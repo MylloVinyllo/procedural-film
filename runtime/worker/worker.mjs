@@ -165,6 +165,17 @@ async function copyOutputs(projectRoot, artifactDir) {
   await fs.cp(source, path.join(artifactDir, "output"), { recursive: true });
 }
 
+async function copyPathIfExists(source, target) {
+  try {
+    await fs.access(source);
+  } catch {
+    return false;
+  }
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.cp(source, target, { recursive: true });
+  return true;
+}
+
 async function sha256File(file) {
   const hash = crypto.createHash("sha256");
   await new Promise((resolve, reject) => {
@@ -225,7 +236,68 @@ async function executeJob(job) {
     await installTools(job, projectRoot);
     await fs.mkdir(path.join(projectRoot, ".mcp-output"), { recursive: true });
 
-    if (job.operation === "check") {
+    if (job.operation === "smoke") {
+      await runCommand(job, "smoke", "node", ["tools/smoke.cjs"], {
+        cwd: projectRoot,
+        timeoutMs: 5 * 60_000,
+      });
+    } else if (job.operation === "fixture_check") {
+      await runCommand(job, "fixture-check", "node", ["tools/check.cjs", "--fixtures"], {
+        cwd: projectRoot,
+        timeoutMs: 15 * 60_000,
+      });
+    } else if (job.operation === "fixture_render") {
+      await runCommand(
+        job,
+        "fixture-render",
+        "node",
+        [
+          "tools/render.cjs",
+          "--fixtures",
+          "--scale", "0.5",
+          "--workers", "2",
+          "--crf", "23",
+          "--preset", "veryfast",
+          "--out", ".mcp-output/fixtures.mp4",
+        ],
+        { cwd: projectRoot, timeoutMs: 30 * 60_000 },
+      );
+    } else if (job.operation === "stubgen") {
+      await runCommand(job, "stubgen", "node", ["tools/stubgen.cjs"], {
+        cwd: projectRoot,
+        timeoutMs: 5 * 60_000,
+      });
+      await copyPathIfExists(
+        path.join(projectRoot, "src", "scenes"),
+        path.join(job.artifactDir, "generated-src", "scenes"),
+      );
+    } else if (job.operation === "audio_qa") {
+      await runCommand(job, "audio-render", "node", ["tools/audio/render-audio.cjs"], {
+        cwd: projectRoot,
+        timeoutMs: 15 * 60_000,
+      });
+      await runCommand(job, "audio-analyze", "node", ["tools/audio/analyze.cjs", ".tmp/audio/score.wav", "--cues"], {
+        cwd: projectRoot,
+        timeoutMs: 10 * 60_000,
+      });
+      await runCommand(job, "audio-peaks", "node", ["tools/audio/peaks.cjs", ".tmp/audio/score.wav"], {
+        cwd: projectRoot,
+        timeoutMs: 10 * 60_000,
+      });
+      await copyPathIfExists(
+        path.join(projectRoot, ".tmp", "audio", "score.wav"),
+        path.join(job.artifactDir, "output", "audio", "score.wav"),
+      );
+    } else if (job.operation === "build_player") {
+      await runCommand(job, "build-player", "node", ["tools/build.cjs"], {
+        cwd: projectRoot,
+        timeoutMs: 10 * 60_000,
+      });
+      await copyPathIfExists(
+        path.join(projectRoot, "dist"),
+        path.join(job.artifactDir, "output", "dist"),
+      );
+    } else if (job.operation === "check") {
       await runCommand(job, "check", "node", ["tools/check.cjs"], {
         cwd: projectRoot,
         timeoutMs: 15 * 60_000,
@@ -313,7 +385,7 @@ async function runtimeInfo() {
   return {
     ok: true,
     runtime: "procedural-film-worker",
-    version: "0.1.0",
+    version: "0.2.0",
     node: process.version,
     platform: process.platform,
     arch: process.arch,
@@ -348,7 +420,18 @@ const server = http.createServer(async (req, res) => {
       const body = await readJson(req);
       validateCommit(body.commit);
       validateProjectPath(body.projectPath);
-      if (!["check", "snap", "render_preview", "render_master"].includes(body.operation)) {
+      if (![
+        "smoke",
+        "fixture_check",
+        "fixture_render",
+        "stubgen",
+        "check",
+        "snap",
+        "audio_qa",
+        "build_player",
+        "render_preview",
+        "render_master",
+      ].includes(body.operation)) {
         throw new Error("unsupported operation");
       }
 
