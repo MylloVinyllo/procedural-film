@@ -10,6 +10,8 @@ const PORT = Number(process.env.PORT || 8080);
 const WORKER_URL = process.env.WORKER_URL || "http://worker:8788";
 const ARTIFACT_ROOT = path.resolve(process.env.ARTIFACT_ROOT || "/artifacts");
 const MAX_INLINE_ARTIFACT_BYTES = Number(process.env.MAX_INLINE_ARTIFACT_BYTES || 33554432);
+const ARTIFACT_CHUNK_BYTES = Number(process.env.ARTIFACT_CHUNK_BYTES || 196608);
+const PLAYER_URI = "ui://procedural-film/artifact-player-v1.html";
 const ALLOWED_ORIGINS = new Set(
   String(process.env.ALLOWED_ORIGINS || "https://chatgpt.com,https://chat.openai.com")
     .split(",")
@@ -107,8 +109,37 @@ function mimeFor(name) {
 function createServer() {
   const server = new McpServer(
     { name: "procedural-film-runtime", version: "0.1.0" },
-    { capabilities: { tools: {} } },
+    { capabilities: { tools: {}, resources: {} } },
   );
+
+
+  const artifactPlayerHtml = [
+    "<!doctype html>",
+    "<html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
+    "<style>",
+    ":root{color-scheme:dark light}body{font-family:system-ui,sans-serif;margin:0;padding:12px;background:transparent}#card{display:grid;gap:10px}#stage{display:grid;place-items:center;min-height:180px;background:#111;border-radius:12px;overflow:hidden}video,img{max-width:100%;max-height:70vh;display:block}#bar{height:6px;background:#333;border-radius:999px;overflow:hidden}#fill{height:100%;width:0;background:#ddd;transition:width .15s linear}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}button,a.btn{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid #666;background:#222;color:#fff;text-decoration:none;cursor:pointer}small{opacity:.72;word-break:break-all}",
+    "</style></head><body><div id='card'><div id='stage'><div id='status'>Waiting for artifact…</div></div><div id='bar'><div id='fill'></div></div><div class='row'><button id='save' disabled>Save to ChatGPT</button><a id='download' class='btn' hidden>Download</a></div><small id='meta'></small></div>",
+    "<script>",
+    "const pending=new Map();let nextId=1;let currentKey='';let currentBlob=null;let currentUrl=null;",
+    "const stage=document.getElementById('stage'),statusEl=document.getElementById('status'),fill=document.getElementById('fill'),metaEl=document.getElementById('meta'),saveBtn=document.getElementById('save'),download=document.getElementById('download');",
+    "function request(method,params){const id=nextId++;window.parent.postMessage({jsonrpc:'2.0',id,method,params},'*');return new Promise((resolve,reject)=>pending.set(id,{resolve,reject}));}",
+    "function decode64(s){const b=atob(s);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}",
+    "async function load(meta){if(!meta)return;const key=meta.jobId+'|'+meta.relativePath;if(key===currentKey)return;currentKey=key;saveBtn.disabled=true;download.hidden=true;statusEl.textContent='Loading artifact…';fill.style.width='0%';metaEl.textContent=meta.fileName+' · '+(meta.sizeBytes/1048576).toFixed(2)+' MB';try{const parts=[];let offset=0;while(offset<meta.sizeBytes){const r=await request('tools/call',{name:'get_artifact_chunk',arguments:{job_id:meta.jobId,relative_path:meta.relativePath,offset,length:meta.chunkBytes}});const sc=r&&r.structuredContent;if(!sc||!sc.chunkBase64)throw new Error('Chunk payload missing');parts.push(decode64(sc.chunkBase64));offset=sc.nextOffset;fill.style.width=Math.min(100,(offset/meta.sizeBytes)*100).toFixed(1)+'%';}currentBlob=new Blob(parts,{type:meta.mimeType});if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(currentBlob);stage.innerHTML='';if(meta.mimeType==='video/mp4'){const v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=currentUrl;stage.appendChild(v);}else if(meta.mimeType.startsWith('image/')){const i=document.createElement('img');i.src=currentUrl;i.alt=meta.fileName;stage.appendChild(i);}else{const p=document.createElement('div');p.textContent='Artifact ready: '+meta.fileName;stage.appendChild(p);}download.href=currentUrl;download.download=meta.fileName;download.hidden=false;saveBtn.disabled=false;fill.style.width='100%';}catch(e){statusEl.textContent='Artifact load failed: '+(e&&e.message?e.message:String(e));}}",
+    "saveBtn.onclick=async()=>{if(!currentBlob||!window.openai||!window.openai.uploadFile)return;saveBtn.disabled=true;const name=(metaEl.textContent||'artifact').split(' · ')[0];try{const file=new File([currentBlob],name,{type:currentBlob.type});const uploaded=await window.openai.uploadFile(file,{library:true});if(uploaded&&uploaded.fileId&&window.openai.getFileDownloadUrl){const d=await window.openai.getFileDownloadUrl({fileId:uploaded.fileId});if(d&&d.downloadUrl){download.href=d.downloadUrl;download.download='';download.textContent='Download from ChatGPT';download.hidden=false;}}saveBtn.textContent='Saved to ChatGPT';}catch(e){saveBtn.textContent='Save failed';saveBtn.disabled=false;}};",
+    "window.addEventListener('message',(event)=>{if(event.source!==window.parent)return;const m=event.data;if(!m||m.jsonrpc!=='2.0')return;if(m.id!==undefined&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);return;}if(m.method==='ui/notifications/tool-result')load(m.params&&m.params.structuredContent);},{passive:true});",
+    "</script></body></html>"
+  ].join("\n");
+
+  server.registerResource("artifact-player", PLAYER_URI, {}, async () => ({
+    contents: [
+      {
+        uri: PLAYER_URI,
+        mimeType: "text/html;profile=mcp-app",
+        text: artifactPlayerHtml,
+        _meta: { ui: { prefersBorder: true } },
+      },
+    ],
+  }));
 
   server.registerTool(
     "runtime_info",
@@ -191,6 +222,89 @@ function createServer() {
     async ({ job_id }) => {
       assertJobId(job_id);
       return jsonResult(await workerJson(`/jobs/${encodeURIComponent(job_id)}/artifacts`));
+    },
+  );
+
+
+  server.registerTool(
+    "get_artifact_chunk",
+    {
+      description: "App-only helper that returns one bounded base64 chunk of a persisted artifact.",
+      inputSchema: z.object({
+        job_id: z.string(),
+        relative_path: z.string().min(1),
+        offset: z.number().int().min(0),
+        length: z.number().int().min(1).max(262144).default(ARTIFACT_CHUNK_BYTES),
+      }),
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+      _meta: { ui: { visibility: ["app"] } },
+    },
+    async ({ job_id, relative_path, offset, length }) => {
+      const target = safeArtifactPath(job_id, relative_path);
+      const stat = await fs.stat(target);
+      if (!stat.isFile()) throw new Error("artifact is not a file");
+      if (offset > stat.size) throw new Error("offset exceeds artifact size");
+      const bounded = Math.min(length, ARTIFACT_CHUNK_BYTES, stat.size - offset);
+      const handle = await fs.open(target, "r");
+      try {
+        const buf = Buffer.alloc(Math.max(0, bounded));
+        const read = bounded > 0 ? await handle.read(buf, 0, bounded, offset) : { bytesRead: 0 };
+        const data = buf.subarray(0, read.bytesRead);
+        const nextOffset = offset + data.length;
+        return {
+          structuredContent: {
+            jobId: job_id,
+            relativePath: relative_path,
+            mimeType: mimeFor(relative_path),
+            sizeBytes: stat.size,
+            offset,
+            nextOffset,
+            done: nextOffset >= stat.size,
+            chunkBase64: data.toString("base64"),
+          },
+          content: [{ type: "text", text: `Artifact chunk ${offset}..${nextOffset} of ${stat.size} bytes.` }],
+        };
+      } finally {
+        await handle.close();
+      }
+    },
+  );
+
+  server.registerTool(
+    "render_artifact_player",
+    {
+      description: "Render a ChatGPT artifact player for a completed video or image. Use after render/snap when the artifact is too large for inline transfer.",
+      inputSchema: z.object({
+        job_id: z.string(),
+        relative_path: z.string().min(1),
+      }),
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+      _meta: {
+        ui: { resourceUri: PLAYER_URI },
+        "openai/toolInvocation/invoking": "Opening artifact…",
+        "openai/toolInvocation/invoked": "Artifact ready.",
+      },
+    },
+    async ({ job_id, relative_path }) => {
+      const target = safeArtifactPath(job_id, relative_path);
+      const stat = await fs.stat(target);
+      if (!stat.isFile()) throw new Error("artifact is not a file");
+      const mimeType = mimeFor(relative_path);
+      if (!(mimeType === "video/mp4" || mimeType.startsWith("image/"))) {
+        throw new Error("artifact player supports video/mp4 and image artifacts");
+      }
+      const payload = {
+        jobId: job_id,
+        relativePath: relative_path,
+        fileName: path.basename(relative_path),
+        mimeType,
+        sizeBytes: stat.size,
+        chunkBytes: ARTIFACT_CHUNK_BYTES,
+      };
+      return {
+        structuredContent: payload,
+        content: [{ type: "text", text: `Artifact player ready for ${payload.fileName} (${payload.sizeBytes} bytes).` }],
+      };
     },
   );
 
