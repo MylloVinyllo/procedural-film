@@ -94,6 +94,11 @@ function safeArtifactPath(jobId, relativePath) {
   return target;
 }
 
+async function sha256File(file) {
+  const data = await fs.readFile(file);
+  return crypto.createHash("sha256").update(data).digest("hex");
+}
+
 function mimeFor(name) {
   const ext = path.extname(name).toLowerCase();
   if (ext === ".png") return "image/png";
