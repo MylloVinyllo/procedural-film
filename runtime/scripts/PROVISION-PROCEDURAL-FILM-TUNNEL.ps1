@@ -1,10 +1,10 @@
-$ErrorActionPreference = 'Stop'
-
 param(
   [Parameter(Mandatory = $true)]
   [ValidatePattern('^tunnel_[A-Za-z0-9]+$')]
   [string]$TunnelId
 )
+
+$ErrorActionPreference = 'Stop'
 
 $RuntimeRoot = Join-Path $env:LOCALAPPDATA 'ProceduralFilmRuntimeTunnel'
 $ConfigRoot = Join-Path $RuntimeRoot 'config'
