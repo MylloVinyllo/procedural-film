@@ -92,7 +92,7 @@
     const recordFill = P.navyDeep;
 
     L.inkPath(ctx, [[180,315],[690,300],[815,365],[260,405]], {
-      closed:true, fill:P.ink, color:soft, width:2.5, seed:101, boilAmp:0.28
+      closed:true, fill:P.night, color:soft, width:2.5, seed:101, boilAmp:0.28
     });
     L.inkPath(ctx, [[260,405],[815,365],[790,665],[250,675]], {
       closed:true, fill:P.ink, color:soft, width:2.8, seed:102, boilAmp:0.28
@@ -164,7 +164,7 @@
 
     L.inkPath(ctx, L.rrectPts(706,186,42,160,14,9), {
       closed:true,
-      fill: highlight === 'vacuum' ? P.red : P.inkSoft,
+      fill:P.paperDeep,
       color:ink,
       width:2.4,
       seed:131,
@@ -174,12 +174,13 @@
     ctx.save();
     ctx.translate(727,238);
     ctx.rotate(armAngle);
-    const armFill = highlight === 'vacuum' || engaged > 0.1 ? P.red : P.paperDeep;
+    const armFill = L.mix(P.paperDeep, P.red, engaged);
+    const padFill = L.mix(P.inkSoft, P.red, engaged);
     L.inkPath(ctx, L.capsulePts(-102,0,224,17,0,64), {
       closed:true, fill:armFill, color:ink, width:2.5, seed:132, boilAmp:0.2
     });
     L.inkPath(ctx, L.rrectPts(-226,-14,30,28,8,7), {
-      closed:true, fill:P.inkSoft, color:ink, width:1.6, seed:133, boilAmp:0.16
+      closed:true, fill:padFill, color:ink, width:1.6, seed:133, boilAmp:0.16
     });
     if (engaged > 0.01) {
       ctx.save();
@@ -259,8 +260,8 @@
     ctx.fillStyle = P.annBlue;
     ctx.fillRect(cx-rx,cy-ry,rx*2,ry*2);
 
-    const zoneX = 650;
-    const left = zoneX - 710*smooth(p);
+    const zoneX = 548;
+    const left = zoneX - 650*smooth(p);
     ctx.globalAlpha = 0.4;
     ctx.fillStyle = P.sage;
     ctx.fillRect(left,cy-ry,zoneX-left,ry*2);
@@ -297,10 +298,14 @@
         ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill();
       }
       ctx.beginPath();
-      ctx.moveTo(850,820); ctx.lineTo(945,700); ctx.stroke();
-      ctx.strokeRect(925,630,78,70);
+      ctx.moveTo(850,820); ctx.lineTo(920,706); ctx.stroke();
       ctx.restore();
-      L.text(ctx,'збір',964,616,{size:22,weight:600,color:P.lineWhite,align:'center',family:'Montserrat, Arial, sans-serif'});
+
+      L.inkPath(ctx,L.rrectPts(866,608,168,104,14,12),{
+        closed:true,fill:P.navyLight,color:P.paleBlue,width:2.2,alpha:0.95,seed:224,boilAmp:0.12
+      });
+      L.text(ctx,'система',950,650,{size:22,weight:500,color:P.lineWhite,align:'center',family:'Montserrat, Arial, sans-serif'});
+      L.text(ctx,'збору',950,680,{size:25,weight:700,color:P.paleBlue,align:'center',family:'Montserrat, Arial, sans-serif'});
     }
 
     const a = spin * Math.PI*2;
@@ -308,7 +313,7 @@
     const my = cy + Math.sin(a)*92;
     ctx.save(); ctx.fillStyle=P.magenta; ctx.beginPath(); ctx.arc(mx,my,7,0,Math.PI*2); ctx.fill(); ctx.restore();
 
-    return { zoneX:548, recordCx:cx, recordCy:cy };
+    return { zoneX, recordCx:cx, recordCy:cy };
   };
 
   FILM.TIMELINE = {
