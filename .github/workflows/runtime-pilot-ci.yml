@@ -1,0 +1,36 @@
+name: runtime-pilot-ci
+
+on:
+  push:
+    branches:
+      - runtime/procedural-film-mcp-pilot
+  workflow_dispatch:
+
+jobs:
+  validate-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Syntax check
+        run: |
+          node --check runtime/mcp/server.mjs
+          node --check runtime/worker/worker.mjs
+
+      - name: Install MCP dependencies
+        working-directory: runtime/mcp
+        run: npm install --no-audit --no-fund
+
+      - name: Verify MCP v2 imports
+        working-directory: runtime/mcp
+        run: |
+          node --input-type=module -e "import {McpServer,createMcpHandler} from '@modelcontextprotocol/server'; import {toNodeHandler} from '@modelcontextprotocol/node'; if(!McpServer||!createMcpHandler||!toNodeHandler) process.exit(1); console.log('MCP_IMPORTS_OK')"
+
+      - name: Compose config validation
+        working-directory: runtime
+        run: docker compose config --quiet
