@@ -11,7 +11,7 @@ const WORKER_URL = process.env.WORKER_URL || "http://worker:8788";
 const ARTIFACT_ROOT = path.resolve(process.env.ARTIFACT_ROOT || "/artifacts");
 const MAX_INLINE_ARTIFACT_BYTES = Number(process.env.MAX_INLINE_ARTIFACT_BYTES || 33554432);
 const ARTIFACT_CHUNK_BYTES = Number(process.env.ARTIFACT_CHUNK_BYTES || 196608);
-const PLAYER_URI = "ui://procedural-film/artifact-player-v1.html";
+const PLAYER_URI = "ui://procedural-film/artifact-player-v2.html";
 const ALLOWED_ORIGINS = new Set(
   String(process.env.ALLOWED_ORIGINS || "https://chatgpt.com,https://chat.openai.com")
     .split(",")
@@ -120,13 +120,16 @@ function createServer() {
     ":root{color-scheme:dark light}body{font-family:system-ui,sans-serif;margin:0;padding:12px;background:transparent}#card{display:grid;gap:10px}#stage{display:grid;place-items:center;min-height:180px;background:#111;border-radius:12px;overflow:hidden}video,img{max-width:100%;max-height:70vh;display:block}#bar{height:6px;background:#333;border-radius:999px;overflow:hidden}#fill{height:100%;width:0;background:#ddd;transition:width .15s linear}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}button,a.btn{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid #666;background:#222;color:#fff;text-decoration:none;cursor:pointer}small{opacity:.72;word-break:break-all}",
     "</style></head><body><div id='card'><div id='stage'><div id='status'>Waiting for artifact…</div></div><div id='bar'><div id='fill'></div></div><div class='row'><button id='save' disabled>Save to ChatGPT</button><a id='download' class='btn' hidden>Download</a></div><small id='meta'></small></div>",
     "<script>",
-    "const pending=new Map();let nextId=1;let currentKey='';let currentBlob=null;let currentUrl=null;",
+    "const pending=new Map();let nextId=1;let currentKey='';let currentBlob=null;let currentUrl=null;let initialized=false;",
     "const stage=document.getElementById('stage'),statusEl=document.getElementById('status'),fill=document.getElementById('fill'),metaEl=document.getElementById('meta'),saveBtn=document.getElementById('save'),download=document.getElementById('download');",
+    "function notify(method,params){window.parent.postMessage({jsonrpc:'2.0',method,params},'*');}",
     "function request(method,params){const id=nextId++;window.parent.postMessage({jsonrpc:'2.0',id,method,params},'*');return new Promise((resolve,reject)=>pending.set(id,{resolve,reject}));}",
+    "async function initializeBridge(){if(initialized)return;await request('ui/initialize',{appInfo:{name:'procedural-film-artifact-player',version:'0.2.0'},appCapabilities:{},protocolVersion:'2026-01-26'});initialized=true;notify('ui/notifications/initialized',{});}",
     "function decode64(s){const b=atob(s);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}",
-    "async function load(meta){if(!meta)return;const key=meta.jobId+'|'+meta.relativePath;if(key===currentKey)return;currentKey=key;saveBtn.disabled=true;download.hidden=true;statusEl.textContent='Loading artifact…';fill.style.width='0%';metaEl.textContent=meta.fileName+' · '+(meta.sizeBytes/1048576).toFixed(2)+' MB';try{const parts=[];let offset=0;while(offset<meta.sizeBytes){const r=await request('tools/call',{name:'get_artifact_chunk',arguments:{job_id:meta.jobId,relative_path:meta.relativePath,offset,length:meta.chunkBytes}});const sc=r&&r.structuredContent;if(!sc||!sc.chunkBase64)throw new Error('Chunk payload missing');parts.push(decode64(sc.chunkBase64));offset=sc.nextOffset;fill.style.width=Math.min(100,(offset/meta.sizeBytes)*100).toFixed(1)+'%';}currentBlob=new Blob(parts,{type:meta.mimeType});if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(currentBlob);stage.innerHTML='';if(meta.mimeType==='video/mp4'){const v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=currentUrl;stage.appendChild(v);}else if(meta.mimeType.startsWith('image/')){const i=document.createElement('img');i.src=currentUrl;i.alt=meta.fileName;stage.appendChild(i);}else{const p=document.createElement('div');p.textContent='Artifact ready: '+meta.fileName;stage.appendChild(p);}download.href=currentUrl;download.download=meta.fileName;download.hidden=false;saveBtn.disabled=false;fill.style.width='100%';}catch(e){statusEl.textContent='Artifact load failed: '+(e&&e.message?e.message:String(e));}}",
+    "async function load(meta){if(!meta)return;await initializeBridge();const key=meta.jobId+'|'+meta.relativePath;if(key===currentKey)return;currentKey=key;saveBtn.disabled=true;download.hidden=true;statusEl.textContent='Loading artifact…';fill.style.width='0%';metaEl.textContent=meta.fileName+' · '+(meta.sizeBytes/1048576).toFixed(2)+' MB';try{const parts=[];let offset=0;while(offset<meta.sizeBytes){const r=await request('tools/call',{name:'get_artifact_chunk',arguments:{job_id:meta.jobId,relative_path:meta.relativePath,offset,length:meta.chunkBytes}});const sc=r&&r.structuredContent;if(!sc||!sc.chunkBase64)throw new Error('Chunk payload missing');parts.push(decode64(sc.chunkBase64));offset=sc.nextOffset;fill.style.width=Math.min(100,(offset/meta.sizeBytes)*100).toFixed(1)+'%';}currentBlob=new Blob(parts,{type:meta.mimeType});if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(currentBlob);stage.innerHTML='';if(meta.mimeType==='video/mp4'){const v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=currentUrl;stage.appendChild(v);}else if(meta.mimeType.startsWith('image/')){const i=document.createElement('img');i.src=currentUrl;i.alt=meta.fileName;stage.appendChild(i);}else{const p=document.createElement('div');p.textContent='Artifact ready: '+meta.fileName;stage.appendChild(p);}download.href=currentUrl;download.download=meta.fileName;download.hidden=false;saveBtn.disabled=false;fill.style.width='100%';}catch(e){statusEl.textContent='Artifact load failed: '+(e&&e.message?e.message:String(e));}}",
     "saveBtn.onclick=async()=>{if(!currentBlob||!window.openai||!window.openai.uploadFile)return;saveBtn.disabled=true;const name=(metaEl.textContent||'artifact').split(' · ')[0];try{const file=new File([currentBlob],name,{type:currentBlob.type});const uploaded=await window.openai.uploadFile(file,{library:true});if(uploaded&&uploaded.fileId&&window.openai.getFileDownloadUrl){const d=await window.openai.getFileDownloadUrl({fileId:uploaded.fileId});if(d&&d.downloadUrl){download.href=d.downloadUrl;download.download='';download.textContent='Download from ChatGPT';download.hidden=false;}}saveBtn.textContent='Saved to ChatGPT';}catch(e){saveBtn.textContent='Save failed';saveBtn.disabled=false;}};",
     "window.addEventListener('message',(event)=>{if(event.source!==window.parent)return;const m=event.data;if(!m||m.jsonrpc!=='2.0')return;if(m.id!==undefined&&pending.has(m.id)){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);return;}if(m.method==='ui/notifications/tool-result')load(m.params&&m.params.structuredContent);},{passive:true});",
+    "initializeBridge().then(()=>{if(window.openai&&window.openai.toolOutput)load(window.openai.toolOutput);}).catch(e=>{statusEl.textContent='Bridge initialization failed: '+(e&&e.message?e.message:String(e));});",
     "</script></body></html>"
   ].join("\n");
 
@@ -136,7 +139,17 @@ function createServer() {
         uri: PLAYER_URI,
         mimeType: "text/html;profile=mcp-app",
         text: artifactPlayerHtml,
-        _meta: { ui: { prefersBorder: true } },
+        _meta: {
+          ui: {
+            prefersBorder: true,
+            csp: {
+              connectDomains: [],
+              resourceDomains: [],
+            },
+          },
+          "openai/widgetDescription": "Preview and save a rendered Procedural Film artifact.",
+          "openai/ui": { availableDisplayModes: ["inline", "fullscreen"] },
+        },
       },
     ],
   }));
