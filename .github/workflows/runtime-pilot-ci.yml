@@ -17,10 +17,37 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Syntax check
+      - name: JavaScript syntax check
         run: |
           node --check runtime/mcp/server.mjs
           node --check runtime/worker/worker.mjs
+
+      - name: PowerShell syntax check
+        shell: pwsh
+        run: |
+          $files = @(
+            'runtime/scripts/START-PROCEDURAL-FILM-RUNTIME.ps1',
+            'runtime/scripts/STOP-PROCEDURAL-FILM-RUNTIME.ps1',
+            'runtime/scripts/PROVISION-PROCEDURAL-FILM-TUNNEL.ps1',
+            'runtime/scripts/START-PROCEDURAL-FILM-TUNNEL.ps1',
+            'runtime/scripts/STOP-PROCEDURAL-FILM-TUNNEL.ps1'
+          )
+          $hadErrors = $false
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $file),
+              [ref]$tokens,
+              [ref]$errors
+            )
+            if ($errors.Count -gt 0) {
+              $hadErrors = $true
+              Write-Host "Syntax errors in $file"
+              $errors | ForEach-Object { Write-Host $_.Message }
+            }
+          }
+          if ($hadErrors) { exit 1 }
 
       - name: Install MCP dependencies
         working-directory: runtime/mcp
