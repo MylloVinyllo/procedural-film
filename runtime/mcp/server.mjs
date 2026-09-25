@@ -148,6 +148,11 @@ function createServer() {
             },
           },
           "openai/widgetDescription": "Preview and save a rendered Procedural Film artifact.",
+          "openai/widgetPrefersBorder": true,
+          "openai/widgetCSP": {
+            connect_domains: [],
+            resource_domains: [],
+          },
           "openai/ui": { availableDisplayModes: ["inline", "fullscreen"] },
         },
       },
