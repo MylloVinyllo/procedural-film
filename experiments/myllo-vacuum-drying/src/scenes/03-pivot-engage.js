@@ -20,8 +20,7 @@
         spin:0.72+t*0.22,
         wet:1,
         dry:0,
-        engaged:engage,
-        highlight:'vacuum'
+        engaged:engage
       });
 
       ctx.save();
