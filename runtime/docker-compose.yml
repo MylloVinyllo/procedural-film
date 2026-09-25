@@ -1,0 +1,57 @@
+services:
+  worker:
+    build:
+      context: ..
+      dockerfile: runtime/worker/Dockerfile
+    environment:
+      REPO_URL: https://github.com/MylloVinyllo/procedural-film.git
+      ARTIFACT_ROOT: /artifacts
+      JOB_ROOT: /tmp/procedural-film-jobs
+      NPM_CONFIG_CACHE: /npm-cache
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      MAX_CONCURRENT: "1"
+    volumes:
+      - ./.runtime-artifacts:/artifacts
+      - npm-cache:/npm-cache
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8788/healthz').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  mcp:
+    build:
+      context: ..
+      dockerfile: runtime/mcp/Dockerfile
+    environment:
+      PORT: "8080"
+      WORKER_URL: http://worker:8788
+      ARTIFACT_ROOT: /artifacts
+      MAX_INLINE_ARTIFACT_BYTES: "33554432"
+      ALLOWED_ORIGINS: https://chatgpt.com,https://chat.openai.com
+    depends_on:
+      worker:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8975:8080"
+    volumes:
+      - ./.runtime-artifacts:/artifacts:ro
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  npm-cache:
