@@ -113,7 +113,7 @@ function mimeFor(name) {
 
 function createServer() {
   const server = new McpServer(
-    { name: "procedural-film-runtime", version: "0.1.0" },
+    { name: "procedural-film-runtime", version: "0.2.0" },
     { capabilities: { tools: {}, resources: {} } },
   );
 
@@ -184,6 +184,42 @@ function createServer() {
   });
 
   server.registerTool(
+    "smoke",
+    {
+      description: "Run the Procedural Film foundation smoke test for one exact project commit.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("smoke", input)),
+  );
+
+  server.registerTool(
+    "fixture_check",
+    {
+      description: "Run the Procedural Film fixture gate (--fixtures) to prove the copied foundation before scene investment.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("fixture_check", input)),
+  );
+
+  server.registerTool(
+    "fixture_render",
+    {
+      description: "Render the foundation fixture mini-film at half scale with sound.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("fixture_render", input)),
+  );
+
+  server.registerTool(
+    "stubgen",
+    {
+      description: "Run tools/stubgen.cjs for the timeline and persist the generated scene stubs as job artifacts.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("stubgen", input)),
+  );
+
+  server.registerTool(
     "check",
     {
       description: "Run the procedural-film six-check gate for one exact project commit.",
@@ -209,6 +245,24 @@ function createServer() {
           options: { shot: input.shot, samples: input.samples, scale: input.scale },
         }),
       ),
+  );
+
+  server.registerTool(
+    "audio_qa",
+    {
+      description: "Render procedural audio, analyze cue timing, and report peaks/headroom in one isolated job.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("audio_qa", input)),
+  );
+
+  server.registerTool(
+    "build_player",
+    {
+      description: "Build the self-contained Procedural Film HTML player and persist dist/ as artifacts.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("build_player", input)),
   );
 
   server.registerTool(
