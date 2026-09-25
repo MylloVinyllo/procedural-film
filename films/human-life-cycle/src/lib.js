@@ -286,11 +286,12 @@
     sunset: '#E79D8F',
     dusk: '#5A4878',
     red: '#BF3F2C',
-    // 2.2 subject palette, warm — filled per film from docs/art-bible.md section 2.2.
-    // Add the subject's named colours here exactly as the art bible publishes them:
-    //     hero: '#D9772B',
-    //     heroDeep: '#B55A1C',
-    // Scene code reads them as lib.pal.<name>.
+    // 2.2 subject palette, warm — human-life-cycle
+    selfWarm: '#C86F4B',
+    socialBlue: '#6FA6B8',
+    memoryViolet: '#80729C',
+    cycleGold: '#D9A23E',
+    ageSage: '#8C9B7C',
     // 2.3 cool schematic palette (blueprint plate)
     navy: '#0B1230',
     navyDeep: '#060A1C',
