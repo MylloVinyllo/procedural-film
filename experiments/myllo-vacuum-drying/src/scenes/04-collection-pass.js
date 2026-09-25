@@ -9,18 +9,18 @@
       const p=M.smooth(t/info.dur);
       M.drawMacroPass(ctx,L,{p,spin:0.1+t*0.22});
 
-      L.text(ctx,'ВОЛОГО',90,420,{
-        size:30,weight:700,color:P.paleBlue,
+      L.text(ctx,'ПІСЛЯ · СУХО',90,420,{
+        size:26,weight:700,color:P.sage,
         family:'Exo 2, Montserrat, Arial, sans-serif',
         tracking:2
       });
-      L.text(ctx,'ЗБІР',540,420,{
-        size:30,weight:700,color:P.magenta,align:'center',
+      L.text(ctx,'ЗОНА ЗБОРУ',540,420,{
+        size:26,weight:700,color:P.magenta,align:'center',
         family:'Exo 2, Montserrat, Arial, sans-serif',
         tracking:2
       });
-      L.text(ctx,'СУХО',990,420,{
-        size:30,weight:700,color:P.sage,align:'right',
+      L.text(ctx,'ДО · ВОЛОГО',990,420,{
+        size:26,weight:700,color:P.paleBlue,align:'right',
         family:'Exo 2, Montserrat, Arial, sans-serif',
         tracking:2
       });
