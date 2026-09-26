@@ -112,10 +112,28 @@
     L.guideCircle(c,540,820,48,{color:P.cycleGold,alpha:.42,width:2});
     L.glowDot(c,540,820,5,{color:P.cycleGold,core:P.glow,rays:0,seed:sd('g3-core'),intensity:.62,glow:3,twinkle:.02});
 
-    // foreground crop for parallax
-    c.save();c.globalAlpha=.55;c.translate(980-120*t,1450);
-    fill(c,L,ell(0,-230,70,84,0,22),P.selfPale,sd('fghead'),3,.8);
-    fill(c,L,[[-125,-165],[-75,-215],[55,-205],[125,-150],[105,120],[-100,130]],P.socialDeep,sd('fgtorso'),4,.65);
+    // foreground passer for parallax: readable human crop, deliberately low visual weight
+    c.save();
+    c.globalAlpha=.34;
+    c.translate(1035-82*t,1458);
+    c.scale(.72,.72);
+    // rear leg and shoe
+    fill(c,L,limb(-34,-210,-50,-95,27,19),P.socialDeep,sd('fg-leg-a'),3);
+    fill(c,L,limb(-50,-95,-58,35,19,13),P.inkSoft,sd('fg-leg-b'),2.8);
+    fill(c,L,[[-82,25],[-35,24],[-8,34],[-12,47],[-78,47]],P.ink,sd('fg-shoe'),2.2);
+    // torso and pelvis
+    const fgTorso=[[-78,-448],[-50,-472],[-18,-482],[42,-474],[78,-444],[66,-330],[50,-246],[-50,-246],[-66,-332]];
+    fill(c,L,fgTorso,P.socialDeep,sd('fg-torso'),3.8,.88);
+    fill(c,L,[[-50,-248],[-56,-207],[-42,-180],[44,-180],[55,-211],[49,-248]],L.mix(P.socialDeep,P.ink,.35),sd('fg-pelvis'),3,.8);
+    // arm and hand
+    fill(c,L,limb(70,-430,96,-332,18,13),P.socialDeep,sd('fg-arm-a'),2.8);
+    fill(c,L,limb(96,-332,76,-248,13,9),P.selfPale,sd('fg-arm-b'),2.4);
+    fill(c,L,ell(74,-240,13,10,.2,16),P.selfPale,sd('fg-hand'),2,.85);
+    // neck / head / hair make the crop read immediately as a person
+    fill(c,L,[[-18,-478],[20,-478],[22,-454],[-20,-454]],P.selfPale,sd('fg-neck'),2.2,.9);
+    fill(c,L,ell(0,-525,46,55,-.03,28),P.selfPale,sd('fg-head'),3,.9);
+    fill(c,L,[[-40,-547],[-28,-577],[-5,-586],[20,-578],[40,-555],[35,-534],[14,-550],[-9,-552],[-31,-538]],P.inkSoft,sd('fg-hair'),2,.78);
+    ink(c,L,[[-16,-524],[-3,-527]],P.ink,sd('fg-eye'),1.1,.7);
     c.restore();
 
     // individual trajectory
