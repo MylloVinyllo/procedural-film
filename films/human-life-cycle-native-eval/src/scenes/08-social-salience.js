@@ -59,6 +59,9 @@
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
     L.blueprint(c,{seed:8001});
+    const up=clamp(t/.18),down=clamp((t-.72)/.23);
+    const eu=up*up*(3-2*up),ed=down*down*(3-2*down),z=1+1.0*eu*(1-ed);
+    c.save();c.translate(540,820);c.scale(z,z);c.translate(-540,-820);
     // guide geometry
     for(const r of [120,230,340]){c.save();c.globalAlpha=.09;c.strokeStyle=P.lavender;c.lineWidth=1;c.beginPath();c.arc(540,820,r,0,TAU);c.stroke();c.restore();}
     line(c,[[190,520],[900,1110]],P.lavender,1,.08,[8,13]);
