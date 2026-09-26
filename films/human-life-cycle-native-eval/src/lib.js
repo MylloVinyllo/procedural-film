@@ -307,7 +307,11 @@
     paleBlue: '#9CC2EA',
     glow: '#FFF3DC',
     magenta: '#FF3D98',
-    // Subject identity tints — human-life-cycle-native-eval\n    schemSelf: '#F2A66A',\n    schemSocial: '#7CCDE0',\n    schemCycle: '#F1CB6B',\n    // Line or dot colours only, never fills; a schematic shot uses at most one besides magenta.
+    // Subject identity tints — human-life-cycle-native-eval
+    schemSelf: '#F2A66A',
+    schemSocial: '#7CCDE0',
+    schemCycle: '#F1CB6B',
+    // Line or dot colours only, never fills; a schematic shot uses at most one besides magenta.
     // 2.4 overlay colours on illustrations
     annMagenta: '#E43D8C',
     annBlue: '#3B8EE0',
