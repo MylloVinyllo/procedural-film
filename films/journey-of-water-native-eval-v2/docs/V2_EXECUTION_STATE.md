@@ -53,4 +53,5 @@ The production procedure is unchanged, but execution is split into resumable tra
   - 01 cloud-hero: accepted after cloud-volume/parallax correction
   - 02 condensation-micro: accepted after density/process-inset correction
   - 03 drop-growth: accepted on six-frame review
-- next: dense scene batch B (04–06)
+- next: dense scene batch C (07–09)
+
