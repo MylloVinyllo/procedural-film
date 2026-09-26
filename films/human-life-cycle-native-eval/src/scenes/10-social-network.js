@@ -13,20 +13,22 @@
     for(let i=0;i<n;i++){
       const a0=-Math.PI/2+(i/n)*TAU;
       const a1=-Math.PI/2+((i+.72)/n)*TAU;
-      ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);
-      if(i<current){ctx.strokeStyle=L.rgba(P.lavender,.28);ctx.lineWidth=2;}
-      else if(i===current){ctx.strokeStyle=P.schemCycle;ctx.lineWidth=4;}
-      else{ctx.strokeStyle=L.rgba(P.grid,.22);ctx.lineWidth=2;}
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1);
+      if(i<current){
+        ctx.strokeStyle=L.rgba(P.lavender,.28);
+        ctx.lineWidth=2;
+      }else if(i===current){
+        ctx.strokeStyle=P.schemCycle;
+        ctx.lineWidth=4;
+      }else{
+        ctx.strokeStyle=L.rgba(P.grid,.22);
+        ctx.lineWidth=2;
+      }
       ctx.stroke();
     }
     ctx.restore();
   }
-
-  const clusters=[
-    {nodes:[[365,690],[300,810],[380,920]],links:[[0,1],[1,2]],start:.18},
-    {nodes:[[720,650],[815,735],[770,845],[860,910]],links:[[0,1],[1,2],[2,3],[0,2]],start:.48},
-    {nodes:[[420,1110],[525,1200],[640,1110]],links:[[0,1],[1,2]],start:.82}
-  ];
 
   function node(c,L,P,x,y,r,seed,col,alpha=1){
     L.glowDot(c,x,y,r*.22,{color:col,core:P.glow,rays:0,seed,intensity:alpha,glow:3,twinkle:.04});
