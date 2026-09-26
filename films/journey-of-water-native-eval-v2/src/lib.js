@@ -286,11 +286,28 @@
     sunset: '#E79D8F',
     dusk: '#5A4878',
     red: '#BF3F2C',
-    // 2.2 subject palette, warm — filled per film from docs/art-bible.md section 2.2.
-    // Add the subject's named colours here exactly as the art bible publishes them:
-    //     hero: '#D9772B',
-    //     heroDeep: '#B55A1C',
-    // Scene code reads them as lib.pal.<name>.
+    // 2.2 subject palette — The Journey of Water
+    waterBody: '#72AEB4',
+    waterDeep: '#3E747B',
+    waterPale: '#C9E0DE',
+    waterFoam: '#F6F1E3',
+    cloudBody: '#E8E3D7',
+    cloudShade: '#B8C0BE',
+    stormGray: '#8E9DA3',
+    soilBody: '#9A6B47',
+    soilDeep: '#694833',
+    stoneBody: '#9B9488',
+    stoneDeep: '#66625C',
+    riverBank: '#9A8A5E',
+    filterSand: '#D2B275',
+    filterGravel: '#86715D',
+    pipeBody: '#6D858A',
+    pipeDeep: '#465A60',
+    flocBody: '#B58B69',
+    seaBody: '#4E8E94',
+    seaDeep: '#2E676E',
+    aerosolDust: '#BCA98C',
+    leafWet: '#769766',
     // 2.3 cool schematic palette (blueprint plate)
     navy: '#0B1230',
     navyDeep: '#060A1C',
@@ -301,8 +318,11 @@
     paleBlue: '#9CC2EA',
     glow: '#FFF3DC',
     magenta: '#FF3D98',
-    // Subject identity tints — 1 to 3 per film, from art-bible 2.3, e.g. schemHero: '#F2A66A'.
-    // Line or dot colours only, never fills; a schematic shot uses at most one besides magenta.
+    // Water identity tints from art-bible 2.3.
+    schemWater: '#74D3E2',
+    schemFlow: '#55B5D2',
+    schemCycle: '#F0C85E',
+    // Line or dot colours only, never large fills; schematic shots keep accent use sparse.
     // 2.4 overlay colours on illustrations
     annMagenta: '#E43D8C',
     annBlue: '#3B8EE0',
