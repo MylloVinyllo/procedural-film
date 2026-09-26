@@ -11,7 +11,7 @@
   function riverRight(y){return 790+125*Math.sin(y/360+.7)+55*Math.sin(y/150);}
   function riverPoly(){
     const L=[],R=[];
-    for(let y=-500;y<=2800;y+=70){L.push([riverLeft(y),y]);R.push([riverRight(y),y]);}
+    for(let y=-500;y<=2800;y+=95){L.push([riverLeft(y),y]);R.push([riverRight(y),y]);}
     return L.concat(R.reverse());
   }
   const RIVER=riverPoly();
@@ -24,7 +24,7 @@
 
   function bankTexture(c,L,P,side,seed){
     const r=L.rng(seed);
-    for(let i=0;i<20;i++){
+    for(let i=0;i<12;i++){
       const y=-200+r()*2900;
       const edge=side<0?riverLeft(y):riverRight(y);
       const x=edge+side*(45+r()*340);
@@ -61,11 +61,11 @@
 
       // river carved through the banks
       c.save();c.fillStyle=P.waterBody;c.beginPath();L.tracePath(c,RIVER,true);c.fill();c.restore();
-      L.hatch(c,RIVER,{angle:.05,spacing:20,width:1.15,color:P.tealDeep,alpha:.32,density:.42,length:[24,82],seed:sd('water-h'),clip:true});
+      L.hatch(c,RIVER,{angle:.05,spacing:28,width:1.1,color:P.tealDeep,alpha:.28,density:.34,length:[24,82],seed:sd('water-h'),clip:true});
 
       // bank edge lines and vegetation texture
       const LP=[],RP=[];
-      for(let y=-500;y<=2800;y+=55){LP.push([riverLeft(y),y]);RP.push([riverRight(y),y]);}
+      for(let y=-500;y<=2800;y+=80){LP.push([riverLeft(y),y]);RP.push([riverRight(y),y]);}
       L.inkPath(c,LP,{color:P.inkSoft,width:3.2,alpha:.72,seed:sd('left'),wobble:1.1,tremble:.22});
       L.inkPath(c,RP,{color:P.inkSoft,width:3.2,alpha:.72,seed:sd('right'),wobble:1.1,tremble:.22});
       bankTexture(c,L,P,-1,sd('texL'));bankTexture(c,L,P,1,sd('texR'));
@@ -92,7 +92,7 @@
       c.restore();
 
       // flow bands and small capillary strokes
-      for(let i=0;i<7;i++){
+      for(let i=0;i<6;i++){
         const x0=360+i*42;
         const pts=[];
         for(let y=100;y<2500;y+=180){
@@ -103,7 +103,7 @@
       }
 
       // sparse trees/reeds on banks for scale
-      for(let i=0;i<14;i++){
+      for(let i=0;i<10;i++){
         const y=220+i*125,x=i%2?riverLeft(y)-100-(i%4)*30:riverRight(y)+90+(i%5)*24;
         L.inkPath(c,[[x,y],[x,y-95-(i%3)*20]],{color:P.wood,width:3,alpha:.45,seed:sd('tree-t',i),wobble:.8,tremble:.16,taper:[4,14]});
         const crown=L.ellipsePts(x,y-120,38+(i%3)*7,55+(i%2)*8,26);
