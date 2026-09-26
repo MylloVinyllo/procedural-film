@@ -1,4 +1,4 @@
-# Art bible: <FILM TITLE>
+# Art bible: Human Life Cycle
 
 The visual rules every scene follows.
 Where this file and a scene brief disagree on a colour, weight or rule, this file wins.
@@ -95,7 +95,15 @@ Stripe band B changes by act; the storyboard assigns one per act.
 | glow | #FFF3DC | Nucleus cores, sun glyph, glows |
 | magenta | #FF3D98 | Moments of change only |
 
-Subject identity tints:\n\n| Name | Hex | Use |\n|---|---|---|\n| schemSelf | #F2A66A | Primary individual node / body line in schematic mode |\n| schemSocial | #7CCDE0 | Social relation nodes / ties in schematic mode |\n| schemCycle | #F1CB6B | Cycle/progress glyph and intergenerational continuity |\n\nSubject tints are line or dot colours, never fills, and a schematic shot uses at most one of them besides magenta.
+Subject identity tints:
+
+| Name | Hex | Use |
+|---|---|---|
+| schemSelf | #F2A66A | Primary individual node / body line in schematic mode |
+| schemSocial | #7CCDE0 | Social relation nodes / ties in schematic mode |
+| schemCycle | #F1CB6B | Cycle/progress glyph and intergenerational continuity |
+
+Subject tints are line or dot colours, never fills, and a schematic shot uses at most one of them besides magenta.
 
 ### 2.4 Overlay colours on illustrations
 
@@ -242,104 +250,357 @@ Draw it with `lib.text` in a thin system sans-serif (light weight), 44 px, lette
 It is centred on x = 540 with its baseline at y = 1470, inside the Shorts safe area (the bottom-right corner sits under the button column).
 The baseline stays at y = 1470. If the closing diagram collides with the wordmark, move the diagram — never the wordmark.
 
-## 10. Subject reference
+## 10. Human subject reference
 
-Sources checked on 2026-09-26: NICHD “About Pregnancy”; NIMH “The Teen Brain: 7 Things to Know”; WHO “Life course”; WHO Commission on Social Connection report overview.
+Research source capture lives in `.tmp/research/HUMAN_LIFE_CYCLE_RESEARCH.md`.
+Sourced biological and life-course claims are kept separate from invented drawing conventions. The film is not a universal biography: environments and props are chosen for visual continuity and readability.
 
-### 10.1 Founding cell / early development
+### 10.1 Recurring protagonist: identity model
 
-Research basis: NICHD states that pregnancy begins with conception, the fertilized egg is a zygote, and the zygote travels to the uterus as a cluster of cells that later contributes to fetus and placenta.
+From later childhood onward, the same protagonist must remain recognizable even when the face is tiny.
+
+Canonical identity cues:
+
+- warm rust-orange upper garment: `selfWarm`;
+- dark ink / deep-rust shaded lower garment;
+- a small asymmetrical hair silhouette, higher on screen-left and flatter on screen-right;
+- a narrow pale face plane, never a circular emoji head after infancy;
+- warm-gold continuity marker near the sternum only when the shot needs an explicit handoff;
+- the `selfWarm` trajectory never crosses through the body; it passes behind or below it.
+
+Adult standing envelope at full figure scale:
+
+| Part | Screen measure |
+|---|---:|
+| total standing height | 690–740 px |
+| head height | 92–108 px |
+| shoulder width | 230–280 px |
+| pelvis width | 150–190 px |
+| hand length | 55–70 px |
+| foot length | 90–115 px |
+
+These are film drawing conventions, not biometric standards.
+
+The adult is never drawn as a five-line stick figure. At phone scale the silhouette must still show: head mass, neck, shoulder slope, ribcage wedge, pelvis wedge, upper/lower limbs with joint bends, hands or mitt forms, feet, clothing edge, and at least two shadow/hatch regions.
+
+### 10.2 Face and head
+
+The face is a three-quarter simplified ink construction unless a shot explicitly calls for profile.
+
+Minimum readable construction for a medium or close figure:
+
+- cranium as an asymmetric oval rather than a perfect circle;
+- jaw taper with a visible chin point;
+- ear on the far side at eye-to-nose height;
+- one eyebrow / eye line on the near side and a shorter far-eye mark;
+- nose bridge plus tip wedge;
+- mouth as two short unequal strokes;
+- hair mass as 3–5 large locks, not individual hairs;
+- neck enters behind the jaw and widens into trapezius/shoulder slope.
+
+At small crowd scale, reduce to cranium + jaw + hair silhouette. Do not reduce the protagonist's head to a filled circle if it occupies more than 45 px in height.
+
+### 10.3 Hands and gesture
+
+Hands carry several story beats, so they get a canonical simplified construction:
+
+- palm: tapered pentagon;
+- thumb: separate wedge;
+- fingers: one grouped mitten edge plus 2–3 notch lines unless the hand is a close-up;
+- wrist is narrower than palm;
+- reaching hands open with the thumb opposed;
+- receiving hands rotate palm-up;
+- older-age hands may show one extra knuckle contour and slower motion, but no caricatured claw shape.
+
+A reciprocal handoff is staged so the two palms approach from different diagonals. The cycleGold transfer point sits in the negative space between them before either hand closes.
+
+### 10.4 Newborn / infant
+
+The birth shot uses recognisable infant mass without medical detail.
+
+- head height approximately one quarter of drawn body length;
+- cranium larger than face;
+- jaw very small;
+- neck mostly hidden by shoulder / wrap;
+- upper and lower limbs remain flexed;
+- hand is a small mitten with a thumb notch;
+- feet are broad soft wedges;
+- torso is a rounded bean shape, not an adult mini-body.
+
+The infant is supported by an adult forearm and cloth shape. The supporting adult is cropped so the newborn remains the subject.
+
+Wrong: adult proportions shrunk down.
+Correct: large cranium, short flexed limbs, compact torso and supported posture.
+
+### 10.5 Child
+
+The child design is a true intermediate body, not a scaled adult.
+
+First-steps figure:
+
+- total figure height around 430–500 px;
+- head height around 95–110 px;
+- torso short, pelvis broad relative to legs;
+- arms lifted away from torso for balance;
+- feet set wider than shoulder width;
+- knees visibly bent;
+- one foot may roll from heel to flat on a beat.
+
+Exploration figure:
+
+- legs lengthen;
+- torso narrows;
+- stride opens;
+- reaching shoulder rotates forward;
+- clothing gains a small scarf/hem or pocket flap that can lag on twos.
+
+The child's warm-orange garment is introduced by shot 05 and survives into later stages as the protagonist identity cue.
+
+### 10.6 Adolescent / young adult
+
+The adolescent passage is a morphological bridge toward adult proportions.
+
+- figure height grows relative to head size;
+- shoulders and pelvis become more adult-like over the transition;
+- limbs lengthen before the final adult torso settles;
+- the protagonist's silhouette must remain distinct from peers through garment colour, hair asymmetry and trajectory;
+- peers vary in height, stance, clothing colour and phase.
+
+Research basis: NIMH describes adolescence as an important period of ongoing brain development and increased salience of social experience. The film translates this into a move from internal network geometry to a richer peer field; the network is symbolic.
+
+Wrong: identical clones surrounding the protagonist.
+Correct: 3–5 visibly different peer figures with uneven spacing and different gesture rhythms.
+
+### 10.7 Adult figure construction
+
+Canonical adult construction uses six masses:
+
+1. cranium + jaw;
+2. ribcage as a tapered oval/wedge;
+3. pelvis as a shorter opposing wedge;
+4. paired upper arms / forearms;
+5. paired thighs / shins;
+6. hands and feet.
+
+Joints are not dots. The elbow and knee are directional angle changes in the contour.
+
+Clothing:
+
+- upper garment has collar/neck opening, shoulder seam, hem and 3–6 fold strokes;
+- lower garment has waistband/pelvis seam, knee fold and outer-leg shadow;
+- shoe is a low wedge with sole line.
+
+Hatching:
+
+- under chin;
+- far side of ribcage;
+- inside elbow / far forearm;
+- inner thigh and calf on shadow side;
+- under garment hem.
+
+The protagonist gets at least one contour break where the warm garment meets skin or lower garment, so the body reads as a dressed person rather than a pictogram.
+
+### 10.8 Social field
+
+WHO social-connection material supports treating relationships as consequential throughout life. The visual field must therefore contain recognisable people, not only anonymous graph nodes.
+
+Crowd/group rules:
+
+- groups are 2–5 figures with gaps between groups;
+- at least three body orientations in a crowd shot;
+- garment palette rotates among socialBlue, ageSage, birthRose, ochre/tan neutrals and paper-dark ink;
+- no repeated clone spacing;
+- one figure can be seated, one leaning, one walking, one turned in conversation;
+- faces at small scale reduce to hair + jaw + single nose/eye mark;
+- depth uses three size bands: near 0.9–1.0, middle 0.65–0.8, far 0.4–0.55.
+
+The protagonist remains readable by warm garment, trajectory and slightly higher local contrast.
+
+### 10.9 Relationship choreography
+
+Close relationship shots use reciprocal physical staging rather than abstract symmetry.
+
+Readable actions include:
+
+- pass / return of a small object;
+- hand placed near another forearm;
+- two people leaning toward a shared task;
+- seated conversation with alternating gesture;
+- walking side by side with asynchronous steps.
+
+The relationship is not coded as romantic, familial or professional unless the storyboard names it. It is simply a human bond.
+
+### 10.10 Environments
+
+The illustrated plate must feel inhabited. Each major life stage gets concrete foreground, middle-ground and background material.
+
+#### Early home / birth
+
+- cloth folds;
+- supporting forearm;
+- low lamp or window rectangle as soft background geometry;
+- one table edge or chair curve kept subordinate.
+
+#### First steps
+
+- floorboards or courtyard stones as perspective guides;
+- low stool / chair edge;
+- one plant or toy-like geometric object;
+- open floor in front of child for motion.
+
+#### Childhood exploration
+
+- tall grass / garden stems or park-edge plants;
+- fence/post rhythm or building edge in far background;
+- kite / paper glider / wind object as reach target;
+- clouds or tree crowns as vertical depth anchors.
+
+#### Peer / adult social space
+
+- pavement or plaza bands;
+- bench / steps / table edge;
+- clustered people at different depths;
+- doorway or building façade lines to give scale.
+
+#### Contribution / making
+
+- long shared worktable;
+- paper sheets / tools / small assembled object;
+- hands from both figures actually manipulate the object;
+- shelves or peg-board / window in background;
+- memoryViolet appears as a trace left by the made object, not as an arbitrary line.
+
+#### Later-life garden
+
+- seated or gently walking protagonist;
+- ageSage foliage with warm paper gaps;
+- one close companion;
+- rail / bench / path edge for depth;
+- young plant / seed head as visual bridge to the intergenerational ending.
+
+### 10.11 Biological beginning
+
+Research basis: NICHD describes conception producing a zygote that becomes a cluster of cells.
 
 Drawing rules:
-- Founding zygote is a single circular form, 190 to 220 px diameter when screen-fixed at the shared match-cut scale.
-- Division is shown as discrete 1 → 2 → 4 → 8 forms. Never imply an exact clock or week count.
-- Daughter cells remain similar in scale within a division event and are contained in a shared outer guide circle.
-- This is a symbolic-scientific view, not a histology plate.
 
-### 10.2 Newborn / infant
+- one founding cell uses G1 at 190–220 px diameter;
+- outer membrane double line;
+- nucleus glow has a small core and halo;
+- division is discrete 1 → 2 → 4 → 8;
+- daughter cells deform slightly against neighbours instead of remaining perfect non-touching circles;
+- the cell cluster sits in faint tissue / fluid guide geometry so it is not a row of UI dots;
+- after 8 cells, the cluster compresses and elongates into a body-axis gesture without pretending to show a literal embryo stage.
 
-Drawing rules:
-- Head is visibly large relative to torso: head height about one quarter of total drawn body height.
-- Limbs are short and softly flexed; hands remain small, simplified mitten-like shapes.
-- The birth shot reads through posture and scale, not anatomical detail.
-- A breath ring may expand from chest level as an overlay, but is symbolic.
+Wrong: eight identical glowing icons floating independently.
+Correct: a contained cluster with contact deformation, membrane depth and one continuous transformation.
 
-### 10.3 Child
+### 10.12 Learning / internal network
 
-Drawing rules:
-- Head proportion reduces relative to total height compared with infant.
-- First-step pose has a wide base, arms away from the torso, torso slightly forward.
-- Later childhood poses are more open and energetic: running, reaching, turning.
-- The individual path is drawn as a selfWarm line behind or under the child, never through the body.
+The schematic learning shot is symbolic.
 
-### 10.4 Adolescent
+- G2 head silhouette remains identifiable with forehead, jaw and neck, not a plain ellipse alone;
+- 40–70 fine branch segments may grow in 3 depth groups;
+- 12–20 node points vary in size;
+- some connections strengthen while others fade;
+- one branch exits the head and becomes the reaching-arm trajectory at the match cut;
+- the head interior gets sparse lattice / contour guides so the network feels embedded in a body, not floating on a slide.
 
-Research basis: NIMH says adolescence is an important period of brain development, maturation continues into the mid-to-late twenties, and changes in systems involved in social processes increase focus on peer relationships and social experiences.
+No labels, numbers or anatomical-region claims.
 
-Drawing rules:
-- Silhouette lengthens toward adult proportion over the shot.
-- Peer figures enter before the primary figure turns toward them.
-- Blueprint network may show connection refinement, but never claims to be a literal connectome.
-- Social salience is shown by attention arcs and peer-node activation, not by a stereotype of rebellion.
+### 10.13 Social schematic system
 
-### 10.5 Adult individual
+The schematic social field keeps recognisable human traces.
 
-Drawing rules:
-- Adult hero is approximately 720 px tall in full-body illustrated shots.
-- Head: 105 to 120 px high; shoulder width: 250 to 290 px.
-- Primary figure always retains selfWarm outline or trajectory when inside a group.
-- Stance is asymmetric enough to feel drawn and alive; avoid mannequin symmetry.
+- primary G3 node can be nested inside a faint torso/shoulder contour;
+- satellite nodes sit in 3 irregular clusters rather than a radial star;
+- ties are curved and have 3 weight classes;
+- at least two nodes have secondary micro-links to show that other people have lives beyond the protagonist;
+- one close tie visually transforms into the arm/hand curve of the following illustrated shot;
+- two ties may dim to show changing relation strength without implying failure.
 
-### 10.6 Social field / relationships
+### 10.14 Ageing
 
-Research basis: WHO’s Commission on Social Connection treats social isolation, loneliness and social connection as consequential to health and well-being; WHO’s life-course framing includes psychosocial and environmental factors throughout life.
+WHO life-course framing includes healthy ageing, and WHO social-connection material does not justify equating age with isolation.
 
-Drawing rules:
-- A social field is not a uniform crowd. Use clusters of 2 to 5 figures with visible gaps between clusters.
-- Relationship ties vary in length and thickness; do not connect every node to every other node.
-- Primary individual node remains schemSelf; social nodes use lavender or schemSocial.
-- Close bonds are shown as reciprocal gestures or paired arcs, not as crowd density alone.
-- Group motion may synchronize on a beat, but the primary individual briefly keeps its own phase to preserve the “I within We” idea.
+The older protagonist is the same person:
 
-### 10.7 Life-course continuity
+- same hair asymmetry, now simplified and lighter;
+- same garment family, muted toward selfDeep / ageSage;
+- posture flexes slightly at hip and upper back;
+- step length shortens;
+- arm swing is smaller;
+- gestures hold for longer;
+- face gains 2–4 short wrinkle/fold marks, never a dense caricature;
+- hands show one extra knuckle contour;
+- at least one companion remains clearly present.
 
-Research basis: WHO describes a life-course approach spanning a good start to life, development in childhood/adolescence/youth, adult health and well-being, healthy ageing and dignified death, with trajectories shaped over time and across generations.
+### 10.15 Intergenerational handoff
 
-Drawing rules:
-- The film uses one continuous selfWarm path across life stages.
-- Earlier stages leave faint memoryViolet traces in later schematic shots.
-- Intergenerational continuity is represented by a cycleGold point passed from older to younger figure.
-- The new path begins after the handoff; it is not the same person literally repeating.
+The final passage is across generations, not reincarnation.
 
-### 10.8 Older adult
+Three age bands may coexist:
 
-Drawing rules:
-- Same identity cues as adult hero, not a new generic elderly figure.
-- Slightly reduced standing height through posture, not skeletal shrinkage.
-- Shorter step length and longer held poses create age rhythm.
-- At least one social relation remains visible so ageing is not equated with isolation.
+- older protagonist;
+- middle adult;
+- younger child.
 
-### 10.9 Recurring progress glyph
+The warm-gold transfer point is passed through hands or through a shared object/seed rather than teleporting between isolated icons.
 
-- Position: centre (900, 300), safely inside the house schematic convention.
-- 18 equal arcs, one per shot.
-- Completed arcs: lavender at 28%; current arc: schemCycle at 100%; future arcs: grid at 22%.
-- The glyph is canonical in shot 02 and copied verbatim to every later schematic scene.
-- It is informational structure, not a clock or medical measure.
+The younger figure starts a new selfWarm trajectory after receiving the point. Its path is visually related to, but not continuous with, the older protagonist's path.
 
-### 10.10 Shared symbolic geometry
+### 10.16 Recurring progress and cycle geometry
 
-- G1 cycle halo: centre (540, 700), radius 150 px. It appears behind the opening adult, becomes the founding cell guide in shot 02 and returns in shot 18.
-- G2 individual trajectory: screen-fixed entry point (220, 1320) and exit point (860, 760) where used for cross-shot handoffs.
-- G3 social node: centre (540, 820), radius 48 px in schematic system views.
-- G4 transfer point: radius 18 px, cycleGold, passed between generations at screen position around (540, 900) before expanding to G1.
+Schematic progress glyph:
 
-### 10.11 Mistakes to avoid
+- centre (900, 300);
+- radius 72;
+- 18 arcs;
+- completed arcs lavender at 28%;
+- current arc schemCycle;
+- future arcs grid at 22%;
+- copied verbatim from the canonical helper, never re-derived per scene.
 
-- Wrong: individual human means socially isolated. Correct: the primary individual remains visually distinct inside relationships.
-- Wrong: social human means a faceless, homogeneous crowd. Correct: show varied clusters, reciprocal gestures and unequal ties.
-- Wrong: adolescence is represented as rebellion or irrationality. Correct: show continued development and increased social salience only.
-- Wrong: the network is a literal brain map or quantified social graph. Correct: it is symbolic system language.
-- Wrong: ageing equals collapse or loneliness. Correct: change posture and tempo while preserving identity and at least one relation.
-- Wrong: the final child/cell is the same person reincarnated. Correct: the loop is symbolic and intergenerational.
-- Wrong: exact embryological timing is implied by the cell animation. Correct: show only the broad 1 → 2 → 4 → 8 visual sequence.
+Shared geometry:
+
+- G1 cycle / founding-cell halo: centre (540,700), radius 150, outer guide radius 184;
+- G2 child/head continuity: centre (540,720), rx 72, ry 92, but the visible head contour adds jaw/neck around the invariant ellipse;
+- G3 primary social node: centre (540,820), radius 48;
+- G4 transfer point: centre (540,920), radius 18.
+
+### 10.17 Density floor for illustrated scenes
+
+Every illustrated scene must contain, at minimum:
+
+- one fully constructed primary figure or biological subject;
+- one middle-ground element;
+- one background depth cue;
+- one surface-detail family: hatch, fold, foliage, hair, fabric, floor or architectural texture;
+- one overlay or recurring continuity device;
+- at least three independently timed visual state changes.
+
+A scene that can be described as “circle + five lines + one arc” is still a stub, even if the gate passes.
+
+### 10.18 Density floor for schematic scenes
+
+Every schematic scene must contain, at minimum:
+
+- a primary double-outline subject;
+- internal structure, not only nodes;
+- guide geometry;
+- at least two hierarchy levels of line weight;
+- 20+ visible structural marks at the representative middle frame;
+- one beat-synchronised transformation;
+- progress glyph copied from the canonical helper when applicable.
+
+### 10.19 Mistakes to avoid
+
+- Wrong: stick-figure protagonist. Correct: constructed human masses, clothing, hands/feet and shadow regions.
+- Wrong: social human equals a faceless homogeneous crowd. Correct: varied clusters, reciprocal gestures, unequal ties and depth.
+- Wrong: schematic means empty navy background with a few dots. Correct: dense but legible structural drawing.
+- Wrong: adolescence equals rebellion. Correct: ongoing development plus increased peer/social salience only.
+- Wrong: ageing equals collapse or loneliness. Correct: same identity, altered tempo/posture, retained connection.
+- Wrong: final child is literally the same person returning. Correct: intergenerational continuity with a new path.
+- Wrong: exact embryological timing is implied. Correct: broad symbolic cell progression only.
+- Wrong: overlays carry the scene while the drawing underneath is empty. Correct: overlay explains or punctuates an already readable illustrated event.
+
