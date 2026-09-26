@@ -1,80 +1,94 @@
-// 11 Relation · T 18.0–20.0
-// Layers: paper/room → table/background → two people → shared object/hands → reciprocal overlays.
+// 11 · Relation · T 18.000–20.000
+// Layers: paper/plaza · bench/background figure · two constructed people · reciprocal hand gesture · paired arcs
 (function(){
   'use strict';
   const ID='bond',TAU=Math.PI*2;
-  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-  const line=(c,p,col,w=2,a=1,dash=null)=>{c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.lineCap='round';c.lineJoin='round';if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)c.lineTo(p[i][0],p[i][1]);c.stroke();c.restore();};
-  const poly=(c,p,fill,stroke,w=2,a=1)=>{c.save();c.globalAlpha=a;c.beginPath();c.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)c.lineTo(p[i][0],p[i][1]);c.closePath();if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=w;c.lineJoin='round';c.stroke();}c.restore();};
-  const ell=(c,x,y,rx,ry,fill,stroke,w=2,a=1,rot=0)=>{c.save();c.globalAlpha=a;c.beginPath();c.ellipse(x,y,rx,ry,rot,0,TAU);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=w;c.stroke();}c.restore();};
-  function limb(a,b,wa,wb){const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.max(1,Math.hypot(dx,dy)),nx=-dy/d,ny=dx/d;return[[a[0]+nx*wa,a[1]+ny*wa],[a[0]-nx*wa,a[1]-ny*wa],[b[0]-nx*wb,b[1]-ny*wb],[b[0]+nx*wb,b[1]+ny*wb]];}
-  function hand(c,P,x,y,s,rot,fill){
-    c.save();c.translate(x,y);c.rotate(rot);
-    poly(c,[[-12*s,-18*s],[17*s,-13*s],[24*s,4*s],[8*s,24*s],[-17*s,17*s],[-23*s,-1*s]],fill,P.ink,2);
-    poly(c,[[14*s,-6*s],[31*s,2*s],[27*s,10*s],[11*s,7*s]],fill,P.ink,1.5);
-    line(c,[[-8*s,5*s],[11*s,7*s]],P.inkSoft,1,.48);line(c,[[-4*s,12*s],[9*s,14*s]],P.inkSoft,1,.48);c.restore();
-  }
-  function room(c,P){
-    c.save();c.globalAlpha=.28;c.fillStyle=P.paperShade;c.fillRect(70,300,940,650);
-    c.strokeStyle=P.inkFaint;c.lineWidth=2.5;c.strokeRect(130,360,300,380);c.strokeRect(680,340,240,400);c.restore();
-    // plant and third soft figure
-    line(c,[[865,1210],[870,910]],P.inkSoft,3,.42);
-    for(let k=0;k<5;k++)ell(c,870+(k%2?46:-45),980+k*48,46,16,P.ageSage,P.inkSoft,1.1,.42,k%2?.25:-.25);
-    c.save();c.globalAlpha=.22;ell(c,150,845,38,48,P.paperDeep,P.ink,1.5);line(c,[[150,895],[150,1070]],P.ink,5,.28);c.restore();
-  }
-  function seatedPerson(c,P,x,y,s,col,hero,lean,armP){
-    const skin=hero?P.selfPale:P.paperDeep;
-    c.save();c.translate(x,y);c.scale(s,s);c.rotate(lean);
-    // chair behind
-    line(c,[[-80,-80],[-80,220]],P.inkFaint,5,.46);line(c,[[80,-80],[80,220]],P.inkFaint,5,.46);line(c,[[-82,70],[82,70]],P.inkFaint,7,.46);
-    // legs seated
-    poly(c,limb([-45,80],[-15,200],31,24),hero?P.socialDeep:P.inkSoft,P.ink,2.2);poly(c,limb([-15,200],[30,315],24,18),hero?P.socialDeep:P.inkSoft,P.ink,2.1);
-    poly(c,limb([35,80],[70,195],31,24),hero?P.socialDeep:P.inkSoft,P.ink,2.2);poly(c,limb([70,195],[105,310],24,18),hero?P.socialDeep:P.inkSoft,P.ink,2.1);
-    poly(c,[[-4,305],[44,304],[62,321],[-10,325]],P.ink,P.ink,1);poly(c,[[80,302],[125,300],[143,317],[84,325]],P.ink,P.ink,1);
-    // pelvis torso
-    poly(c,[[-72,30],[72,30],[62,100],[-62,100]],hero?P.socialDeep:P.inkSoft,P.ink,2.4);
-    poly(c,[[-95,-195],[-48,-230],[48,-230],[95,-190],[72,32],[-72,32]],col,P.ink,3);
-    // near arm reaches table
-    const ex=hero?85+armP*95:-85-armP*95, ey=-65-armP*10;
-    const elbow=hero?[108,-135]:[-108,-135];
-    poly(c,limb([hero?72:-72,-175],elbow,24,18),col,P.ink,2.1);
-    poly(c,limb(elbow,[ex,ey],18,12),skin,P.ink,2.0);
-    // far arm relaxed
-    const e2=hero?[-112,-120]:[112,-120],h2=hero?[-102,-25]:[102,-25];
-    poly(c,limb([hero?-70:70,-170],e2,21,16),col,P.ink,1.9);poly(c,limb(e2,h2,16,11),skin,P.ink,1.8);
+  const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
+  function fill(c,L,pts,col,seed,w=3.8,a=1){L.inkPath(c,pts,{closed:true,fill:col,fillAlpha:a,color:L.pal.ink,alpha:a,width:w,seed,wobble:1,tremble:.28,boilAmp:.45,double:w>4?{offset:2.2,width:1.1,alpha:.17,seed:seed+1}:false});}
+  function ink(c,L,pts,col,seed,w=1.8,a=1,t=[5,10]){L.inkPath(c,pts,{closed:false,color:col,width:w,alpha:a,seed,wobble:.75,tremble:.23,boilAmp:.35,taper:t});}
+  function ell(cx,cy,rx,ry,rot=0,n=26){const out=[],cr=Math.cos(rot),sr=Math.sin(rot);for(let i=0;i<n;i++){const a=i/n*TAU,x=Math.cos(a)*rx,y=Math.sin(a)*ry;out.push([cx+x*cr-y*sr,cy+x*sr+y*cr]);}return out;}
+  function limb(ax,ay,bx,by,wa,wb){const dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d;return[[ax+nx*wa,ay+ny*wa],[bx+nx*wb,by+ny*wb],[bx-nx*wb,by-ny*wb],[ax-nx*wa,ay-ny*wa]];}
+  function hand(x,y,rot,s){const b=[[-20,-9],[-2,-14],[17,-9],[25,-2],[19,8],[8,16],[-5,15],[-17,9],[-24,1]],cr=Math.cos(rot),sr=Math.sin(rot);return b.map(([px,py])=>[x+(px*cr-py*sr)*s,y+(px*sr+py*cr)*s]);}
+
+  function person(c,L,P,o,t){
+    const s=o.s||1,seed=o.seed,x=o.x,y=o.y,col=o.col,deep=o.deep;
+    const ext=o.extend||0,lean=o.lean||0;
+    c.save();c.translate(x,y);c.rotate(lean);
+    const headY=-520*s,shoulderY=-430*s,pelvisY=-210*s;
+    // legs
+    fill(c,L,limb(-35*s,pelvisY,-42*s,-105*s,-28*s<0?28*s:28*s,20*s),deep,seed+1,3*s);
+    fill(c,L,limb(-42*s,-105*s,-48*s,-5*s,20*s,14*s),deep,seed+2,2.7*s);
+    fill(c,L,limb(35*s,pelvisY,48*s,-105*s,29*s,20*s),P.inkSoft,seed+3,3*s);
+    fill(c,L,limb(48*s,-105*s,52*s,-5*s,20*s,14*s),P.inkSoft,seed+4,2.7*s);
+    fill(c,L,[[-72*s,-14*s],[-28*s,-14*s],[-4*s,-3*s],[-8*s,10*s],[-70*s,10*s]],P.ink,seed+5,2.2*s);
+    fill(c,L,[[28*s,-14*s],[72*s,-14*s],[96*s,-3*s],[92*s,10*s],[30*s,10*s]],P.ink,seed+6,2.2*s);
+    // torso/pelvis
+    const torso=[[-82*s,-447*s],[-52*s,-470*s],[-18*s,-480*s],[44*s,-472*s],[80*s,-442*s],[68*s,-328*s],[52*s,-245*s],[-52*s,-245*s],[-68*s,-330*s]];
+    fill(c,L,torso,col,seed+10,4.2*s);
+    L.hatch(c,torso,{spacing:10*s,angle:-.8,length:[14*s,40*s],density:(hx)=>clamp((hx+10*s)/(110*s))*.46,color:deep,alpha:.38,width:1*s,seed:seed+11});
+    fill(c,L,[[-52*s,-248*s],[-58*s,-206*s],[-43*s,-178*s],[45*s,-178*s],[56*s,-210*s],[50*s,-248*s]],deep,seed+12,3.2*s);
+    // outer arm
+    const side=o.side;
+    const sh=[side*74*s,shoulderY];
+    const el=[side*(105-22*ext)*s,-335*s];
+    const wr=[side*(112-78*ext)*s,-264*s-10*ext*s];
+    fill(c,L,limb(...sh,...el,20*s,15*s),col,seed+13,3*s);
+    fill(c,L,limb(...el,...wr,15*s,11*s),P.selfPale,seed+14,2.6*s);
+    fill(c,L,hand(wr[0],wr[1],side*(.2-.45*ext),.72*s),P.selfPale,seed+15,2.2*s);
+    // other arm relaxed
+    const sh2=[-side*74*s,shoulderY],el2=[-side*95*s,-330*s],wr2=[-side*72*s,-250*s];
+    fill(c,L,limb(...sh2,...el2,19*s,14*s),col,seed+16,2.9*s);
+    fill(c,L,limb(...el2,...wr2,14*s,10*s),P.selfPale,seed+17,2.4*s);
     // neck/head
-    poly(c,[[-25,-255],[25,-255],[28,-225],[-28,-225]],skin,P.ink,1.5);
-    ell(c,0,-315,48,58,skin,P.ink,2.4,1,-.03);
-    poly(c,[[-40,-308],[-28,-266],[0,-252],[31,-271],[42,-315]],skin,P.ink,1.8);
-    c.save();c.fillStyle=P.ink;c.beginPath();c.moveTo(-45,-323);c.bezierCurveTo(-30,-382,20,-384,43,-329);c.quadraticCurveTo(10,-354,-7,-337);c.quadraticCurveTo(-25,-360,-45,-323);c.fill();c.restore();
-    line(c,[[-15,-310],[-3,-312]],P.ink,1.2,.7);line(c,[[7,-307],[18,-305]],P.ink,1,.55);line(c,[[-4,-282],[10,-282]],P.inkSoft,1,.55);
-    for(let k=0;k<5;k++)line(c,[[-45+k*22,-175],[-36+k*20,-40]],hero?P.selfDeep:P.inkSoft,1,.18);
+    fill(c,L,[[-18*s,-475*s],[20*s,-475*s],[22*s,-451*s],[-20*s,-451*s]],P.selfPale,seed+18,2.3*s);
+    fill(c,L,ell(0,headY,46*s,55*s,-side*.02,28),P.selfPale,seed+19,3.4*s);
+    fill(c,L,[[-40*s,-542*s],[-28*s,-572*s],[-5*s,-582*s],[20*s,-574*s],[40*s,-551*s],[35*s,-530*s],[14*s,-546*s],[-9*s,-548*s],[-31*s,-534*s]],o.hero?P.ink:L.mix(P.ink,col,.14),seed+20,2.2*s);
+    ink(c,L,[[side*-18*s,-520*s],[side*-3*s,-523*s]],P.ink,seed+21,1.2*s,.75);
+    ink(c,L,[[side*9*s,-520*s],[side*16*s,-510*s],[side*12*s,-503*s]],P.inkSoft,seed+22,1*s,.6);
+    if(o.hero)ink(c,L,[[-76*s,-438*s],[-64*s,-427*s],[-72*s,-413*s]],P.cycleGold,seed+23,1.8*s,.9);
     c.restore();
-    return {handX:x+s*ex, handY:y+s*ey, hero, skin, s};
+  }
+
+  function environment(c,L,P){
+    c.save();c.globalAlpha=.38;
+    c.fillStyle=P.paperShade;c.fillRect(80,320,920,730);
+    c.fillStyle=L.rgba(P.stripeSage,.24);c.fillRect(0,1060,1080,860);
+    // bench
+    fill(c,L,[[130,1050],[410,1048],[405,1085],[125,1088]],P.wood,sd('bench'),2.4,.55);
+    ink(c,L,[[165,1088],[150,1250],[370,1085],[390,1250]],P.inkSoft,sd('legs'),4,.45,[0,0]);
+    // far window/door
+    c.fillStyle=L.rgba(P.stripeSky,.25);c.fillRect(700,430,210,360);
+    ink(c,L,[[700,790],[700,430],[910,430],[910,790]],P.inkFaint,sd('door'),1.4,.45,[0,0]);
+    // soft background figure
+    c.globalAlpha=.25;
+    fill(c,L,ell(835,770,33,41,0,22),P.selfPale,sd('bghead'),2,.8);
+    fill(c,L,[[795,820],[820,795],[850,798],[880,825],[868,1010],[807,1010]],P.birthRose,sd('bgtorso'),2.5,.7);
+    c.restore();
+    // floor lines
+    for(let y=1160,i=0;y<1880;y+=95,i++)ink(c,L,[[0,y],[1080,y-45]],P.inkFaint,sd('floor',i),1,.18,[0,0]);
   }
 
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.paper(c,{seed:11001});L.stripes(c,{colors:[P.stripeCream,P.stripeSage],width:145,angle:-.52,offset:6*info.T,seed:11002});
-    room(c,P);
-    // table
-    poly(c,[[190,1015],[895,1015],[930,1070],[160,1070]],P.paperDeep,P.ink,3,.92);
-    line(c,[[225,1070],[205,1430]],P.ink,7,.76);line(c,[[860,1070],[880,1430]],P.ink,7,.76);
-    for(let x=210;x<890;x+=48)line(c,[[x,1030],[x+18,1056]],P.inkSoft,1,.35);
-    const p1=clamp(t/.55),p2=clamp((t-.78)/.5);
-    const a=seatedPerson(c,P,340,920,.78,P.selfWarm,true,-.025,p1);
-    const b=seatedPerson(c,P,740,920,.78,P.socialBlue,false,.02,p2);
-    // small shared card/object
-    const mix=t<.75?p1:1-p2*.55;
-    const ox=560+40*(mix-.5),oy=935;
-    poly(c,[[ox-36,oy-22],[ox+38,oy-16],[ox+32,oy+26],[ox-42,oy+20]],P.cycleGold,P.ink,2,.92);
-    // hands last, above object/table
-    hand(c,P,a.handX,a.handY,.82,-.20,P.selfPale);
-    hand(c,P,b.handX,b.handY,.82,Math.PI+.18,P.paperDeep);
-    // reciprocal arcs
-    const r1=L.seg(t,.18,.85,'outExpo'),r2=L.seg(t,.85,1.55,'outExpo');
-    if(r1>0)L.arcAnnotation(c,540,900,170,3.0,3.0+r1*2.1,{color:P.annBlue,width:2.5,p:1,arrow:11});
-    if(r2>0)L.arcAnnotation(c,540,900,145,.2,.2+r2*2.2,{color:P.annBlue,width:2.5,p:1,arrow:11});
-    if(t>.82)L.arcAnnotation(c,540,930,72,-1.2,-1.2+L.seg(t,.82,1.15,'outBack')*5.1,{color:P.annYellow,width:3,p:1});
+    L.paper(c,{seed:sd('paper')});L.stripes(c,{colors:[P.stripeCream,P.stripeSage],width:140,angle:-.52,offset:info.T*12,seed:sd('stripes')});
+    environment(c,L,P);
+    const a=L.seg(t,.32,.85,'inOutCubic');
+    const b=L.seg(t,.82,1.35,'inOutCubic');
+    person(c,L,P,{x:360,y:1415,s:.78,col:P.selfWarm,deep:P.selfDeep,seed:sd('hero'),side:1,extend:a,lean:-.03,hero:true},t);
+    person(c,L,P,{x:720,y:1410,s:.76,col:P.socialBlue,deep:P.socialDeep,seed:sd('other'),side:-1,extend:b,lean:.025},t);
+
+    // reciprocal physical exchange
+    const p=L.seg(t,.35,1.35,'outExpo');
+    if(p>0){
+      L.arcAnnotation(c,535,1120,180,2.85,4.95,{color:P.annBlue,width:2.3,p:Math.min(1,p*1.2),arrow:10,alpha:.55});
+      L.arcAnnotation(c,545,1120,180,.3,-1.8,{color:P.annBlue,width:2.1,p:Math.max(0,(p-.3)/.7),arrow:10,alpha:.45});
+    }
+    const touch=L.seg(t,.92,1.15,'outBack');
+    if(touch>0)L.guideCircle(c,540,1185,24+30*touch,{color:P.cycleGold,alpha:.55*(1-L.seg(t,1.25,1.7)),width:2.4,quadrants:6});
+
+    // exit paired arcs collapse to role-system rings
+    const e=L.seg(t,1.55,2,'outExpo');
+    if(e>0){L.guideCircle(c,540,1050,145,{color:P.annYellow,alpha:.18+.32*e,width:2});L.guideCircle(c,540,1050,215,{color:P.annBlue,alpha:.12+.24*e,width:1.6});}
   }});
 })();
