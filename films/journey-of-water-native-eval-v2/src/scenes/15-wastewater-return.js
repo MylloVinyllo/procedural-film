@@ -74,17 +74,22 @@
 
     // biological aeration basin
     box(c,L,P,110,950,530,430,sd('bio'));
-    const bio=L.seg(t,.85,1.6,'inOutCubic');
+    const bio=L.seg(t,.78,1.55,'inOutCubic');
+    // A faint water body plus cross-basin flow makes the biological stage readable at quarter scale.
+    c.save();c.globalAlpha=.035+.075*bio;c.fillStyle=P.schemWater;c.fillRect(125,970,500,390);c.restore();
+    for(let j=0;j<4;j++){
+      water(c,L,P,[[145,1035+j*78],[320,1015+j*80],[470,1040+j*76],[605,1020+j*82]],sd('bio-water',j),.18+.26*bio,1.35);
+    }
     // dense biological/floc texture
     const rb=L.rng(sd('bio-floc'));
-    for(let i=0;i<62;i++){
-      const x=145+rb()*460,y=1000+rb()*320,rr=2+rb()*6;
-      c.save();c.globalAlpha=.15+.38*bio;c.strokeStyle=i%5===0?P.schemWater:P.lavender;c.lineWidth=.8;c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();c.restore();
+    for(let i=0;i<74;i++){
+      const x=145+rb()*460,y=1000+rb()*320,rr=3+rb()*7;
+      c.save();c.globalAlpha=.24+.46*bio;c.strokeStyle=i%5===0?P.schemWater:P.lavender;c.lineWidth=1;c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();c.restore();
     }
     // aeration bubbles rise continuously on twos
-    for(let i=0;i<18;i++){
-      const x=145+(i%9)*52,y=1340-((q*90+i*57)%330),rr=2+(i%4)*1.4;
-      c.save();c.globalAlpha=.18+.46*bio;c.strokeStyle=P.paleBlue;c.lineWidth=.9;c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();c.restore();
+    for(let i=0;i<24;i++){
+      const x=145+(i%12)*39,y=1340-((q*96+i*49)%330),rr=3+(i%4)*1.6;
+      c.save();c.globalAlpha=.28+.52*bio;c.strokeStyle=P.paleBlue;c.lineWidth=1.05;c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();c.restore();
     }
     const mag=L.seg(t,1.0,1.18,'outExpo')*(1-L.seg(t,1.3,1.5,'outQuad'));
     if(mag>0)L.guideCircle(c,390,1135,70+65*mag,{color:P.magenta,alpha:.45*(1-mag*.2),width:2.4,quadrants:8});
