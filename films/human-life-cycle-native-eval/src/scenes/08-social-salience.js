@@ -15,9 +15,16 @@
       const a1=-Math.PI/2+((i+.72)/n)*TAU;
       ctx.beginPath();
       ctx.arc(cx,cy,r,a0,a1);
-      if(i<current){ctx.strokeStyle=L.rgba(P.lavender,.28);ctx.lineWidth=2;}
-      else if(i===current){ctx.strokeStyle=P.schemCycle;ctx.lineWidth=4;}
-      else{ctx.strokeStyle=L.rgba(P.grid,.22);ctx.lineWidth=2;}
+      if(i<current){
+        ctx.strokeStyle=L.rgba(P.lavender,.28);
+        ctx.lineWidth=2;
+      }else if(i===current){
+        ctx.strokeStyle=P.schemCycle;
+        ctx.lineWidth=4;
+      }else{
+        ctx.strokeStyle=L.rgba(P.grid,.22);
+        ctx.lineWidth=2;
+      }
       ctx.stroke();
     }
     ctx.restore();
