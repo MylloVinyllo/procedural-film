@@ -139,11 +139,16 @@
       L.glowDot(c,x,y,7,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('hero'),intensity:.9,glow:3,twinkle:.02});
     }
 
-    // final clear-water path straightens into pipe cross-section for shot 13
+    // final clear-water path collapses into the canonical G3 pipe-flow match cut for shot 13
     const exit=L.seg(t,2.1,2.5,'outExpo');
     if(exit>0){
-      c.save();c.globalAlpha=.3+.6*exit;c.strokeStyle=P.schemWater;c.lineWidth=4;c.beginPath();c.moveTo(760,1580);c.lineTo(1010,1580);c.stroke();c.restore();
-      L.guideCircle(c,940,1580,58,{color:P.schemFlow,alpha:.22+.28*exit,width:1.5,dash:[4,7]});
+      c.save();c.globalAlpha=.22+.45*exit;c.strokeStyle=P.schemWater;c.lineWidth=3;c.beginPath();c.moveTo(760,1580);c.lineTo(1010,1580);c.stroke();c.restore();
+      L.guideCircle(c,940,1580,58,{color:P.schemFlow,alpha:.16+.16*exit,width:1.2,dash:[4,7]});
+
+      c.save();c.globalAlpha=.25+.7*exit;c.strokeStyle=P.schemWater;c.lineWidth=3.6;c.beginPath();
+      c.moveTo(300,920);c.bezierCurveTo(420,900,650,940,780,920);c.stroke();c.restore();
+      L.glowDot(c,540,920,8,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('g3-exit'),intensity:.72+.22*exit,glow:3,twinkle:.02});
+      L.guideCircle(c,540,920,58,{color:P.schemFlow,alpha:.16+.25*exit,width:1.4,dash:[4,7]});
     }
   }});
 })();
