@@ -37,6 +37,9 @@
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
     L.blueprint(c,{seed:12001});
+    const up=clamp(t/.22),down=clamp((t-1.16)/.26);
+    const eu=up*up*(3-2*up),ed=down*down*(3-2*down),z=1+.38*eu*(1-ed);
+    c.save();c.translate(540,820);c.scale(z,z);c.translate(-540,-820);
     // protagonist core with faint torso
     c.save();c.strokeStyle=P.lavender;c.globalAlpha=.22;c.lineWidth=1.3;c.beginPath();c.moveTo(465,665);c.quadraticCurveTo(540,625,615,665);c.lineTo(650,1005);c.quadraticCurveTo(540,1060,430,1005);c.closePath();c.stroke();c.restore();
     node(c,P,540,820,42,1,P.schemSelf);
@@ -60,6 +63,7 @@
     if(ex>0){
       c.save();c.strokeStyle=P.schemCycle;c.lineWidth=3;c.globalAlpha=.85*ex;c.beginPath();c.moveTo(210,1030);c.lineTo(870,1030);c.stroke();c.restore();
     }
+    c.restore();
     progressGlyph(c,L,11);
   }});
 })();
