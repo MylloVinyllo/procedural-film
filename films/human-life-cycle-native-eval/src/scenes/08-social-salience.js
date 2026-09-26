@@ -1,80 +1,83 @@
-// 08 Peers · T 13.5–14.5
-// Layers: blueprint base → protagonist torso → peer clusters → attention arc → progress glyph.
+// 08 · Peers · T 13.500–14.500
 (function(){
   'use strict';
-  const ID='social-salience',TAU=Math.PI*2;
-  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-  function progressGlyph(ctx,L,n){
+  const ID='social-salience',TAU=Math.PI*2,clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
+
+  // Canonical progress glyph. Copy this function byte-for-byte into every schematic scene.
+  function progressGlyph(ctx,L,current){
     const P=L.pal;
-    const cx=900,cy=300,r=72;
+    const cx=900,cy=300,r=72,n=18;
     ctx.save();
     ctx.lineCap='round';
-    for(let i=0;i<18;i++){
-      const a0=-Math.PI/2+i*TAU/18;
-      const a1=-Math.PI/2+(i+0.72)*TAU/18;
-      ctx.strokeStyle=i<n?P.lavender:(i===n?P.schemCycle:P.grid);
-      ctx.globalAlpha=i<n?0.28:(i===n?1:0.22);
-      ctx.lineWidth=i===n?4:2;
-      ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);ctx.stroke();
+    for(let i=0;i<n;i++){
+      const a0=-Math.PI/2+(i/n)*TAU;
+      const a1=-Math.PI/2+((i+.72)/n)*TAU;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1);
+      if(i<current){ctx.strokeStyle=L.rgba(P.lavender,.28);ctx.lineWidth=2;}
+      else if(i===current){ctx.strokeStyle=P.schemCycle;ctx.lineWidth=4;}
+      else{ctx.strokeStyle=L.rgba(P.grid,.22);ctx.lineWidth=2;}
+      ctx.stroke();
     }
     ctx.restore();
   }
-  function line(c,pts,col,w=2,a=1,dash=null){
-    c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.lineCap='round';c.lineJoin='round';if(dash)c.setLineDash(dash);
-    c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)c.lineTo(pts[i][0],pts[i][1]);c.stroke();c.restore();
-  }
-  function n(c,P,x,y,r,a,hot=false){
-    c.save();c.globalAlpha=a;c.fillStyle=hot?P.glow:P.navyLight;c.strokeStyle=hot?P.schemSocial:P.lavender;c.lineWidth=hot?2.2:1.3;
-    c.beginPath();c.arc(x,y,r,0,TAU);c.fill();c.stroke();c.restore();
-  }
-  function protagonist(c,P){
-    c.save();c.globalAlpha=.68;c.strokeStyle=P.lavender;c.lineWidth=1.5;
-    c.beginPath();c.moveTo(465,680);c.quadraticCurveTo(540,640,615,680);c.lineTo(650,1030);c.quadraticCurveTo(540,1080,430,1030);c.closePath();c.stroke();
-    c.globalAlpha=.20;c.beginPath();c.moveTo(540,650);c.lineTo(540,1080);c.stroke();c.restore();
-    // G3 exact
-    c.save();c.strokeStyle=P.schemSelf;c.fillStyle=P.navyLight;c.lineWidth=3;c.beginPath();c.arc(540,820,48,0,TAU);c.fill();c.stroke();
-    c.globalAlpha=.35;c.lineWidth=1.2;c.beginPath();c.arc(540,820,34,0,TAU);c.stroke();c.restore();
-  }
-  const clusters=[
-    {nodes:[[320,670,24],[375,720,18]],edges:[[0,1]],delay:.12},
-    {nodes:[[755,630,18],[820,700,26],[740,760,15]],edges:[[0,1],[1,2],[0,2]],delay:.28},
-    {nodes:[[290,1040,20]],edges:[],delay:.42}
-  ];
-  function peers(c,P,t){
-    clusters.forEach((cl,ci)=>{
-      const p=clamp((t-cl.delay)/.22);if(p<=0)return;
-      cl.edges.forEach((e,ei)=>{
-        const a=cl.nodes[e[0]],b=cl.nodes[e[1]];
-        c.save();c.strokeStyle=P.schemSocial;c.lineWidth=1.3+ei*.4;c.globalAlpha=.28*p;
-        c.beginPath();c.moveTo(a[0],a[1]);c.quadraticCurveTo((a[0]+b[0])/2+10*Math.sin(ci+ei),(a[1]+b[1])/2-14,b[0],b[1]);c.stroke();c.restore();
-      });
-      cl.nodes.forEach((q,i)=>n(c,P,q[0],q[1],q[2],(.45+i*.08)*p,i===0&&ci===0));
-      // connect cluster toward protagonist with varying strength
-      const anchor=cl.nodes[0],strong=ci===0;
-      c.save();c.strokeStyle=strong?P.schemSocial:P.lavender;c.lineWidth=strong?3:1.3;c.globalAlpha=(strong?.74:.22)*p;
-      c.beginPath();c.moveTo(540,820);c.quadraticCurveTo((540+anchor[0])/2,720+ci*80,anchor[0],anchor[1]);c.stroke();c.restore();
-    });
+
+  function personGlyph(c,L,P,x,y,s,seed,alpha){
+    c.save();c.globalAlpha=alpha;
+    c.strokeStyle=P.lavender;c.lineWidth=1.6;
+    c.beginPath();c.ellipse(x,y-65*s,28*s,34*s,0,0,TAU);c.stroke();
+    c.beginPath();
+    c.moveTo(x-36*s,y-22*s);c.quadraticCurveTo(x,y-42*s,x+36*s,y-22*s);
+    c.moveTo(x-24*s,y-20*s);c.lineTo(x-19*s,y+45*s);
+    c.moveTo(x+24*s,y-20*s);c.lineTo(x+19*s,y+45*s);
+    c.stroke();
+    L.glowDot(c,x,y-5*s,4.2*s,{color:P.schemSocial,core:P.glow,rays:0,seed,intensity:alpha*.8,glow:2.7,twinkle:.04});
+    c.restore();
   }
 
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.blueprint(c,{seed:8001});
-    const up=clamp(t/.18),down=clamp((t-.72)/.23);
-    const eu=up*up*(3-2*up),ed=down*down*(3-2*down),z=1+1.0*eu*(1-ed);
-    c.save();c.translate(540,820);c.scale(z,z);c.translate(-540,-820);
-    // guide geometry
-    for(const r of [120,230,340]){c.save();c.globalAlpha=.09;c.strokeStyle=P.lavender;c.lineWidth=1;c.beginPath();c.arc(540,820,r,0,TAU);c.stroke();c.restore();}
-    line(c,[[190,520],[900,1110]],P.lavender,1,.08,[8,13]);
-    protagonist(c,P);peers(c,P,t);
-    // attention arc rotates toward peer field
-    const u=clamp((t-.45)/.38);
-    if(u>0){
-      c.save();c.strokeStyle=P.magenta;c.lineWidth=3;c.globalAlpha=.85;
-      const a0=-2.6+(1.1*u),a1=a0+1.05;c.beginPath();c.arc(540,820,112,a0,a1);c.stroke();
-      for(let k=0;k<5;k++){const a=a0+k*(a1-a0)/4;line(c,[[540+Math.cos(a)*120,820+Math.sin(a)*120],[540+Math.cos(a)*137,820+Math.sin(a)*137]],P.magenta,1.2,.55);}
-      c.restore();
-    }
-    c.restore();
+    L.blueprint(c,{seed:sd('bp'),center:[540,820],circles:5,diagonals:5});
     progressGlyph(c,L,7);
+
+    // incoming arm arc becomes first peer connection
+    c.save();c.strokeStyle=L.rgba(P.paleBlue,.5);c.lineWidth=1.6;c.setLineDash([8,8]);
+    c.beginPath();c.arc(540,820,245,-2.4,-1.0);c.stroke();c.restore();
+
+    // primary faint torso around exact G3
+    c.save();c.strokeStyle=P.lineWhite;c.lineWidth=2;c.beginPath();
+    c.ellipse(540,650,50,61,0,0,TAU);
+    c.moveTo(470,725);c.quadraticCurveTo(540,690,610,725);
+    c.moveTo(485,730);c.lineTo(500,930);c.moveTo(595,730);c.lineTo(580,930);
+    c.stroke();c.restore();
+    L.glowDot(c,540,820,12,{color:P.schemSelf,core:P.glow,rays:8,seed:sd('core'),intensity:1,glow:4.1,twinkle:.05});
+    L.guideCircle(c,540,820,48,{color:P.schemSelf,alpha:.7,width:2.2});
+    L.guideCircle(c,540,820,82,{color:P.lavender,alpha:.16,width:1,dash:[4,7]});
+
+    const peers=[
+      [295,655,.9],[260,900,.78],[360,1090,.7],[760,640,.86],[830,860,.75],[735,1080,.72]
+    ];
+    peers.forEach((p,i)=>{
+      const on=L.seg(t,.18+i*.055,.42+i*.055,'outBack');
+      if(on<=0)return;
+      personGlyph(c,L,P,p[0],p[1],p[2],sd('peer',i),.2+.8*on);
+      const cp=[(540+p[0])/2+(i%2?35:-35),(820+p[1])/2-30];
+      c.save();c.strokeStyle=i===3?P.schemSocial:L.rgba(P.lavender,.45);c.lineWidth=i===3?2.8:1.3;c.globalAlpha=.25+.65*on;c.beginPath();
+      c.moveTo(540,820);c.quadraticCurveTo(cp[0],cp[1],p[0],p[1]-5);c.stroke();c.restore();
+    });
+
+    // attention sector swings toward peer cluster
+    const q=L.seg(t,.45,.78,'inOutCubic');
+    c.save();
+    c.strokeStyle=P.magenta;c.fillStyle=L.rgba(P.magenta,.08);c.lineWidth=2.3;c.globalAlpha=.25+.65*q;
+    c.beginPath();c.moveTo(540,820);c.arc(540,820,185,-Math.PI*.95+q*.65,-Math.PI*.55+q*.65);c.closePath();c.fill();c.stroke();c.restore();
+
+    // one tie strengthens toward outgoing paper scene
+    const s=L.seg(t,.68,.95,'outExpo');
+    if(s>0){
+      c.save();c.strokeStyle=P.schemSocial;c.lineWidth=3;c.globalAlpha=s;c.beginPath();c.moveTo(540,820);c.quadraticCurveTo(655,735,760,640);c.stroke();c.restore();
+      L.guideCircle(c,540,820,48+52*s,{color:P.schemCycle,alpha:.28*(1-s),width:2});
+    }
   }});
 })();
