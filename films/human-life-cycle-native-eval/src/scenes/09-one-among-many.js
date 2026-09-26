@@ -106,7 +106,11 @@
 
     // protagonist
     const off=L.seg(t,.9,1.2,'snap');
-    person(c,L,P,{x:535,y:1390,s:.82,col:P.selfWarm,deep:P.selfDeep,phase:off?-.12:.05,hero:true,seed:sd('hero'),alpha:1},t);
+    person(c,L,P,{x:540,y:1085,s:.82,col:P.selfWarm,deep:P.selfDeep,phase:off?-.12:.05,hero:true,seed:sd('hero'),alpha:1},t);
+
+    // G3 is physically attached to the protagonist's chest for the entire shot.
+    L.guideCircle(c,540,820,48,{color:P.cycleGold,alpha:.42,width:2});
+    L.glowDot(c,540,820,5,{color:P.cycleGold,core:P.glow,rays:0,seed:sd('g3-core'),intensity:.62,glow:3,twinkle:.02});
 
     // foreground crop for parallax
     c.save();c.globalAlpha=.55;c.translate(980-120*t,1450);
@@ -115,13 +119,13 @@
     c.restore();
 
     // individual trajectory
-    ink(c,L,[[250,1450],[360,1400],[470,1390],[535,1385],[640,1345],[760,1290]],P.selfWarm,sd('traj'),3.7,.65,[8,16]);
+    ink(c,L,[[250,1190],[360,1140],[470,1110],[540,1088],[650,1120],[760,1180]],P.selfWarm,sd('traj'),3.7,.65,[8,16]);
 
     // group flow strokes
     const gp=L.seg(t,.3,.85,'outExpo');
     if(gp>0){
-      L.arcAnnotation(c,520,1320,300,2.55,5.2,{color:P.annBlue,width:2,p:gp,arrow:11,alpha:.42});
-      L.arcAnnotation(c,560,1200,360,2.8,5.0,{color:P.annBlue,width:1.6,p:gp,arrow:9,alpha:.28});
+      L.arcAnnotation(c,520,1070,300,2.55,5.2,{color:P.annBlue,width:2,p:gp,arrow:11,alpha:.42});
+      L.arcAnnotation(c,560,990,360,2.8,5.0,{color:P.annBlue,width:1.6,p:gp,arrow:9,alpha:.28});
     }
 
     // G3 chest marker becomes exact exit
