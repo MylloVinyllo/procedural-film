@@ -1,112 +1,116 @@
-// 17 Continue · T 29.0–30.5
-// Layers: paper/threshold garden → background adult → older protagonist + child → constructed hands → seed/G4 → new path and G1 expansion.
+// 17 · Continue · T 29.000–30.500
+// Layers: paper/garden threshold · middle adult · older protagonist · child · physical seed handoff · new trajectory
 (function(){
   'use strict';
   const ID='handoff',TAU=Math.PI*2;
-  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-  const line=(c,p,col,w=2,a=1,dash=null)=>{c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.lineCap='round';c.lineJoin='round';if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)c.lineTo(p[i][0],p[i][1]);c.stroke();c.restore();};
-  const poly=(c,p,fill,stroke,w=2,a=1)=>{c.save();c.globalAlpha=a;c.beginPath();c.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)c.lineTo(p[i][0],p[i][1]);c.closePath();if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=w;c.lineJoin='round';c.stroke();}c.restore();};
-  const ell=(c,x,y,rx,ry,fill,stroke,w=2,a=1,rot=0)=>{c.save();c.globalAlpha=a;c.beginPath();c.ellipse(x,y,rx,ry,rot,0,TAU);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=w;c.stroke();}c.restore();};
-  function limb(a,b,wa,wb){const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.max(1,Math.hypot(dx,dy)),nx=-dy/d,ny=dx/d;return[[a[0]+nx*wa,a[1]+ny*wa],[a[0]-nx*wa,a[1]-ny*wa],[b[0]-nx*wb,b[1]-ny*wb],[b[0]+nx*wb,b[1]+ny*wb]];}
-  function hand(c,P,x,y,s,rot,fill,open){
-    c.save();c.translate(x,y);c.rotate(rot);
-    poly(c,[[-12*s,-18*s],[17*s,-13*s],[24*s,4*s],[8*s,24*s],[-17*s,17*s],[-23*s,-1*s]],fill,P.ink,2);
-    const thumb=open?32:26;poly(c,[[14*s,-6*s],[thumb*s,2*s],[(thumb-4)*s,10*s],[11*s,7*s]],fill,P.ink,1.4);
-    line(c,[[-8*s,5*s],[11*s,7*s]],P.inkSoft,1,.45);line(c,[[-4*s,12*s],[9*s,14*s]],P.inkSoft,1,.45);c.restore();
-  }
+  const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const lerp=(a,b,p)=>a+(b-a)*p;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
+  function fill(c,L,pts,col,seed,w=3.6,a=1){L.inkPath(c,pts,{closed:true,fill:col,fillAlpha:a,color:L.pal.ink,alpha:a,width:w,seed,wobble:1,tremble:.28,boilAmp:.45,double:w>4?{offset:2.2,width:1.1,alpha:.16,seed:seed+1}:false});}
+  function ink(c,L,pts,col,seed,w=1.8,a=1,t=[5,10]){L.inkPath(c,pts,{closed:false,color:col,width:w,alpha:a,seed,wobble:.75,tremble:.23,boilAmp:.35,taper:t});}
+  function ell(cx,cy,rx,ry,rot=0,n=26){const out=[],cr=Math.cos(rot),sr=Math.sin(rot);for(let i=0;i<n;i++){const a=i/n*TAU,x=Math.cos(a)*rx,y=Math.sin(a)*ry;out.push([cx+x*cr-y*sr,cy+x*sr+y*cr]);}return out;}
+  function limb(ax,ay,bx,by,wa,wb){const dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d;return[[ax+nx*wa,ay+ny*wa],[bx+nx*wb,by+ny*wb],[bx-nx*wb,by-ny*wb],[ax-nx*wa,ay-ny*wa]];}
+  function hand(x,y,rot,s){const b=[[-20,-9],[-3,-14],[15,-10],[24,-3],[19,7],[8,16],[-4,15],[-17,9],[-24,1]],cr=Math.cos(rot),sr=Math.sin(rot);return b.map(([px,py])=>[x+(px*cr-py*sr)*s,y+(px*sr+py*cr)*s]);}
 
-  function backdrop(c,P){
-    c.save();c.globalAlpha=.30;c.fillStyle=P.paperShade;c.fillRect(70,310,940,600);
-    c.strokeStyle=P.inkFaint;c.lineWidth=2.5;c.strokeRect(710,350,230,450);c.restore();
-    // planter/table threshold
-    poly(c,[[140,1080],[900,1080],[930,1145],[115,1145]],P.paperDeep,P.ink,3,.82);
-    line(c,[[185,1145],[170,1490]],P.ink,7,.62);line(c,[[860,1145],[880,1490]],P.ink,7,.62);
-    // planter foliage
-    c.save();c.fillStyle=P.ageSage;c.globalAlpha=.55;
-    for(let i=0;i<10;i++){const x=170+i*80,y=1040-25*(i%3),rx=42+(i%2)*8;c.beginPath();c.ellipse(x,y,rx,18,(i%2?-.2:.2),0,TAU);c.fill();}
-    c.restore();
-  }
-
-  function older(c,P,L,t){
-    const tw=L.onTwos(t),x=330,y=1170,skin=P.selfPale;
-    // legs / pelvis
-    poly(c,limb([x-35,y-50],[x-60,y+100],29,22),P.socialDeep,P.ink,2.2);
-    poly(c,limb([x-60,y+100],[x-68,y+255],22,16),P.socialDeep,P.ink,2.1);
-    poly(c,limb([x+35,y-50],[x+55,y+105],29,22),P.socialDeep,P.ink,2.2);
-    poly(c,limb([x+55,y+105],[x+62,y+255],22,16),P.socialDeep,P.ink,2.1);
-    poly(c,[[x-70,y-140],[x+70,y-140],[x+60,y-50],[x-60,y-50]],P.socialDeep,P.ink,2.4);
-    // torso
-    poly(c,[[x-98,y-355],[x-47,y-388],[x+46,y-382],[x+94,y-342],[x+75,y-140],[x-72,y-140]],P.selfWarm,P.ink,2.9);
-    // far arm
-    poly(c,limb([x-76,y-330],[x-118,y-240],23,17),P.selfWarm,P.ink,2);
-    poly(c,limb([x-118,y-240],[x-102,y-145],17,12),skin,P.ink,1.9);
-    // near arm to G4
-    const p=clamp((t-.02)/.48),el=[x+112,y-260],h=[x+155+60*p,y-190+50*p];
-    poly(c,limb([x+76,y-325],el,24,18),P.selfWarm,P.ink,2.1);
-    poly(c,limb(el,h,18,12),skin,P.ink,1.9);
-    // head
-    poly(c,[[x-25,y-414],[x+25,y-414],[x+28,y-382],[x-28,y-382]],skin,P.ink,1.5);
-    ell(c,x,y-472,49,58,skin,P.ink,2.4,1,-.04);
-    poly(c,[[x-41,y-464],[x-28,y-424],[x,y-410],[x+31,y-429],[x+43,y-472]],skin,P.ink,1.8);
-    line(c,[[x-38,y-486],[x-8,y-518],[x+38,y-486]],P.inkSoft,5,.60);
-    line(c,[[x-15,y-464],[x-3,y-466]],P.ink,1.2,.65);line(c,[[x+8,y-460],[x+18,y-459]],P.ink,1,.5);line(c,[[x-4,y-437],[x+10,y-436]],P.inkSoft,1,.55);
-    hand(c,P,h[0],h[1],.82,-.22,skin,true);
-    return {x:h[0],y:h[1]};
-  }
-
-  function child(c,P,L,t){
-    const x=725,y=1240,skin=P.selfPale;
+  function figure(c,L,P,o){
+    const s=o.s||1,x=o.x,y=o.y,seed=o.seed,side=o.side,col=o.col,deep=o.deep;
+    const old=o.old,child=o.child,reach=o.reach||0;
+    const headY=child?-420*s:old?-470*s:-500*s,shoulderY=child?-330*s:old?-385*s:-410*s,pelvisY=child?-165*s:-205*s;
+    c.save();c.translate(x,y);if(old)c.rotate(.07);
     // legs
-    poly(c,limb([x-28,y-60],[x-48,y+70],25,19),P.socialDeep,P.ink,2);
-    poly(c,limb([x-48,y+70],[x-55,y+195],19,14),P.socialDeep,P.ink,1.9);
-    poly(c,limb([x+28,y-60],[x+45,y+70],25,19),P.socialDeep,P.ink,2);
-    poly(c,limb([x+45,y+70],[x+52,y+195],19,14),P.socialDeep,P.ink,1.9);
-    poly(c,[[x-58,y-130],[x+58,y-130],[x+49,y-58],[x-49,y-58]],P.socialDeep,P.ink,2.2);
-    poly(c,[[x-80,y-315],[x-39,y-345],[x+39,y-345],[x+80,y-310],[x+63,y-130],[x-63,y-130]],P.selfWarm,P.ink,2.7);
-    // arms toward centre
-    const p=clamp((t-.12)/.48),el=[x-105,y-220],h=[x-135-48*p,y-160+24*p];
-    poly(c,limb([x-66,y-295],el,21,16),P.selfWarm,P.ink,1.9);poly(c,limb(el,h,16,11),skin,P.ink,1.8);
-    const er=[x+90,y-230],hr=[x+98,y-135];poly(c,limb([x+66,y-292],er,20,15),P.selfWarm,P.ink,1.9);poly(c,limb(er,hr,15,10),skin,P.ink,1.8);
+    const legW=child?26:old?27:30;
+    fill(c,L,limb(-34*s,pelvisY,-42*s,-100*s,legW*s,19*s),deep,seed+1,2.9*s);
+    fill(c,L,limb(-42*s,-100*s,-48*s,-5*s,19*s,14*s),deep,seed+2,2.6*s);
+    fill(c,L,limb(34*s,pelvisY,46*s,-100*s,(legW+1)*s,19*s),P.inkSoft,seed+3,2.9*s);
+    fill(c,L,limb(46*s,-100*s,52*s,-5*s,19*s,14*s),P.inkSoft,seed+4,2.6*s);
+    fill(c,L,[[-70*s,-13*s],[-28*s,-14*s],[-4*s,-3*s],[-8*s,10*s],[-69*s,10*s]],P.ink,seed+5,2.2*s);
+    fill(c,L,[[28*s,-13*s],[70*s,-14*s],[94*s,-3*s],[90*s,10*s],[30*s,10*s]],P.ink,seed+6,2.2*s);
+    // torso
+    const tw=child?68:old?76:80;
+    const torso=[[-tw*s,-(Math.abs(shoulderY)+16*s)],[-50*s,shoulderY-24*s],[-16*s,shoulderY-34*s],[42*s,shoulderY-26*s],[tw*s,shoulderY+4*s],[65*s,-295*s],[50*s,-230*s],[-50*s,-230*s],[-65*s,-297*s]];
+    fill(c,L,torso,col,seed+10,4*s);
+    if(o.hero)L.hatch(c,torso,{spacing:10*s,angle:-.8,length:[14*s,40*s],density:(hx)=>clamp((hx+10*s)/(105*s))*.5,color:deep,alpha:.4,width:1*s,seed:seed+11});
+    fill(c,L,[[-50*s,-232*s],[-56*s,-198*s],[-42*s,-175*s],[43*s,-175*s],[53*s,-202*s],[48*s,-232*s]],deep,seed+12,3.2*s);
+    // reaching arm toward centre
+    const sh=[side*70*s,shoulderY],el=[side*(95-30*reach)*s,-315*s],wr=[side*(100-82*reach)*s,-235*s-reach*20*s];
+    fill(c,L,limb(...sh,...el,18*s,13*s),col,seed+13,2.9*s);
+    fill(c,L,limb(...el,...wr,13*s,9*s),P.selfPale,seed+14,2.4*s);
+    fill(c,L,hand(wr[0],wr[1],side*(.2-.55*reach),.72*s),P.selfPale,seed+15,2.1*s);
+    // second arm
+    const sh2=[-side*70*s,shoulderY],el2=[-side*88*s,-315*s],wr2=[-side*64*s,-240*s];
+    fill(c,L,limb(...sh2,...el2,18*s,13*s),col,seed+16,2.8*s);
+    fill(c,L,limb(...el2,...wr2,13*s,9*s),P.selfPale,seed+17,2.4*s);
     // head
-    poly(c,[[x-22,y-370],[x+22,y-370],[x+24,y-342],[x-24,y-342]],skin,P.ink,1.4);
-    ell(c,x,y-420,47,56,skin,P.ink,2.2,1,-.04);
-    poly(c,[[x-39,y-413],[x-26,y-375],[x,y-362],[x+29,y-380],[x+40,y-420]],skin,P.ink,1.6);
-    c.save();c.fillStyle=P.ink;c.beginPath();c.moveTo(x-43,y-432);c.bezierCurveTo(x-28,y-486,x+19,y-492,x+41,y-438);c.quadraticCurveTo(x+12,y-460,x-6,y-446);c.quadraticCurveTo(x-24,y-466,x-43,y-432);c.fill();c.restore();
-    hand(c,P,h[0],h[1],.76,Math.PI+.18,skin,true);
-    return {x:h[0],y:h[1]};
+    fill(c,L,ell(0,headY,child?44*s:old?44*s:46*s,child?52*s:old?52*s:55*s,-side*.02,28),P.selfPale,seed+18,3.3*s);
+    const hair=old?L.mix(P.ink,P.paper,.45):o.hero?P.ink:L.mix(P.ink,col,.18);
+    fill(c,L,[[-39*s,headY-22*s],[-27*s,headY-50*s],[-5*s,headY-59*s],[20*s,headY-51*s],[39*s,headY-30*s],[34*s,headY-10*s],[13*s,headY-25*s],[-9*s,headY-27*s],[-30*s,headY-14*s]],hair,seed+19,2*s);
+    ink(c,L,[[-16*s,headY],[ -3*s,headY-3*s]],P.ink,seed+20,1.1*s,.75);
+    ink(c,L,[[8*s,headY],[15*s,headY+10*s],[12*s,headY+17*s]],P.inkSoft,seed+21,1*s,.6);
+    if(o.hero)ink(c,L,[[-72*s,shoulderY+8*s],[-60*s,shoulderY+19*s],[-68*s,shoulderY+32*s]],P.cycleGold,seed+22,1.8*s,.9);
+    c.restore();
+    return {wx:x+wr[0],wy:y+wr[1]};
   }
 
-  function middleAdult(c,P){
-    c.save();c.globalAlpha=.28;
-    ell(c,545,650,40,50,P.paperDeep,P.ink,1.5);
-    poly(c,[[500,700],[590,700],[615,920],[480,920]],P.socialBlue,P.ink,1.8);
-    line(c,[[500,745],[440,825]],P.ink,4,.36);line(c,[[590,745],[650,820]],P.ink,4,.36);
+  function env(c,L,P){
+    c.fillStyle=L.rgba(P.stripeSpring,.18);c.fillRect(0,300,1080,1620);
+    c.save();c.globalAlpha=.35;
+    // doorway/window
+    c.fillStyle=P.paperShade;c.fillRect(80,320,920,670);
+    c.fillStyle=L.rgba(P.stripeSky,.26);c.fillRect(690,430,230,390);
+    ink(c,L,[[690,820],[690,430],[920,430],[920,820]],P.inkFaint,sd('door'),1.5,.48,[0,0]);
+    // planter/table edge
+    fill(c,L,[[110,1110],[430,1105],[425,1160],[105,1165]],P.wood,sd('table'),2.4,.6);
+    fill(c,L,[[750,1115],[980,1110],[970,1160],[745,1165]],P.paperDeep,sd('planter'),2.3,.55);
     c.restore();
+    // leaves / stems
+    for(let i=0;i<18;i++){
+      const r=L.rng(sd('plant',i)),x=720+r()*260,y=1250+r()*270,h=70+r()*130;
+      ink(c,L,[[x,y],[x+(r()-.5)*18,y-h]],P.ageSage,sd('stem',i),1.5,.5,[2,5]);
+      fill(c,L,ell(x+((i%2)?20:-20),y-h*.55,24,9,(i%2?.25:-.25),16),P.sage,sd('leaf',i),1.2,.35);
+    }
+    // large foreground leaf
+    fill(c,L,ell(110,1490,120,42,-.35,30),P.sage,sd('fgleaf'),2.4,.48);
+    ink(c,L,[[12,1530],[200,1452]],P.inkSoft,sd('vein'),1.4,.4,[0,0]);
   }
 
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.paper(c,{seed:17001});L.stripes(c,{colors:[P.stripeCream,P.stripeApricot],width:145,angle:-.52,offset:6*info.T,seed:17002});
-    backdrop(c,P);middleAdult(c,P);
-    const a=older(c,P,L,t),b=child(c,P,L,t);
+    L.paper(c,{seed:sd('paper')});L.stripes(c,{colors:[P.stripeCream,P.stripeSpring],width:140,angle:-.52,offset:info.T*12,seed:sd('stripes')});
+    env(c,L,P);
+    const a=L.seg(t,0,.55,'inOutCubic'),b=L.seg(t,.18,.7,'inOutCubic');
+    const old=figure(c,L,P,{x:350,y:1435,s:.80,col:L.mix(P.selfWarm,P.ageSage,.2),deep:P.selfDeep,seed:sd('old'),side:1,reach:a,old:true,hero:true});
+    const kid=figure(c,L,P,{x:730,y:1430,s:.68,col:P.childSky,deep:P.socialDeep,seed:sd('kid'),side:-1,reach:b,child:true});
 
-    // exact G4 between hands early
-    const transfer=clamp((t-.18)/.50),release=clamp((t-.52)/.28);
-    const gx=540,gy=920;
-    ell(c,gx,gy,18+4*transfer,18+4*transfer,P.cycleGold,P.ink,2,.95);
-    if(transfer>0)L.arcAnnotation(c,gx,gy,62,-1.2,-1.2+transfer*4.9,{color:P.annYellow,width:2.5,p:1});
-    // new trajectory begins only after child receives
-    const path=clamp((t-.92)/.35);
-    if(path>0){
-      c.save();c.strokeStyle=P.selfWarm;c.lineWidth=5;c.globalAlpha=.66;c.setLineDash([18,12]);
-      c.beginPath();c.moveTo(720,1120);c.bezierCurveTo(800,1060,860,960,900,880-80*path);c.stroke();c.restore();
+    // soft middle adult behind
+    c.save();c.globalAlpha=.28;c.translate(560,1140);
+    fill(c,L,ell(0,-210,34,41,0,22),P.selfPale,sd('mhead'),2,.75);
+    fill(c,L,[[-54,-160],[-32,-185],[26,-182],[56,-155],[44,80],[-45,80]],P.birthRose,sd('mtorso'),2.5,.7);c.restore();
+
+    // exact G4 lives between hands
+    const g=L.seg(t,.18,.55,'outBack');
+    const release=L.seg(t,.5,.82,'outExpo');
+    const gx=lerp(540,kid.wx,release*.6),gy=lerp(920,kid.wy,release*.6);
+    L.guideCircle(c,gx,gy,18,{color:P.cycleGold,alpha:.92,width:2.4});
+    L.glowDot(c,gx,gy,6,{color:P.cycleGold,core:P.glow,rays:8,seed:sd('g4'),intensity:.65+.35*g,glow:4.2,twinkle:.03});
+
+    // child's new trajectory begins after receipt, separate from older path
+    const p=L.seg(t,.72,1.22,'outExpo');
+    if(p>0){
+      const pts=[[730,1410],[790,1370],[850,1320],[910,1240]];
+      const n=Math.max(2,Math.round(pts.length*p));
+      ink(c,L,pts.slice(0,n),P.selfWarm,sd('newpath'),3.2,.62,[8,16]);
     }
-    // G4 expands into G1 while environment conceptually falls away
-    const ex=clamp((t-1.18)/.28);
-    if(ex>0){
-      const r=18+(150-18)*ex;
-      c.save();c.strokeStyle=P.cycleGold;c.lineWidth=3;c.globalAlpha=.9;c.beginPath();c.arc(540,700,r,0,TAU);c.stroke();c.restore();
-      c.save();c.fillStyle=P.paper;c.globalAlpha=.18*ex;c.fillRect(0,0,1080,1920);c.restore();
+
+    // middle adult contact
+    const touch=L.seg(t,.72,1.0,'outBack');
+    if(touch>0)L.arcAnnotation(c,650,1090,120,2.2,3.45,{color:P.annBlue,width:1.9,p:touch,arrow:8,alpha:.38});
+
+    // point lifts and expands toward G1
+    const e=L.seg(t,1.05,1.5,'outExpo');
+    if(e>0){
+      const cx=lerp(gx,540,e),cy=lerp(gy,700,e),rr=lerp(18,150,e);
+      L.guideCircle(c,cx,cy,rr,{color:P.cycleGold,alpha:.8,width:2.5,quadrants:e>.5?8:0});
+      L.guideCircle(c,cx,cy,rr+34,{color:P.annYellow,alpha:.16+.18*e,width:1.3,dash:[5,8]});
     }
   }});
 })();
