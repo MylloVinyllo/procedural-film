@@ -16,9 +16,9 @@
     const tw=L.onTwos(t);
     const phase=tw<.5?0:tw<1?1:tw<1.5?2:3;
     const poses=[
-      {x:330,lean:.06,armL:-1.0,armR:.85,kneeL:.5,kneeR:-.25,footL:-.15,footR:.1},
-      {x:410,lean:.11,armL:-.72,armR:.62,kneeL:.15,kneeR:.52,footL:.15,footR:.38},
-      {x:500,lean:.05,armL:-.55,armR:.85,kneeL:.56,kneeR:.05,footL:.32,footR:-.05},
+      {x:540,lean:.06,armL:-1.0,armR:.85,kneeL:.5,kneeR:-.25,footL:-.15,footR:.1},
+      {x:505,lean:.11,armL:-.72,armR:.62,kneeL:.15,kneeR:.52,footL:.15,footR:.38},
+      {x:560,lean:.05,armL:-.55,armR:.85,kneeL:.56,kneeR:.05,footL:.32,footR:-.05},
       {x:540,lean:0,armL:-.9,armR:.92,kneeL:.12,kneeR:.14,footL:0,footR:0},
     ];
     return poses[phase];
@@ -27,7 +27,7 @@
   function drawChild(c,L,P,t){
     const po=poseAt(L,t),s=1;
     c.save();
-    c.translate(po.x,1325);
+    c.translate(po.x,1175);
     c.rotate(po.lean);
 
     // shadow first
