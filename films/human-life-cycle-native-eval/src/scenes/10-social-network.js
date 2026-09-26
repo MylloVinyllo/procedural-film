@@ -30,6 +30,13 @@
     ctx.restore();
   }
 
+  const clusters=[
+    {nodes:[[365,690],[300,810],[380,920]],links:[[0,1],[1,2]],start:.18},
+    {nodes:[[720,650],[815,735],[770,845],[860,910]],links:[[0,1],[1,2],[2,3],[0,2]],start:.48},
+    {nodes:[[420,1110],[525,1200],[640,1110]],links:[[0,1],[1,2]],start:.82}
+  ];
+
+
   function node(c,L,P,x,y,r,seed,col,alpha=1){
     L.glowDot(c,x,y,r*.22,{color:col,core:P.glow,rays:0,seed,intensity:alpha,glow:3,twinkle:.04});
     L.guideCircle(c,x,y,r,{color:col,alpha:.42*alpha,width:1.4});
