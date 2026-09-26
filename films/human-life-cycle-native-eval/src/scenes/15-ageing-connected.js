@@ -17,8 +17,6 @@
     c.save();c.translate(x,y);c.rotate(lean*(hero?1:-.3));
     const headY=-485*s,shoulderY=-398*s,pelvisY=-205*s;
     // legs, short step
-    fill(c,L,limb(-34*s,pelvisY,-42*s+walk*12*s,-105*s,-1,1).map((p,i)=>p),o.deep,seed+1,2.8*s);
-    // replace malformed helper width via direct shapes
     fill(c,L,limb(-34*s,pelvisY,-42*s+walk*12*s,-105*s,27*s,20*s),o.deep,seed+2,3*s);
     fill(c,L,limb(-42*s+walk*12*s,-105*s,-46*s+walk*step*28*s,-6*s,20*s,14*s),o.deep,seed+3,2.7*s);
     fill(c,L,limb(34*s,pelvisY,46*s-walk*12*s,-105*s,28*s,20*s),P.inkSoft,seed+4,3*s);
