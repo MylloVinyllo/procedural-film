@@ -65,6 +65,9 @@
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
     L.blueprint(c,{seed:10001});
+    const up=clamp(t/.28),down=clamp((t-1.58)/.28);
+    const eu=up*up*(3-2*up),ed=down*down*(3-2*down),z=1+.85*eu*(1-ed);
+    c.save();c.translate(540,820);c.scale(z,z);c.translate(-540,-820);
     // guide field
     for(const r of [150,280,420]){c.save();c.strokeStyle=P.lavender;c.lineWidth=1;c.globalAlpha=.08;c.beginPath();c.arc(540,820,r,0,TAU);c.stroke();c.restore();}
     line(c,[[140,520],[940,1220]],P.lavender,1,.08,[10,14]);
