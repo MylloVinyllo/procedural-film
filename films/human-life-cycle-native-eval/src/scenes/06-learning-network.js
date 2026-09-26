@@ -101,6 +101,12 @@
 
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.blueprint(c,{seed:6001});guides(c,P);head(c,P);network(c,P,t);progressGlyph(c,L,5);
+    L.blueprint(c,{seed:6001});
+    const up=clamp(t/.28),down=clamp((t-1.08)/.30);
+    const eu=up*up*(3-2*up),ed=down*down*(3-2*down),z=1+1.35*eu*(1-ed);
+    c.save();c.translate(540,720);c.scale(z,z);c.translate(-540,-720);
+    guides(c,P);head(c,P);network(c,P,t);
+    c.restore();
+    progressGlyph(c,L,5);
   }});
 })();
