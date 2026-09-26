@@ -121,6 +121,16 @@
       c.save();c.globalAlpha=.32*(1-p*.8);c.fillStyle=P.waterPale;c.beginPath();c.arc(x,y,16+4*i,0,TAU);c.fill();c.strokeStyle=P.waterDeep;c.lineWidth=1.2;c.stroke();c.restore();
     });
 
+    // Loop seam: restore the three neighbour droplets to the exact opening positions/sizes used by shot 01.
+    const seam=L.seg(t,1.28,1.5,'outExpo');
+    if(seam>0){
+      const rr=[18,29,30];
+      starts.forEach((s,i)=>{
+        c.save();c.globalAlpha=seam;c.fillStyle=P.waterPale;c.beginPath();c.arc(s[0],s[1],rr[i],0,TAU);c.fill();
+        c.strokeStyle=P.waterDeep;c.lineWidth=1.2;c.stroke();c.restore();
+      });
+    }
+
     // Faint cloud circulation matches the opening visual language.
     const arcs=L.seg(t,.25,.9,'outExpo');
     if(arcs>0){
