@@ -70,6 +70,15 @@
       }
     }
 
+    // Match-cut entry: exact G3 survives the first frames before bending into the physical outfall stream.
+    const entry=1-L.seg(t,0,.3,'outQuad');
+    if(entry>0){
+      c.save();c.globalAlpha=.72*entry;c.strokeStyle=P.annBlue;c.lineWidth=2.8;c.beginPath();
+      c.moveTo(300,920);c.bezierCurveTo(420,900,650,940,780,920);c.stroke();c.restore();
+      L.glowDot(c,540,920,8,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('g3-entry'),intensity:.84*entry,glow:2.8,twinkle:.01});
+      L.guideCircle(c,540,920,48,{color:P.annYellow,alpha:.16*entry,width:1.4,dash:[4,8]});
+    }
+
     // G3 tracer enters, bends into main current, then loses its halo.
     const hero=L.seg(t,0,1.15,'inOutCubic');
     const path=[[300,920],[390,960],[470,1030],[560,1080],[690,1110],[820,1140],[960,1160]];
