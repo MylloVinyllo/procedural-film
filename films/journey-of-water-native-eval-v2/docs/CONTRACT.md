@@ -5,7 +5,7 @@ Every agent that touches this project follows it.
 
 ## Goal
 
-A film of <SUBJECT — one line, e.g. "the life of a monarch butterfly">, drawn entirely by JavaScript on a canvas, with music and sound effects synthesised in JavaScript.
+A film following one visually traceable drop of water through cloud formation, rain, leaf and soil, stream and river, human infrastructure, sea, evaporation and return to cloud, drawn entirely by JavaScript on a canvas, with music and sound effects synthesised in JavaScript.
 It ships as one self-contained HTML file and as a rendered MP4 for YouTube Shorts.
 The look and editing follow `docs/art-bible.md`.
 
