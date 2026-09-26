@@ -857,3 +857,127 @@ The loop is symbolic and intergenerational. WHO life-course grounds continuity a
 - T 31.000: resolved opening pulse C2+C4.
 - T 31.500: glass overtone and loop pickup, with level matched to T 0.
 
+
+
+# V2 execution layer: drawable choreography
+
+This section is the production bridge between the semantic storyboard above and scene implementation. It does not change timing, order, research claims, or the illustrated/schematic alternation. It makes every shot concrete enough to build as a miniature drawing system rather than a motion card.
+
+## V2-01 adult-hero
+- Depth layers: distant facade and windows; social figures/bench; path and plants; protagonist; trajectory; G1 and attention geometry.
+- Hero must be a filled multi-part adult body with separate head, neck, ribcage, pelvis, upper/lower limbs, hands and shoes. No stick anatomy.
+- Beat states: 0.00 full pose and field already readable; 0.50 weight transfer and ring; 1.00 distant figures hit a related but not identical step; 1.375–1.50 camera push isolates the exact G1 geometry.
+- Exit invariant: G1 centre/radii remain screen-fixed even while the illustrated camera moves.
+
+## V2-02 cell-genesis
+- Structural layers: blueprint; tissue/fluid field; exact G1 membrane; cell interiors; division bridges; body-axis morph; progress glyph.
+- The biological event must be drawn as changing cell topology, not one glowing dot duplicating.
+- Beat states: one cell → two → four → eight → axial contraction. Each division briefly exposes a bridge and then resolves into separate membranes.
+- Exit invariant: body-axis geometry lands in the same central zone used by shot 03.
+
+## V2-03 birth
+- Depth layers: warm room/window plane; supporting adult/cloth; cradle ellipse/folds; newborn; breath/hand overlays.
+- Newborn must show flexed limbs and large head proportion, and must visibly rest in a supporting structure rather than float.
+- Beat states: readable held infant; breath; hand/finger motion; enclosure curve sweeps toward the next measurement language.
+- Exit invariant: the enclosing sweep supplies the visual logic for the shot-04 bracket.
+
+## V2-04 growth-ladder
+- Structural layers: blueprint; baseline and ruler; infant/child/adolescent/adult outlines; proportion ticks; stage highlights; G2.
+- Four stages must differ in body proportion, not only overall scale.
+- Beat states: stages appear sequentially, then all co-exist, then the child/adolescent head geometry is privileged.
+- Exit invariant: exact G2 ellipse is clean and unobstructed for the illustrated cut.
+
+## V2-05 first-steps
+- Depth layers: doorway/furniture/plant; perspective floor; child shadow; filled child; path and step annotations.
+- Child motion uses four explicit gait drawings: rear-foot weight, heel contact, cross-over, wobble/recovery.
+- Beat states: first landing; second landing; wobble; recovery into the G2 head placement.
+- Exit invariant: head outline settles onto G2 while the rest of the scene can continue to move.
+
+## V2-06 learning-network
+- Structural layers: exact G2 head; internal lattice/stipple; branch network; changing-strength links; one outgoing branch; progress glyph.
+- Network is contained within an identifiable head/body context, not floating abstractly.
+- Beat states: first branch wave; second wave; selective strengthening/fading; one route exits the head.
+- Exit invariant: outgoing branch has a tangent that can become the child’s reaching arm trajectory.
+
+## V2-07 childhood-explore
+- Depth layers: distant park/fence; trees; ground/grass; kite/target; child; trajectory; jump/reach annotations.
+- Child uses filled masses and a twisted run/jump pose with one arm clearly reaching upward.
+- Beat states: continued reach; run step; airborne reach; landing and turn.
+- Exit invariant: final reaching arc aims toward where peer geometry will appear in shot 08.
+
+## V2-08 social-salience
+- Structural layers: blueprint; primary faint body; exact G3 node; embodied peer glyphs; curved ties; attention sector; progress glyph.
+- Peers are not equal dots. They must have distinct body-shaped schematic glyphs and different placements.
+- Beat states: peer bodies appear; ties establish; attention sector rotates; one tie strengthens.
+- Exit invariant: G3 remains exact and becomes the chest-position anchor for shot 09.
+
+## V2-09 one-among-many
+- Depth layers: plaza/facade; far crowd; mid crowd; protagonist; foreground passer; self path; group-flow arcs.
+- Crowd figures vary scale, stance, direction and colour family. The hero stays uniquely traceable.
+- Beat states: crowd movement; momentary phase synchrony; hero off-phase step; camera/picture emphasis on G3.
+- Exit invariant: the social field must still feel inhabited when G3 is isolated for the cut.
+
+## V2-10 social-network
+- Structural layers: blueprint; faint human context; G3; three heterogeneous clusters; intra-cluster links; cross-cluster bridges; changing ties; progress glyph.
+- Never draw a complete graph. Secondary nodes must also have lives beyond the hero through micro-links.
+- Beat states: close cluster; distant cluster; third cluster; one close relationship strengthens while others dim.
+- Exit invariant: strengthened relationship curve supplies the gesture direction for shot 11.
+
+## V2-11 bond
+- Depth layers: plaza/bench/background figure; two filled people; hands; reciprocal arcs; contact ring.
+- Relationship must read without overlays through orientation, lean, arm extension and reciprocal hand motion.
+- Beat states: separate readable bodies; offer; return; contact/overlap; slight withdrawal.
+- Exit invariant: two overlapping gesture arcs collapse into the ring language of shot 12.
+
+## V2-12 role-system
+- Structural layers: blueprint; faint protagonist body; three incomplete rings; embodied nodes; cross-context ties; progress glyph.
+- Rings are open contexts rather than cages. Sparse people sit on different rings and some ties cross contexts.
+- Beat states: inner context; second context; outer context; cross-context ties; one horizontal work-surface line emerges.
+- Exit invariant: the ring system straightens toward the shared workbench edge in shot 13.
+
+## V2-13 create-contribute
+- Depth layers: workshop wall/shelves/tools; workbench; two filled half/full figures; hands; modular physical object; memory trace.
+- The scene must depict an actual shared making sequence. A base, upright, circular element and connector assemble into one object.
+- Beat states: protagonist reaches; partner reaches; pieces align; object locks; completed object receives an echo/trace.
+- Exit invariant: memoryViolet appears only after physical completion and becomes shot-14 path material.
+
+## V2-14 memory-field
+- Structural layers: blueprint; continuing memory path; five reused mini-glyphs from prior shots; cross-links; condensed self trace; progress glyph.
+- Required recognisable recalls: cradle curve, footprints, reaching child, G3 social cluster, shared-made object.
+- Beat states: path draws; glyphs emerge in waves; links establish; protagonist trace condenses.
+- Exit invariant: self trace resolves into the body axis/posture logic for later life.
+
+## V2-15 ageing-connected
+- Depth layers: garden/building; bench/path; foliage; older protagonist; companion; trajectory; seed motif.
+- Older hero is the same identity through colour family, shoulder notch and face asymmetry. Ageing changes posture, step and tempo rather than agency.
+- Beat states: two people walk/stand in relation; protagonist gestures; seed motif appears near the companion exchange.
+- Exit invariant: cycleGold seed occupies the zone that will initiate the generational spiral.
+
+## V2-16 generation-spiral
+- Structural layers: blueprint; double spiral; embodied generation silhouettes; continuity route; exact G4; progress glyph.
+- Generations are bodies along a spiral, not points on a decorative coil.
+- Beat states: spiral draws; child/young/adult/older figures appear; older-to-younger route emerges; G4 becomes exact.
+- Exit invariant: G4 is screen-fixed at the handoff position.
+
+## V2-17 handoff
+- Depth layers: garden/threshold; optional middle adult; older protagonist; younger child; complete hands; G4; new trajectory; expanding G1.
+- Transfer is physical: older hand offers, younger hand approaches, G4 bridges the gap, younger closes, older releases, new path begins.
+- Beat states: approach; bridge/contact; release; new trajectory; G4 lifts and expands.
+- Exit invariant: the expanding continuity point lands on G1 centre and radius.
+
+## V2-18 seed-loop
+- Structural layers: blueprint; faint echoes of G2/G3/G4; exact G1; founding cell; division; cycle arc; progress glyph; final wordmark.
+- The ending must reconnect social/intergenerational continuity to biological possibility without claiming the same individual repeats.
+- Beat states: seed reaches G1; membrane gathers; cell division begins; history echoes converge; cycle arc closes.
+- Exit invariant: final G1 composition can hard-cut back to shot 01 with the same screen-fixed guide.
+
+## Per-shot completion gate
+A scene is not complete because it renders. For each shot:
+1. build the scene with the layer/depth requirements above;
+2. render six temporal samples;
+3. inspect all six actual frames;
+4. fix composition, anatomy, collisions, readability, density and exit geometry;
+5. re-snap if any material fix was required;
+6. only then advance to the next scene batch.
+
+The native six-check remains a technical correctness gate. It is not a substitute for the six-frame visual inspection.
