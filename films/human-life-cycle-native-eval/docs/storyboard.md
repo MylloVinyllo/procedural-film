@@ -292,7 +292,7 @@ T 8.000 to 10.000, illustrated, hard cut.
 
 ### Composition
 
-Small child crosses from left to centre on open paper ground. G2 head geometry is respected when child reaches the central pose. The selfWarm trajectory is clearly visible behind the feet.
+Small child begins on the incoming G2 guide, takes two short unstable steps through the central paper ground, then recovers onto G2 again. The selfWarm trajectory is clearly visible behind the feet.
 
 ### Forms
 
@@ -304,7 +304,7 @@ selfWarm path, annBlue step arcs, one annYellow balance ring.
 
 ### Motion
 
-T 8.000: first-step pose fully drawn. T 8.500: step one lands. T 9.000: step two lands. T 9.500: brief wobble/recovery; head settles into exact G2 ellipse.
+T 8.000: first-step pose is already aligned to G2. T 8.500: step one lands slightly off-centre. T 9.000: step two crosses the centre. T 9.500: brief wobble/recovery; head settles back onto the exact G2 guide.
 
 ### Camera
 
@@ -890,7 +890,8 @@ This section is the production bridge between the semantic storyboard above and 
 ## V2-05 first-steps
 - Depth layers: doorway/furniture/plant; perspective floor; child shadow; filled child; path and step annotations.
 - Child motion uses four explicit gait drawings: rear-foot weight, heel contact, cross-over, wobble/recovery.
-- Beat states: first landing; second landing; wobble; recovery into the G2 head placement.
+- The first and final poses are both centred on G2; the middle two poses move only within the central field so the match-cut chain remains literal.
+- Beat states: G2 entry; first landing; second landing; wobble/recovery back to G2.
 - Exit invariant: head outline settles onto G2 while the rest of the scene can continue to move.
 
 ## V2-06 learning-network
