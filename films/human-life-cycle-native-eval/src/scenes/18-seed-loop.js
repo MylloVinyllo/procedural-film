@@ -33,6 +33,15 @@
     ctx.restore();
   }
 
+  function ellipsePoly(cx,cy,rx,ry,n=42){
+    const out=[];
+    for(let i=0;i<n;i++){
+      const a=i/n*TAU;
+      out.push([cx+Math.cos(a)*rx,cy+Math.sin(a)*ry]);
+    }
+    return out;
+  }
+
   function membrane(c,L,P,cx,cy,rx,ry,seed,a=1){
     const pts=[];
     const bi=L.boil(L.T);
@@ -46,7 +55,7 @@
 
   function daughter(c,L,P,x,y,r,seed,a=1){
     membrane(c,L,P,x,y,r,r*.92,seed,a);
-    const clip=L.ellipsePts(x,y,r-10,r*.92-10,40);
+    const clip=ellipsePoly(x,y,r-10,r*.92-10,40);
     L.hexLattice(c,clip,{r:12,width:.8,color:P.lavender,alpha:.11*a,jitter:.4,seed:seed+2,boilAmp:.12});
     L.stipple(c,clip,{spacing:15,r:[.5,1.1],density:.26,color:P.paleBlue,alpha:.12*a,seed:seed+3,boilAmp:.12});
     L.glowDot(c,x,y,7,{color:P.schemSelf,core:P.glow,rays:6,seed:seed+4,intensity:.55+.45*a,glow:4,twinkle:.03});
@@ -95,7 +104,7 @@
       if(gather>0){
         const r=lerp(16,118,gather);
         membrane(c,L,P,540,700,r,r*.94,sd('mother'),gather);
-        const clip=L.ellipsePts(540,700,Math.max(8,r-12),Math.max(8,r*.94-12),42);
+        const clip=ellipsePoly(540,700,Math.max(8,r-12),Math.max(8,r*.94-12),42);
         L.stipple(c,clip,{spacing:17,r:[.5,1.2],density:.28*gather,color:P.paleBlue,alpha:.13+.12*gather,seed:sd('mother-stipple'),boilAmp:.12});
       }
 
