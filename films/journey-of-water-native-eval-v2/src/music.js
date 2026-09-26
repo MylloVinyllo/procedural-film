@@ -34,10 +34,11 @@
     // Master tilt EQ in dB: a low shelf under the subs, presence and air for phone speakers.
     eq: { low: -4, presence: 5, air: 3 },
     comp: { threshold: -18, knee: 10, ratio: 2, attack: 0.006, release: 0.2 },
-    // Section fader rides in dB at global times, pre-compressor: quiet egg, hushed pupa, full drop,
-    // hushed winter, and an ending level that meets the opening level at the loop seam.
-    // Per film: section fader rides in dB at global times, pre-compressor (see reference/music.md).
-    ride: [[0, 0]],
+    // Water-film section rides. Opening and closing meet at the same level for a clean loop.
+    ride: [
+      [0,-2],[1.5,-3],[3.5,-2.5],[5,-1],[7,0],[9,-2],[10.5,-1.5],[14,-.5],[18,-2],
+      [19.5,-1],[22,-.5],[23.5,0],[25.5,-1],[27.5,-.5],[29,0],[31,-2],[33,-3],[34.5,-2],[36,-2]
+    ],
   };
 
   // ---------------------------------------------------------------- pitch
@@ -1314,29 +1315,121 @@
   // and the engine windows each call, so scheduling the whole piece here is correct. Everything
   // below derives from FILM.TIMELINE, so it runs at any bpm and duration.
   const CH = {
-    home: ['D3', 'A3', 'D4', 'F#4'],
-    away: ['G3', 'B3', 'D4', 'G4'],
+    cloud: ['C3','G3','D4','A4'],
+    rain: ['C3','G3','D4','E4'],
+    earth: ['F3','C4','G4','A4'],
+    river: ['C3','G3','C4','E4'],
+    city: ['D3','A3','C4','E4'],
+    ocean: ['C3','G3','D4','A4'],
   };
 
-  function score(E, I) {
-    const { kick, hat, kalimba, pad, sub } = I;
-    const bpm = (FILM.TIMELINE && FILM.TIMELINE.bpm) || 120;
-    const DUR = (FILM.TIMELINE && FILM.TIMELINE.duration) || 32;
-    const BAR = 240 / bpm;
-    const BEAT = 60 / bpm;
-    const motif = ['D5', 'F#5', 'A5', 'E5'];
-    for (let beat = 0; beat * BEAT < DUR - 1e-9; beat++) {
-      const t = Math.round(beat * BEAT * 1000) / 1000;
-      const down = beat % 4 === 0;
-      kick(t, down ? 0.8 : 0.5, down ? 'full' : 'felt');
-      hat(t + BEAT / 2, 0.1);
-      kalimba(t + BEAT / 2, hz(motif[beat % 4]), 0.2, { hall: 0.15, delay: 0.1, pan: beat % 2 ? 0.15 : -0.15 });
-      if (down) {
-        const home = beat % 8 === 0;
-        pad(t, Math.min(t + BAR, DUR), home ? CH.home : CH.away, 0.28, { att: 0.05, rel: 0.1, cut0: 900, cut1: 1400, hall: 0.15 });
-        sub(t, Math.min(t + BAR, DUR), home ? 'D2' : 'G1', 0.4, { att: 0.02, rel: 0.08 });
-      }
-    }
+  function score(E,I){
+    const {kick,hat,brush,kalimba,glass,pad,sub,subDrop,plip,glide,nz,wind,tock,gong,revSwell}=I;
+    const DUR=(FILM.TIMELINE&&FILM.TIMELINE.duration)||36;
+    const motif=['C5','G5','D6','A5'];
+    const motifTimes=[.5,1,2,2.5,14.5,15.5,16,16.5,24,28.5,30,34.5,35,35.5];
+    motifTimes.forEach((t,i)=>{
+      if(t<DUR) kalimba(t,hz(motif[i%4]),.17+(i%4===0?.05:0),{hall:.18,delay:.08,pan:i%2?.12:-.12,dec:1.1});
+    });
+
+    // Long harmonic beds follow the physical regimes rather than every shot.
+    [
+      [0,5,CH.cloud,.16,700,1250],
+      [5,10.5,CH.rain,.13,850,1500],
+      [10.5,18,CH.earth,.15,650,1150],
+      [18,23.5,CH.city,.12,520,900],
+      [23.5,29,CH.river,.13,650,1050],
+      [29,36,CH.ocean,.17,720,1350],
+    ].forEach((s,i)=>pad(s[0],s[1],s[2],s[3],{att:.3,rel:.45,cut0:s[4],cut1:s[5],hall:.2,width:.65,detune:6+(i%2)*2}));
+
+    // Low reservoir / river foundation, intentionally sparse.
+    [
+      [0,5,'C2',.19],[5,10.5,'G1',.2],[10.5,18,'F2',.2],
+      [18,23.5,'D2',.18],[23.5,29,'C2',.2],[29,36,'C2',.22]
+    ].forEach(s=>sub(s[0],s[1],s[2],s[3],{att:.08,rel:.25,sus:.72}));
+
+    // Atmosphere / cloud. Wide, soft and granular.
+    wind(0,5,[[0,0],[.25,.055],[4.65,.05],[5,0]],{lp:2100});
+    nz(0,5,{
+      type:'bandpass',q:.45,f:[[0,520],[2.5,850,'lin'],[5,620,'lin']],
+      amp:[[0,0],[.35,.035],[4.7,.03],[5,0]],stereo:true,sustain:true,bus:'amb',key:'cloud-bed'
+    });
+    [2,2.5,3].forEach((t,i)=>glass(t,hz(['G5','D6','A5'][i]),.08,{dec:.65,hall:.25,pan:(i-1)*.25}));
+    revSwell(1.18,.32,.11,{hi:true,hall:.18});
+    revSwell(3.18,.32,.09,{hi:true,hall:.16});
+    glide(4.48,880,340,.48,.08,{hall:.12});
+
+    // Rain fall and leaf impact.
+    nz(5,2,{
+      type:'highpass',q:.55,f:[[0,3600],[2,6200,'lin']],
+      amp:[[0,0],[.12,.08],[1.75,.1],[2,0]],stereo:true,sustain:true,bus:'amb',key:'rain'
+    });
+    for(let t=5.25,i=0;t<6.95;t+=.25,i++) plip(t,2400+(i%4)*350,1500+(i%3)*250,.018+(i%3)*.006,{pan:(i%5-2)*.16});
+    subDrop(7,95,46,.34,.24);
+    nz(7,.42,{type:'bandpass',q:.7,f:[[0,900],[.18,4200,'exp'],[.42,1600,'exp']],amp:[[0,0],[.006,.25],[.12,.08,'exp'],[.42,0]],stereo:true,bus:'sfx',key:'splash'});
+    [7.18,7.27,7.36,7.48].forEach((t,i)=>plip(t,1800+i*260,1100+i*120,.055-i*.006,{pan:(i-1.5)*.25}));
+    nz(8,.75,{type:'bandpass',q:.6,f:[[0,620],[.75,1400,'lin']],amp:[[0,0],[.08,.045],[.65,.03],[.75,0]],bus:'sfx',key:'leaf-slide'});
+    revSwell(8.55,.45,.12,{hi:true,hall:.2});
+
+    // Leaf schematic: high, airy transpiration branch.
+    nz(9,1.5,{type:'highpass',q:.6,f:[[0,4800],[1.5,7200,'lin']],amp:[[0,0],[.35,.026],[1.35,.04],[1.5,0]],stereo:true,sustain:true,bus:'amb',key:'stomata'});
+    glass(10,hz('D6'),.075,{dec:.8,hall:.3});
+    glide(10.3,950,420,.2,.06,{hall:.12});
+
+    // Soil infiltration: granular, close, irregular.
+    nz(10.5,3.5,{type:'bandpass',q:.55,f:[[0,220],[1.5,620,'lin'],[3.5,380,'lin']],amp:[[0,0],[.2,.055],[3.2,.05],[3.5,0]],stereo:true,sustain:true,bus:'amb',key:'soil'});
+    [10.75,11,11.5,12,12.5,13,13.5].forEach((t,i)=>tock(t,.035+(i%2)*.012,260+(i%4)*55,{pan:(i%5-2)*.13,dec:.05}));
+    revSwell(12.18,.32,.08,{hall:.12});
+
+    // Stream and river: moving resonant noise plus understated pulse.
+    nz(14,4,{type:'bandpass',q:.45,f:[[0,320],[2,560,'lin'],[4,420,'lin']],amp:[[0,0],[.2,.07],[3.7,.075],[4,0]],stereo:true,sustain:true,bus:'amb',key:'stream'});
+    [14,15,16,17].forEach((t,i)=>brush(t,.035+(i%2)*.01,(i%2?.25:-.25)));
+    [15,15.5,17.5].forEach((t,i)=>plip(t,900+i*180,650+i*80,.04,{pan:(i-1)*.25}));
+    revSwell(17.5,.5,.14,{hall:.18});
+    subDrop(18,72,42,.38,.22);
+
+    // Water-system / treatment: quiet mechanical pulse and process ticks.
+    nz(18,5.5,{type:'bandpass',q:1.1,f:[[0,115],[2.5,145,'lin'],[5.5,125,'lin']],amp:[[0,0],[.2,.05],[5.2,.055],[5.5,0]],stereo:true,sustain:true,bus:'amb',key:'plant-hum'});
+    [18.5,19,19.5,20,20.5,21,21.5,22,22.5,23].forEach((t,i)=>tock(t,.035+(i%4===0?.018:0),310+(i%5)*90,{pan:(i%6-2.5)*.11,dec:.055}));
+    [20,20.5,21,21.5].forEach((t,i)=>glass(t,hz(['C5','G5','D6','A5'][i]),.045,{dec:.45,hall:.12}));
+    nz(21,.7,{type:'bandpass',q:.7,f:[[0,1400],[.7,3900,'exp']],amp:[[0,0],[.05,.07],[.6,.025],[.7,0]],bus:'sfx',key:'filter'});
+    nz(22,1.5,{type:'bandpass',q:.8,f:[[0,180],[1.5,520,'lin']],amp:[[0,0],[.1,.06],[1.35,.055],[1.5,0]],stereo:true,sustain:true,bus:'amb',key:'pipe'});
+    glide(22.8,320,620,.55,.055,{hall:.08});
+
+    // Domestic water, drain and wastewater plant.
+    nz(23.5,1.9,{type:'bandpass',q:.5,f:[[0,900],[.6,1600,'lin'],[1.9,700,'lin']],amp:[[0,0],[.05,.07],[1.65,.06],[1.9,0]],stereo:true,sustain:true,bus:'sfx',key:'faucet'});
+    glass(24,hz('C6'),.095,{dec:.85,hall:.2});
+    [24.35,24.5,24.65].forEach((t,i)=>plip(t,1800+i*250,1100+i*100,.04,{pan:(i-1)*.25}));
+    nz(24.85,.65,{type:'bandpass',q:1.0,f:[[0,420],[.65,1200,'exp']],amp:[[0,0],[.08,.08],[.55,.05],[.65,0]],stereo:true,bus:'sfx',key:'drain'});
+    subDrop(25.5,82,44,.3,.15);
+    nz(25.5,2,{type:'bandpass',q:.7,f:[[0,160],[2,310,'lin']],amp:[[0,0],[.2,.05],[1.8,.055],[2,0]],stereo:true,sustain:true,bus:'amb',key:'wastewater'});
+    [26,26.5,27].forEach((t,i)=>tock(t,.04,270+i*70,{pan:(i-1)*.2,dec:.06}));
+    for(let t=26.9,i=0;t<27.45;t+=.11,i++) plip(t,1300+(i%4)*140,950+(i%3)*90,.018,{pan:(i%5-2)*.14});
+
+    // River release to sea.
+    nz(27.5,3.5,{type:'bandpass',q:.42,f:[[0,300],[1.5,480,'lin'],[3.5,250,'lin']],amp:[[0,0],[.15,.065],[3.25,.075],[3.5,0]],stereo:true,sustain:true,bus:'amb',key:'river-ocean'});
+    nz(28,.4,{type:'bandpass',q:.8,f:[[0,700],[.4,1700,'lin']],amp:[[0,0],[.02,.09],[.2,.04],[.4,0]],bus:'sfx',key:'eddy'});
+    gong(29,hz('C3'),.09,{dec:1.7,hall:.3});
+    for(let t=29.5,i=0;t<30.8;t+=.5,i++) brush(t,.03+(i%2)*.008,(i%2?.35:-.35));
+    revSwell(30.55,.45,.12,{hi:false,fTop:2200,hall:.22});
+
+    // Evaporation and condensation return.
+    nz(31,2,{type:'highpass',q:.55,f:[[0,1600],[2,7200,'exp']],amp:[[0,0],[.2,.04],[1.65,.075],[2,0]],stereo:true,sustain:true,bus:'amb',key:'evap'});
+    [32,32.5].forEach((t,i)=>glass(t,hz(i?'G6':'C6'),.055,{dec:.9,hall:.35,pan:i?.25:-.2}));
+    nz(33,1.5,{type:'highpass',q:.7,f:[[0,6500],[1.5,3500,'exp']],amp:[[0,0],[.15,.035],[1.3,.045],[1.5,0]],stereo:true,sustain:true,bus:'amb',key:'condense'});
+    [33.5,34,34.5].forEach((t,i)=>glass(t,hz(['C5','G5','D6'][i]),.055+.008*i,{dec:.8,hall:.3,pan:(i-1)*.2}));
+    revSwell(34.18,.32,.08,{hi:false,fTop:1600,hall:.18});
+
+    // Closing cloud ambience deliberately meets the opening.
+    wind(34.5,36,[[0,0],[.15,.05],[1.3,.05],[1.5,0]],{lp:2100});
+    nz(34.5,1.5,{type:'bandpass',q:.45,f:[[0,620],[1.5,520,'lin']],amp:[[0,0],[.18,.032],[1.35,.035],[1.5,0]],stereo:true,sustain:true,bus:'amb',key:'cloud-loop'});
+
+    // Structural cut punctuation: small rather than trailer-like.
+    const cuts=[1.5,3.5,5,7,9,10.5,12.5,14,16,18,19.5,22,23.5,25.5,27.5,29,31,33,34.5];
+    cuts.forEach((t,i)=>{
+      if(i%4===0) kick(t,.13,'felt');
+      else tock(t,.018,420+(i%5)*55,{pan:(i%2?.18:-.18),dec:.035});
+    });
   }
 
   FILM.audio = {
