@@ -32,7 +32,7 @@
     if(o.hero)L.hatch(c,torso,{spacing:10*s,angle:-.8,length:[14*s,40*s],density:(hx)=>clamp((hx+10*s)/(105*s))*.5,color:deep,alpha:.4,width:1*s,seed:seed+11});
     fill(c,L,[[-50*s,-232*s],[-56*s,-198*s],[-42*s,-175*s],[43*s,-175*s],[53*s,-202*s],[48*s,-232*s]],deep,seed+12,3.2*s);
     // reaching arm toward centre
-    const sh=[side*70*s,shoulderY],el=[side*(95-30*reach)*s,-315*s],wr=[side*(100-82*reach)*s,-235*s-reach*20*s];
+    const sh=[side*70*s,shoulderY],el=[side*(95+45*reach)*s,(-315-120*reach)*s],wr=[side*(100+120*reach)*s,(-235-385*reach)*s];
     fill(c,L,limb(...sh,...el,18*s,13*s),col,seed+13,2.9*s);
     fill(c,L,limb(...el,...wr,13*s,9*s),P.selfPale,seed+14,2.4*s);
     fill(c,L,hand(wr[0],wr[1],side*(.2-.55*reach),.72*s),P.selfPale,seed+15,2.1*s);
@@ -78,8 +78,8 @@
     L.paper(c,{seed:sd('paper')});L.stripes(c,{colors:[P.stripeCream,P.stripeSpring],width:140,angle:-.52,offset:info.T*12,seed:sd('stripes')});
     env(c,L,P);
     const a=L.seg(t,0,.55,'inOutCubic'),b=L.seg(t,.18,.7,'inOutCubic');
-    const old=figure(c,L,P,{x:350,y:1435,s:.80,col:L.mix(P.selfWarm,P.ageSage,.2),deep:P.selfDeep,seed:sd('old'),side:1,reach:a,old:true,hero:true});
-    const kid=figure(c,L,P,{x:730,y:1430,s:.68,col:P.childSky,deep:P.socialDeep,seed:sd('kid'),side:-1,reach:b,child:true});
+    const old=figure(c,L,P,{x:365,y:1435,s:.80,col:L.mix(P.selfWarm,P.ageSage,.2),deep:P.selfDeep,seed:sd('old'),side:1,reach:a,old:true,hero:true});
+    const kid=figure(c,L,P,{x:715,y:1430,s:.68,col:P.childSky,deep:P.socialDeep,seed:sd('kid'),side:-1,reach:b,child:true});
 
     // soft middle adult behind
     c.save();c.globalAlpha=.28;c.translate(560,1140);
