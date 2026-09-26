@@ -74,6 +74,7 @@
       for(let k=0;k<5;k++){const a=a0+k*(a1-a0)/4;line(c,[[540+Math.cos(a)*120,820+Math.sin(a)*120],[540+Math.cos(a)*137,820+Math.sin(a)*137]],P.magenta,1.2,.55);}
       c.restore();
     }
+    c.restore();
     progressGlyph(c,L,7);
   }});
 })();
