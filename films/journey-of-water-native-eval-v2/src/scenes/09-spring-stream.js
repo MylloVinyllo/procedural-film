@@ -120,6 +120,15 @@
     // reeds foreground and midground
     for(let i=0;i<12;i++)reed(c,L,P,40+i*90,1770-(i%3)*25,145+(i%4)*24,i*.6,sd('reed',i),t);
 
+    // Match-cut entry: exact canonical G3 survives the first frames, then dissolves into the physical creek flow.
+    const entry=1-L.seg(t,0,.34,'outQuad');
+    if(entry>0){
+      c.save();c.globalAlpha=.72*entry;c.strokeStyle=P.annBlue;c.lineWidth=2.8;c.beginPath();
+      c.moveTo(300,920);c.bezierCurveTo(420,900,650,940,780,920);c.stroke();c.restore();
+      L.glowDot(c,540,920,8,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('g3-entry'),intensity:.82*entry,glow:2.8,twinkle:.01});
+      L.guideCircle(c,540,920,48,{color:P.annYellow,alpha:.18*entry,width:1.4,dash:[4,8]});
+    }
+
     // G3: highlighted hero streamline crosses the actual moving creek
     const hero=L.seg(t,.1,1.25,'inOutCubic');
     const heroPts=[[300,920],[390,950],[485,980],[585,1020],[690,1075],[780,1125]];
