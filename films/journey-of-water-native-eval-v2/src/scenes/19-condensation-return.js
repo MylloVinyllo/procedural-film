@@ -136,12 +136,13 @@
     // Future G1 emerges only near the exit.
     const g1=L.seg(t,1.18,1.5,'outExpo');
     if(g1>0){
-      const pts=dropShape(540,720,105,90,.28);
+      const rx=lerp(18,38,g1),ry=lerp(16,35,g1);
+      const pts=dropShape(540,720,rx,ry,.28);
       L.inkPath(c,pts,{closed:true,color:P.lavender,width:2.4,alpha:.2+.7*g1,seed:sd('g1'),wobble:.12,tremble:.03,boilAmp:.04});
-      const inner=dropShape(540,720,96,82,.28);
+      const inner=dropShape(540,720,Math.max(10,rx-7),Math.max(9,ry-6),.28);
       L.inkPath(c,inner,{closed:true,color:P.lavender,width:1.2,alpha:.18+.32*g1,seed:sd('g1i'),wobble:.08,tremble:.02,boilAmp:.03});
       L.glowDot(c,506,692,8,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('g1glint'),intensity:.7+.2*g1,glow:3,twinkle:.02});
-      L.guideCircle(c,540,720,150,{color:P.schemWater,alpha:.1+.16*g1,width:1.2,dash:[5,9]});
+      L.guideCircle(c,540,720,150,{color:P.schemWater,alpha:.1*(1-g1),width:1.1,dash:[5,9]});
     }
 
     // Measurement brackets on condensation shell scale and cloud-scale field.
