@@ -84,7 +84,7 @@
 
     const deform=L.seg(t,.28,1.12,'inOutCubic');
     const flat=.08+.62*deform;
-    const rx=105+3*deform,ry=98-8*deform;
+    const rx=105,ry=90;
     airflow(c,L,P,L.seg(t,.15,.8,'outExpo'));
 
     // bottom pressure arrows oppose the falling direction
