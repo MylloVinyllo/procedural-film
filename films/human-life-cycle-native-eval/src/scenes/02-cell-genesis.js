@@ -184,9 +184,14 @@
       const L=info.lib,P=L.pal;
       const t=clamp(tIn,0,info.dur);
       L.blueprint(ctx,{seed:2001});
+      // Match G1 at frame zero, then push deep into the cellular field before easing partway back.
+      const up=smooth(t/.35),back=smooth((t-1.85)/.45);
+      const z=1+1.15*up-.55*back;
+      ctx.save();ctx.translate(540,700);ctx.scale(z,z);ctx.translate(-540,-700);
       guideField(ctx,P,t);
       construction(ctx,P);
       drawCluster(ctx,P,t);
+      ctx.restore();
       progressGlyph(ctx,L,1);
     }
   });
