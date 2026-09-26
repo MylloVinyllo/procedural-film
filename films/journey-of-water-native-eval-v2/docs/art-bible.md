@@ -78,6 +78,22 @@ These values are the water film's published subject colours and are mirrored exa
 | waterFoam | #F6F1E3 | Foam, bubble rims, bright splash fragments |
 | cloudBody | #E8E3D7 | Warm-paper cloud mass |
 | cloudShade | #B8C0BE | Cloud underside and dense condensed regions |
+| cloudBackA | #E2E0D9 | Cool rear cloud lobe A |
+| cloudBackB | #E8E3D7 | Warm rear cloud lobe B |
+| cloudBackC | #D9D9D4 | Cool rear cloud lobe C |
+| cloudBackD | #E4E1D9 | Warm rear cloud lobe D |
+| cloudBackE | #D7D7D2 | Lower rear cloud lobe E |
+| cloudBackF | #D3D4D0 | Lower rear cloud lobe F |
+| cloudMidA | #E9E4DA | Mid cloud lobe A |
+| cloudMidB | #E1DED5 | Mid cloud lobe B |
+| cloudMidC | #DCDAD2 | Mid cloud lobe C |
+| cloudMidD | #E7E2D9 | Mid cloud lobe D |
+| cloudMidE | #E3DFD5 | Mid cloud lobe E |
+| cloudMidF | #DDDAD1 | Mid cloud lobe F |
+| cloudFrontA | #ECE7DC | Foreground cloud lobe A |
+| cloudFrontB | #E7E2D8 | Foreground cloud lobe B |
+| cloudFrontC | #EAE5DB | Foreground cloud lobe C |
+| cloudFrontD | #E4E0D7 | Foreground cloud lobe D |
 | stormGray | #8E9DA3 | Rain shafts and heavy-cloud accents |
 | soilBody | #9A6B47 | Mineral/organic soil matrix |
 | soilDeep | #694833 | Deep soil shadow, saturated pockets |
