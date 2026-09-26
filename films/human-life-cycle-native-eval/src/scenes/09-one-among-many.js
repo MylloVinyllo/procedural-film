@@ -100,8 +100,8 @@
 
     // mid crowd
     [
-      {x:300,y:1310,s:.62,col:P.socialBlue,phase:.35},{x:720,y:1300,s:.66,col:P.ageSage,phase:.15,flip:1},
-      {x:850,y:1350,s:.55,col:P.birthRose,phase:.45},{x:220,y:1380,s:.52,col:P.ochre,phase:.05,flip:1}
+      {x:300,y:1160,s:.62,col:P.socialBlue,phase:.35},{x:720,y:1150,s:.66,col:P.ageSage,phase:.15,flip:1},
+      {x:850,y:1200,s:.55,col:P.birthRose,phase:.45},{x:220,y:1215,s:.52,col:P.ochre,phase:.05,flip:1}
     ].forEach((o,i)=>person(c,L,P,Object.assign({seed:sd('mid',i),alpha:.78},o),t));
 
     // protagonist
