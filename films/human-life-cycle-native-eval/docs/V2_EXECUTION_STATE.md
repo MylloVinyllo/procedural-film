@@ -37,48 +37,48 @@ Status: complete
 - restored the drawable Human Life Cycle art bible
 
 ### P1 — storyboard deepening
-Status: pending
+Status: complete
 - rewrite the 18-shot storyboard to worked-example depth
 - no scene code changes
 
 ### P2 — scene batch A
-Status: pending
+Status: complete
 - scenes 01–03
 - one commit
 - then one six-sample snapshot job per scene, resumed by job ID as needed
 
 ### P3 — scene batch B
-Status: pending
+Status: complete
 - scenes 04–06
 - one commit
 - then visual snapshot verification
 
 ### P4 — scene batch C
-Status: pending
+Status: complete
 - scenes 07–09
 - one commit
 - then visual snapshot verification
 
 ### P5 — scene batch D
-Status: pending
+Status: complete
 - scenes 10–12
 - one commit
 - then visual snapshot verification
 
 ### P6 — scene batch E
-Status: pending
+Status: complete
 - scenes 13–15
 - one commit
 - then visual snapshot verification
 
 ### P7 — scene batch F
-Status: pending
+Status: complete
 - scenes 16–18
 - one commit
 - then visual snapshot verification
 
 ### P8 — native whole-film checks
-Status: pending
+Status: in progress
 - one native six-check job
 - one whole-film contact-sheet job
 - inspect actual rendered frames
@@ -95,9 +95,30 @@ Status: pending
 - final master render
 - final standalone evaluation against Butterfly control
 
+## Visual QA receipts
+
+- 01 adult-hero: `02809d7b-cba0-448a-ae06-a7c3c235587c` — inspected, accepted
+- 02 cell-genesis: `94cb76c3-98ea-4626-b344-0b2abbb53d79` — inspected, accepted
+- 03 birth: `da7c86ad-d99e-4996-9eb1-57eaf510687c` — inspected, accepted
+- 04 growth-ladder: `f94cdeb6-5af1-4c64-b0b1-fe1807ac86c7` — inspected, accepted
+- 05 first-steps: `2f0c13d8-1bb1-4511-9ca4-657ac75478ff` — inspected, accepted
+- 06 learning-network: `c3ce3581-c824-4a8b-9b3c-3fe549c6d2d6` — inspected, accepted
+- 07 childhood-explore: `14551e5f-bebf-4819-af32-96dae348c8a3` — inspected, accepted
+- 08 social-salience: `a0f6b612-ff4b-4d99-9ebd-f38cdeaf1623` — inspected, accepted
+- 09 one-among-many: `7fca2920-eca6-49ec-a570-27f9305b45c5` — inspected, accepted
+- 10 social-network: `c2df2475-bebc-4a55-9c3e-715355208f1e` — inspected, accepted
+- 11 bond: initial `9e13c257-03da-4f4a-b961-fe25f5c5099f`; corrected `4d363fa2-6c0d-446f-8e6f-953c0846f544` — physical reciprocity fixed and re-inspected
+- 12 role-system: `c61ceb26-9627-43cf-9e6f-0dccdc228732` — inspected, accepted
+- 13 create-contribute: `fd49224c-8a32-41a1-b064-295fde4979a6` — inspected, accepted
+- 14 memory-field: `a6a57a68-c816-48c2-9ad9-ce37ea4468fd` — inspected, accepted
+- 15 ageing-connected: `f1799900-06ff-45c9-81a7-6df279a2602e` — inspected, accepted
+- 16 generation-spiral: `b641faaa-2905-42c4-bd7c-27f3cc8aef91` — inspected, accepted
+- 17 handoff: initial `09a5b19f-41dc-4c8a-bb38-e88764f44d36`; corrected `9520fc32-f111-44b5-a22f-53e5a7ef9bbb` — hand transfer moved into actual hands at G4 and re-inspected
+- 18 seed-loop: `45fa10a3-8ff6-471e-9891-f65286dd40e5` — inspected, accepted
+
 ## Current durable checkpoint
 
 - branch: `film/human-life-cycle-native-eval-v2`
-- latest known commit after P0: `250b8e57177640254fa30ec3edd9355d3a826c7b`
-- active runtime job: none
-- next action: P1 storyboard deepening
+- current production head: `e336be72ca39720ab5ab8e4d256f46b89d4e6cb9`
+- active runtime job: `57f1c4cf-30a5-435a-8a36-4295bfb00df0` (native six-check)
+- next action: resume that exact job; if green, launch one whole-film contact-sheet job; then native critic waves
