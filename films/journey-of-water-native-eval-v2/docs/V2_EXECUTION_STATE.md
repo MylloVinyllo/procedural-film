@@ -26,7 +26,7 @@ The production procedure is unchanged, but execution is split into resumable tra
 - Timeline: complete
 - Stub pass: complete
 - Scenes: in progress
-- Music: pending
+- Music: complete
 - Critic waves: pending
 - Deliver: pending
 
