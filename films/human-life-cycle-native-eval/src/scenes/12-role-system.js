@@ -8,15 +8,26 @@
   function progressGlyph(ctx,L,current){
     const P=L.pal;
     const cx=900,cy=300,r=72,n=18;
-    ctx.save();ctx.lineCap='round';
+    ctx.save();
+    ctx.lineCap='round';
     for(let i=0;i<n;i++){
-      const a0=-Math.PI/2+(i/n)*TAU,a1=-Math.PI/2+((i+.72)/n)*TAU;
-      ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);
-      if(i<current){ctx.strokeStyle=L.rgba(P.lavender,.28);ctx.lineWidth=2;}
-      else if(i===current){ctx.strokeStyle=P.schemCycle;ctx.lineWidth=4;}
-      else{ctx.strokeStyle=L.rgba(P.grid,.22);ctx.lineWidth=2;}
+      const a0=-Math.PI/2+(i/n)*TAU;
+      const a1=-Math.PI/2+((i+.72)/n)*TAU;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1);
+      if(i<current){
+        ctx.strokeStyle=L.rgba(P.lavender,.28);
+        ctx.lineWidth=2;
+      }else if(i===current){
+        ctx.strokeStyle=P.schemCycle;
+        ctx.lineWidth=4;
+      }else{
+        ctx.strokeStyle=L.rgba(P.grid,.22);
+        ctx.lineWidth=2;
+      }
       ctx.stroke();
-    }ctx.restore();
+    }
+    ctx.restore();
   }
 
   function tinyPerson(c,L,P,x,y,s,seed,col,alpha=1){
