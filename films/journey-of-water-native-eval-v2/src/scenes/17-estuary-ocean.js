@@ -1,14 +1,110 @@
-// STUB
-FILM.scene({
-  id:'estuary-ocean',
-  draw(ctx,t,info){
-    const L=info.lib,P=L.pal,p=L.clamp(t/info.dur),q=L.clamp(L.onTwos(t)/info.dur),seed=L.hash('estuary-ocean');
-    L.paper(ctx); L.stripes(ctx,{colors:[P.stripeCream,P.stripeSage],width:140,angle:-.52,offset:info.T*12,seed});
-    L.inkPath(ctx,L.ellipsePts(540,860,300,400,72),{closed:true,width:5,seed:seed+1,double:true});
-    L.inkLine(ctx,140,1300,940,1300,{width:3,seed:seed+2});
-    L.inkCircle(ctx,240+600*q,1230,44,{width:3,seed:seed+3,fill:P.waterBody});
-    L.text(ctx,'STUB 17',540,330,{size:60,weight:600,align:'center',color:P.annMagenta});
-    L.text(ctx,info.shot.title||'estuary-ocean',540,1420,{size:44,align:'center',color:P.ink});
-    if(p>.01)L.inkLine(ctx,140,1530,140+800*p,1530,{width:4,color:P.annBlue,seed:seed+4,taper:0});
+// 17 · Into the ocean · T 29.000–31.000
+// Illustrated estuary-to-ocean scale transition with multiple wave scales and a macro push into exact G4.
+(function(){
+  'use strict';
+  const ID='estuary-ocean',TAU=Math.PI*2;
+  const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const lerp=(a,b,p)=>a+(b-a)*p;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
+
+  function cloud(c,L,P,x,y,s,seed,alpha=.45){
+    for(let i=0;i<5;i++){
+      const cx=x+(i-2)*75*s,cy=y+Math.sin(i*.8)*18*s,rx=(90+(i%3)*20)*s,ry=(50+(i%2)*16)*s;
+      const pts=L.ellipsePts(cx,cy,rx,ry,34);
+      c.save();c.globalAlpha=alpha;c.fillStyle=P.cloudBody;c.beginPath();L.tracePath(c,pts,true);c.fill();
+      L.hatch(c,pts,{angle:.75,spacing:10,width:1,color:P.cloudShade,alpha:.22,density:.4,length:[12,38],seed:seed+i,clip:true});c.restore();
+    }
   }
-});
+
+  function reed(c,L,P,x,y,h,seed,t){
+    const sway=Math.sin(L.onTwos(t)*2+seed*.01)*10;
+    L.inkPath(c,[[x,y],[x+sway*.4,y-h*.5],[x+sway,y-h]],{color:P.leaf,width:2,alpha:.56,seed,wobble:.8,tremble:.16,taper:[4,12]});
+  }
+
+  FILM.scene({id:ID,draw(c,tIn,info){
+    const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur),q=L.onTwos(t);
+    const macro=L.seg(t,1.45,2.0,'inOutCubic');
+
+    L.paper(c,{seed:sd('paper')});
+    L.stripes(c,{colors:[P.stripeCream,P.stripeSky],width:140,angle:-.52,offset:info.T*6,seed:sd('stripes')});
+
+    // sky / horizon
+    c.save();c.fillStyle=L.rgba(P.stripeSky,.7);c.fillRect(0,220,1080,620);c.restore();
+    cloud(c,L,P,220,430,.8,sd('cloud1'),.42);cloud(c,L,P,850,360,.6,sd('cloud2'),.34);
+    // sun
+    c.save();c.globalAlpha=.75;c.fillStyle=P.sun;c.beginPath();c.arc(810,450,48,0,TAU);c.fill();c.restore();
+    for(let k=0;k<14;k++){
+      const a=k/14*TAU;
+      L.inkPath(c,[[810+Math.cos(a)*62,450+Math.sin(a)*62],[810+Math.cos(a)*86,450+Math.sin(a)*86]],{color:P.annYellow,width:1.5,alpha:.35,seed:sd('sunray',k),wobble:.3,tremble:.06});
+    }
+
+    // distant birds / scale
+    for(let i=0;i<5;i++){
+      const x=180+i*140,y=520+(i%2)*45,span=18+(i%3)*5;
+      L.inkPath(c,[[x-span,y],[x,y-7],[x+span,y]],{color:P.inkSoft,width:1.3,alpha:.35,seed:sd('bird',i),wobble:.4,tremble:.08});
+    }
+
+    // estuary water from midframe down
+    c.save();c.fillStyle=P.seaBody;c.globalAlpha=.95;c.fillRect(0,760,1080,1160);c.restore();
+
+    // river plume / mixing bands use direction, not opaque colour blocks
+    const plume=[
+      [[0,900],[220,930],[450,1000],[720,1070],[1080,1120]],
+      [[0,1020],[230,1050],[500,1130],[760,1190],[1080,1240]],
+      [[0,1160],[260,1190],[520,1280],[810,1335],[1080,1375]]
+    ];
+    plume.forEach((pts,i)=>L.inkPath(c,L.smoothPts(pts,false,4),{color:i===0?P.waterDeep:P.tealDeep,width:i===0?3:1.5,alpha:.28+.12*(i===0),seed:sd('plume',i),wobble:.25,tremble:.06,boilAmp:.1}));
+
+    // multiple wave scales
+    for(let band=0;band<7;band++){
+      const y=820+band*145;
+      const pts=[];
+      for(let x=-80;x<=1160;x+=80){
+        const amp=12+band*2;
+        pts.push([x,y+Math.sin(x/120+q*.8+band)*amp]);
+      }
+      L.inkPath(c,L.smoothPts(pts,false,3),{color:band%3===0?P.white:P.seaDeep,width:band%3===0?1.6:1.1,alpha:band%3===0?.28:.24,seed:sd('wave',band),wobble:.25,tremble:.06,boilAmp:.1});
+    }
+    // small capillary ripples around future G4 patch
+    for(let i=0;i<12;i++){
+      const r=65+i*13,a0=-.3+.04*i,a1=Math.PI+.2-.03*i;
+      L.arcAnnotation(c,540,760+230*(1-macro),r,a0,a1,{color:i%3===0?P.white:P.tealDeep,width:i%3===0?1.2:.8,p:1,alpha:.12+.1*(i%3)});
+    }
+
+    // foreground shoreline/reeds frame the water
+    const shore=[[0,1370],[150,1310],[270,1370],[340,1510],[310,1920],[0,1920]];
+    c.save();c.fillStyle=P.riverBank;c.globalAlpha=.9;c.beginPath();L.tracePath(c,shore,true);c.fill();
+    L.hatch(c,shore,{angle:.75,spacing:9,width:1.1,color:P.inkSoft,alpha:.38,density:.48,length:[14,45],seed:sd('shore'),clip:true});
+    L.inkPath(c,shore,{closed:true,color:P.inkSoft,width:2.5,seed:sd('shore-o'),wobble:.9,tremble:.18});c.restore();
+    for(let i=0;i<11;i++)reed(c,L,P,20+i*34,1720-(i%3)*18,140+(i%4)*28,sd('reed',i),t);
+
+    // local foam only at small breaking crests
+    for(let i=0;i<18;i++){
+      const x=350+i*42,y=1320+28*Math.sin(i*.7+q*.8);
+      if(i%3!==0)continue;
+      c.save();c.globalAlpha=.35;c.fillStyle=P.waterFoam;c.beginPath();c.arc(x,y,3+(i%4),0,TAU);c.fill();c.restore();
+    }
+
+    // tracer becomes tiny within the reservoir and then visually subordinate
+    const hero=L.seg(t,.05,1.05,'inOutCubic');
+    if(hero>0){
+      const x=lerp(250,690,hero),y=lerp(1050,1180,hero);
+      L.inkPath(c,[[x-80,y-16],[x,y],[x+100,y+18]],{color:P.annBlue,width:2.4,alpha:.45*(1-.4*hero),seed:sd('hero-line'),wobble:.12,tremble:.03,taper:[5,10]});
+      L.glowDot(c,x,y,lerp(7,4,hero),{color:P.schemCycle,core:P.glow,rays:0,seed:sd('hero'),intensity:.65,glow:2,twinkle:.02});
+    }
+
+    // solar-energy cue before macro transition
+    const sun=L.seg(t,.75,1.45,'outExpo');
+    if(sun>0)L.arcAnnotation(c,810,450,310,2.2,3.75,{color:P.annYellow,width:2,p:sun,arrow:9,alpha:.38});
+
+    // G4 macro push: world recedes, exact screen-space guide appears over sunlit surface patch.
+    if(macro>0){
+      c.save();c.globalAlpha=.08+.18*macro;c.fillStyle=P.waterPale;c.beginPath();c.arc(540,760,165+120*macro,0,TAU);c.fill();c.restore();
+      L.guideCircle(c,540,760,165,{color:P.annYellow,alpha:.18+.36*macro,width:2,dash:[5,8]});
+      for(let i=0;i<9;i++){
+        const y=700+i*18;
+        L.inkPath(c,[[400,y],[680,y+5*Math.sin(i)]],{color:i%3===0?P.white:P.tealDeep,width:1.1,alpha:.16+.2*macro,seed:sd('macro-ripple',i),wobble:.16,tremble:.04});
+      }
+    }
+  }});
+})();
