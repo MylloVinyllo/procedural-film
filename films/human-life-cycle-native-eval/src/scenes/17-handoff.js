@@ -32,7 +32,7 @@
     if(o.hero)L.hatch(c,torso,{spacing:10*s,angle:-.8,length:[14*s,40*s],density:(hx)=>clamp((hx+10*s)/(105*s))*.5,color:deep,alpha:.4,width:1*s,seed:seed+11});
     fill(c,L,[[-50*s,-232*s],[-56*s,-198*s],[-42*s,-175*s],[43*s,-175*s],[53*s,-202*s],[48*s,-232*s]],deep,seed+12,3.2*s);
     // reaching arm toward centre
-    const sh=[side*70*s,shoulderY],el=[side*(95+45*reach)*s,(-315-120*reach)*s],wr=[side*(100+120*reach)*s,(-235-385*reach)*s];
+    const sh=[side*70*s,shoulderY],el=[side*(95+45*reach)*s,(-315-60*reach)*s],wr=[side*(100+120*reach)*s,(-235-150*reach)*s];
     fill(c,L,limb(...sh,...el,18*s,13*s),col,seed+13,2.9*s);
     fill(c,L,limb(...el,...wr,13*s,9*s),P.selfPale,seed+14,2.4*s);
     fill(c,L,hand(wr[0],wr[1],side*(.2-.55*reach),.72*s),P.selfPale,seed+15,2.1*s);
@@ -81,11 +81,6 @@
     const old=figure(c,L,P,{x:365,y:1435,s:.80,col:L.mix(P.selfWarm,P.ageSage,.2),deep:P.selfDeep,seed:sd('old'),side:1,reach:a,old:true,hero:true});
     const kid=figure(c,L,P,{x:715,y:1430,s:.68,col:P.childSky,deep:P.socialDeep,seed:sd('kid'),side:-1,reach:b,child:true});
 
-    // soft middle adult behind
-    c.save();c.globalAlpha=.28;c.translate(560,1140);
-    fill(c,L,ell(0,-210,34,41,0,22),P.selfPale,sd('mhead'),2,.75);
-    fill(c,L,[[-54,-160],[-32,-185],[26,-182],[56,-155],[44,80],[-45,80]],P.birthRose,sd('mtorso'),2.5,.7);c.restore();
-
     // exact G4 lives between hands
     const g=L.seg(t,.18,.55,'outBack');
     const release=L.seg(t,.5,.82,'outExpo');
@@ -96,14 +91,10 @@
     // child's new trajectory begins after receipt, separate from older path
     const p=L.seg(t,.72,1.22,'outExpo');
     if(p>0){
-      const pts=[[730,1410],[790,1370],[850,1320],[910,1240]];
+      const pts=[[730,1170],[790,1135],[850,1095],[910,1035]];
       const n=Math.max(2,Math.round(pts.length*p));
       ink(c,L,pts.slice(0,n),P.selfWarm,sd('newpath'),3.2,.62,[8,16]);
     }
-
-    // middle adult contact
-    const touch=L.seg(t,.72,1.0,'outBack');
-    if(touch>0)L.arcAnnotation(c,650,1090,120,2.2,3.45,{color:P.annBlue,width:1.9,p:touch,arrow:8,alpha:.38});
 
     // point lifts and expands toward G1
     const e=L.seg(t,1.05,1.5,'outExpo');
