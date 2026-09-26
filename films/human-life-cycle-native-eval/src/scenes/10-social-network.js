@@ -97,6 +97,7 @@
       c.save();c.strokeStyle=P.schemCycle;c.lineWidth=4;c.globalAlpha=.9*ex;
       c.beginPath();c.moveTo(540,820);c.quadraticCurveTo(655,845,760,955);c.quadraticCurveTo(825,1010,890,980);c.stroke();c.restore();
     }
+    c.restore();
     progressGlyph(c,L,9);
   }});
 })();
