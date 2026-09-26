@@ -36,7 +36,7 @@
   }
 
   function mainDrop(c,L,P,grow){
-    const rx=105+grow*8,ry=90+grow*5,pts=dropShape(540,720,rx,ry,.52);
+    const rx=105,ry=90,pts=dropShape(540,720,rx,ry,.52);
     // subtle interior lattice and stipple to make this a system rather than an icon
     c.save();c.globalAlpha=.18;
     L.hexLattice(c,pts,{r:14,jitter:1.2,width:.8,color:P.lavender,alpha:.42,seed:sd('g1-hex'),boilAmp:.08,clip:true});
