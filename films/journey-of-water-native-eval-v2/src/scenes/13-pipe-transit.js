@@ -96,6 +96,15 @@
       L.inkPath(c,L.smoothPts(pts.slice(0,n),false,4),{color:P.waterPale,width:20,alpha:.62,seed:sd('branch-water'),wobble:.45,tremble:.08,taper:[10,20]});
     }
 
+    // Match-cut entry: canonical G3 is present on the first frame and dissolves into the live pipe flow.
+    const entry=1-L.seg(t,0,.34,'outQuad');
+    if(entry>0){
+      c.save();c.globalAlpha=.76*entry;c.strokeStyle=P.annBlue;c.lineWidth=3;c.beginPath();
+      c.moveTo(300,920);c.bezierCurveTo(420,900,650,940,780,920);c.stroke();c.restore();
+      L.glowDot(c,540,920,8,{color:P.schemCycle,core:P.glow,rays:0,seed:sd('g3-entry'),intensity:.86*entry,glow:3,twinkle:.01});
+      L.guideCircle(c,540,920,58,{color:P.annYellow,alpha:.16*entry,width:1.4,dash:[4,7]});
+    }
+
     // G3 hero streamline stays distinguishable from the general flow
     const hero=L.seg(t,.05,1.35,'inOutCubic');
     const hpts=[[300,920],[420,915],[540,920],[650,925],[760,915],[880,875],[1010,790]];
