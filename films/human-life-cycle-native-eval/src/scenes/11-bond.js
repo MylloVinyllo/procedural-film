@@ -31,8 +31,8 @@
     // outer arm
     const side=o.side;
     const sh=[side*74*s,shoulderY];
-    const el=[side*(105-22*ext)*s,-335*s];
-    const wr=[side*(112-78*ext)*s,-264*s-10*ext*s];
+    const el=[side*(105+42*ext)*s,-335*s-10*ext*s];
+    const wr=[side*(112+118*ext)*s,-264*s-26*ext*s];
     fill(c,L,limb(...sh,...el,20*s,15*s),col,seed+13,3*s);
     fill(c,L,limb(...el,...wr,15*s,11*s),P.selfPale,seed+14,2.6*s);
     fill(c,L,hand(wr[0],wr[1],side*(.2-.45*ext),.72*s),P.selfPale,seed+15,2.2*s);
@@ -75,8 +75,8 @@
     environment(c,L,P);
     const a=L.seg(t,.32,.85,'inOutCubic');
     const b=L.seg(t,.82,1.35,'inOutCubic');
-    person(c,L,P,{x:360,y:1415,s:.78,col:P.selfWarm,deep:P.selfDeep,seed:sd('hero'),side:1,extend:a,lean:-.03,hero:true},t);
-    person(c,L,P,{x:720,y:1410,s:.76,col:P.socialBlue,deep:P.socialDeep,seed:sd('other'),side:-1,extend:b,lean:.025},t);
+    person(c,L,P,{x:385,y:1415,s:.78,col:P.selfWarm,deep:P.selfDeep,seed:sd('hero'),side:1,extend:a,lean:-.03,hero:true},t);
+    person(c,L,P,{x:695,y:1410,s:.76,col:P.socialBlue,deep:P.socialDeep,seed:sd('other'),side:-1,extend:b,lean:.025},t);
 
     // reciprocal physical exchange
     const p=L.seg(t,.35,1.35,'outExpo');
