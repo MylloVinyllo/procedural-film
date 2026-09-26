@@ -68,13 +68,13 @@
       const drift=10*Math.sin(q*(.7+depth)+phase);
       let x=540+Math.cos(a)*rad+Math.cos(a+Math.PI/2)*drift;
       let y=720+Math.sin(a)*rad*.83+Math.sin(a+Math.PI/2)*drift*.65;
-      const base=2+r()*6.5;
-      const rr=base*(.75+.25*depth);
+      const base=2.5+r()*8.5;
+      const rr=base*(.8+.35*depth);
       const nucleus=i%4===0;
       c.save();
-      c.globalAlpha=.18+.44*depth;
-      c.strokeStyle=i%7===0?P.schemWater:P.lavender;
-      c.lineWidth=.7+depth*.65;
+      c.globalAlpha=.28+.52*depth;
+      c.strokeStyle=i%5===0?P.schemWater:P.lavender;
+      c.lineWidth=.85+depth*.75;
       c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();
       if(nucleus){
         c.fillStyle=P.aerosolDust;
@@ -82,6 +82,20 @@
       }
       c.restore();
     }
+
+    // Mid-scale droplets remain readable at quarter scale and make the field feel populated.
+    const rrng=L.rng(sd('mid-drops'));
+    for(let i=0;i<28;i++){
+      const a=rrng()*TAU,rad=210+rrng()*390,qd=L.onTwos(t);
+      const x=540+Math.cos(a)*rad+Math.sin(qd*.9+i)*7;
+      const y=720+Math.sin(a)*rad*.78+Math.cos(qd*.8+i*.7)*5;
+      const rr=10+rrng()*18;
+      c.save();c.globalAlpha=.34+.12*(i%3);c.strokeStyle=i%4===0?P.schemWater:P.lavender;c.lineWidth=1.1+(i%3)*.25;
+      c.beginPath();c.arc(x,y,rr,0,TAU);c.stroke();
+      if(i%6===0){c.fillStyle=P.aerosolDust;c.globalAlpha=.55;c.beginPath();c.arc(x,y,2.2,0,TAU);c.fill();}
+      c.restore();
+    }
+    [165,235,320].forEach((rad,i)=>L.guideCircle(c,540,720,rad,{color:i===0?P.schemWater:P.lavender,alpha:i===0?.16:.08,width:i===0?1.5:1,dash:i?[4,10]:[6,8]}));
 
     // Three coherent curved inflow bands explain how material reaches the hero drop.
     const bands=[
@@ -129,14 +143,31 @@
 
     mainDrop(c,L,P,grow);
 
-    // One aerosol-nucleus inset, with shell and radial ticks.
+    // Two macro insets: condensation nucleus and coalescence. They add explanatory density without text.
     const insetP=L.seg(t,.2,.55,'outBack');
     if(insetP>0){
       const x=215,y=1240;
-      L.guideCircle(c,x,y,56,{color:P.lavender,alpha:.42*insetP,width:1.5});
-      c.save();c.globalAlpha=.8*insetP;c.fillStyle=P.aerosolDust;c.beginPath();c.arc(x,y,5,0,TAU);c.fill();c.restore();
-      L.ticks(c,x,y,{r:74,n:16,len:8,major:4,majorLen:14,color:P.lineWhite,alpha:.28*insetP,width:1});
-      L.bracket(c,145,1360,285,1360,{color:P.lavender,alpha:.42*insetP,width:1.3,tick:12});
+      L.guideCircle(c,x,y,92,{color:P.lavender,alpha:.18+.28*insetP,width:1.5});
+      L.guideCircle(c,x,y,48,{color:P.schemWater,alpha:.35*insetP,width:1.4});
+      c.save();c.globalAlpha=.88*insetP;c.fillStyle=P.aerosolDust;c.beginPath();c.arc(x,y,6,0,TAU);c.fill();c.restore();
+      L.ticks(c,x,y,{r:112,n:20,len:8,major:5,majorLen:16,color:P.lineWhite,alpha:.26*insetP,width:1});
+      L.bracket(c,120,1370,310,1370,{color:P.lavender,alpha:.42*insetP,width:1.3,p:insetP});
+    }
+
+    const coal=L.seg(t,.55,1.35,'inOutCubic');
+    if(coal>0){
+      const x=820,y=1260;
+      L.guideCircle(c,x,y,122,{color:P.lavender,alpha:.18+.18*coal,width:1.2,dash:[4,8]});
+      const sep=lerp(72,14,coal);
+      const r1=42+10*coal,r2=35+8*coal;
+      c.save();c.globalAlpha=.45+.45*coal;c.strokeStyle=P.schemWater;c.lineWidth=1.8;
+      c.beginPath();c.arc(x-sep,y,r1,0,TAU);c.stroke();
+      c.beginPath();c.arc(x+sep*.85,y+5,r2,0,TAU);c.stroke();c.restore();
+      if(coal>.65){
+        const m=clamp((coal-.65)/.35);
+        L.guideCircle(c,x,y,54+18*m,{color:P.magenta,alpha:.36*(1-m),width:2.2,quadrants:8});
+      }
+      L.bracket(c,690,1415,950,1415,{color:P.lavender,alpha:.34*coal,width:1.2,p:coal});
     }
 
     // Downward direction appears only late, preparing the mechanics shot.
