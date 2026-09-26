@@ -1,91 +1,150 @@
-// 18 Again · T 30.5–32.0
-// Layers: blueprint base → G1/founding core → whole-film memory fragments → progress glyph → wordmark.
+// 18 · Again · T 30.500–32.000
+// Layers: blueprint · incoming G1 · received continuity seed · growth lattice · cycle glyph · closing wordmark
 (function(){
   'use strict';
   const ID='seed-loop',TAU=Math.PI*2;
-  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const lerp=(a,b,p)=>a+(b-a)*p;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
 
-  function progressGlyph(ctx,L,n){
-    const P=L.pal,cx=900,cy=300,r=72;
-    ctx.save();ctx.lineCap='round';
-    for(let i=0;i<18;i++){
-      const a0=-Math.PI/2+i*TAU/18,a1=-Math.PI/2+(i+.72)*TAU/18;
-      ctx.strokeStyle=i<n?P.lavender:(i===n?P.schemCycle:P.grid);
-      ctx.globalAlpha=i<n?.28:(i===n?1:.22);ctx.lineWidth=i===n?4:2;
-      ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);ctx.stroke();
-    }ctx.restore();
+  // Canonical progress glyph. Copy this function byte-for-byte into every schematic scene.
+  function progressGlyph(ctx,L,current){
+    const P=L.pal;
+    const cx=900,cy=300,r=72,n=18;
+    ctx.save();
+    ctx.lineCap='round';
+    for(let i=0;i<n;i++){
+      const a0=-Math.PI/2+(i/n)*TAU;
+      const a1=-Math.PI/2+((i+.72)/n)*TAU;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1);
+      if(i<current){
+        ctx.strokeStyle=L.rgba(P.lavender,.28);
+        ctx.lineWidth=2;
+      }else if(i===current){
+        ctx.strokeStyle=P.schemCycle;
+        ctx.lineWidth=4;
+      }else{
+        ctx.strokeStyle=L.rgba(P.grid,.22);
+        ctx.lineWidth=2;
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
   }
-  function line(c,p,col,w=2,a=1,dash=null){
-    c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.lineCap='round';c.lineJoin='round';if(dash)c.setLineDash(dash);
-    c.beginPath();c.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)c.lineTo(p[i][0],p[i][1]);c.stroke();c.restore();
+
+  function membrane(c,L,P,cx,cy,rx,ry,seed,a=1){
+    const pts=[];
+    const bi=L.boil(L.T);
+    for(let i=0;i<72;i++){
+      const u=i/72*TAU;
+      const wob=Math.sin(u*3+bi*.11)*2+Math.sin(u*7-bi*.07)*.9;
+      pts.push([cx+Math.cos(u)*(rx+wob),cy+Math.sin(u)*(ry+wob*.65)]);
+    }
+    L.inkPath(c,pts,{closed:true,color:P.lineWhite,alpha:.72*a,width:2.2,seed,wobble:.6,tremble:.15,boilAmp:.2,double:{offset:9,width:1.1,alpha:.35,seed:seed+1}});
   }
-  function fragment(c,P,type,a,rot,r){
-    const x=540+Math.cos(rot)*r,y=700+Math.sin(rot)*r*.85;
-    c.save();c.translate(x,y);c.rotate(rot+.4);c.globalAlpha=a;c.strokeStyle=P.memoryViolet;c.lineWidth=1.6;c.lineCap='round';
-    if(type===0){c.beginPath();c.arc(0,0,42,2.5,5.2);c.stroke();line(c,[[-25,34],[0,48],[28,36]],P.memoryViolet,1.1,a);}
-    else if(type===1){c.beginPath();c.moveTo(-42,15);c.quadraticCurveTo(-8,-28,45,2);c.stroke();for(let k=0;k<3;k++)line(c,[[8+k*9,-3],[24+k*7,15]],P.memoryViolet,1,a*.65);}
-    else if(type===2){for(const q of [[-22,-8,9],[8,-18,12],[25,12,8],[-5,22,7]]){c.beginPath();c.arc(q[0],q[1],q[2],0,TAU);c.stroke();}line(c,[[-18,-5],[5,-15],[21,9]],P.memoryViolet,1,a*.6);}
-    else if(type===3){line(c,[[-45,18],[45,18]],P.memoryViolet,1.7,a);line(c,[[-34,18],[-38,47]],P.memoryViolet,1,a);line(c,[[34,18],[38,47]],P.memoryViolet,1,a);c.strokeRect(-13,-6,26,20);}
-    else {c.beginPath();c.ellipse(0,0,15,26,.25,0,TAU);c.stroke();line(c,[[0,23],[16,45]],P.memoryViolet,1,a);}
+
+  function daughter(c,L,P,x,y,r,seed,a=1){
+    membrane(c,L,P,x,y,r,r*.92,seed,a);
+    const clip=L.ellipsePts(x,y,r-10,r*.92-10,40);
+    L.hexLattice(c,clip,{r:12,width:.8,color:P.lavender,alpha:.11*a,jitter:.4,seed:seed+2,boilAmp:.12});
+    L.stipple(c,clip,{spacing:15,r:[.5,1.1],density:.26,color:P.paleBlue,alpha:.12*a,seed:seed+3,boilAmp:.12});
+    L.glowDot(c,x,y,7,{color:P.schemSelf,core:P.glow,rays:6,seed:seed+4,intensity:.55+.45*a,glow:4,twinkle:.03});
+  }
+
+  function traceHistory(c,L,P,t){
+    // very faint echoes from prior geometric contracts, converging on G1
+    c.save();
+    c.strokeStyle=L.rgba(P.lavender,.13);
+    c.lineWidth=1;
+    c.setLineDash([4,9]);
+
+    // G2 head echo
+    c.beginPath();c.ellipse(310,1120,72,92,0,0,TAU);c.stroke();
+    // G3 social node echo
+    c.beginPath();c.arc(790,1080,48,0,TAU);c.stroke();
+    // G4 handoff echo
+    c.beginPath();c.arc(540,1380,18,0,TAU);c.stroke();
+
+    [[310,1120],[790,1080],[540,1380]].forEach((p,i)=>{
+      c.beginPath();c.moveTo(p[0],p[1]);c.quadraticCurveTo(540,980-i*45,540,700);c.stroke();
+    });
     c.restore();
   }
 
-  FILM.scene({id:ID,draw(c,tIn,info){
-    const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.blueprint(c,{seed:18001});
+  FILM.scene({
+    id:ID,
+    draw(c,tIn,info){
+      const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
 
-    // structural guide field
-    for(const r of [184,280,390]){c.save();c.strokeStyle=P.lavender;c.lineWidth=1;c.globalAlpha=.08;c.beginPath();c.arc(540,700,r,0,TAU);c.stroke();c.restore();}
-    line(c,[[190,350],[890,1050]],P.lavender,1,.06,[10,14]);
-    line(c,[[205,1080],[875,360]],P.lavender,1,.05,[10,14]);
-    for(let k=0;k<24;k++){
-      const a=k*TAU/24,r0=405,r1=k%3===0?430:418;
-      line(c,[[540+Math.cos(a)*r0,700+Math.sin(a)*r0],[540+Math.cos(a)*r1,700+Math.sin(a)*r1]],P.lavender,1,k%3===0?.25:.12);
-    }
+      L.blueprint(c,{seed:sd('blueprint'),center:[540,700],circles:6,diagonals:5});
+      traceHistory(c,L,P,t);
 
-    // G1 arrives already complete from shot 17
-    c.save();c.strokeStyle=P.schemCycle;c.lineWidth=3;c.globalAlpha=.9;c.beginPath();c.arc(540,700,150,0,TAU);c.stroke();
-    c.globalAlpha=.24;c.lineWidth=1.2;c.beginPath();c.arc(540,700,184,0,TAU);c.stroke();c.restore();
+      // Exact incoming G1, screen-fixed and already present on frame zero.
+      L.guideCircle(c,540,700,184,{color:P.lavender,alpha:.18,width:1.4,dash:[5,8]});
+      L.guideCircle(c,540,700,150,{color:P.lineWhite,alpha:.72,width:2.2});
+      L.ticks(c,540,700,{r:150,n:24,len:8,major:6,majorLen:16,color:P.lineWhite,alpha:.38,width:1.1});
 
-    // central founding core
-    const core=clamp((t-.15)/.22);
-    if(core>0){
-      c.save();c.globalAlpha=core;c.fillStyle=P.glow;c.strokeStyle=P.schemCycle;c.lineWidth=2.5;c.shadowColor=P.glow;c.shadowBlur=20;
-      c.beginPath();c.arc(540,700,24,0,TAU);c.fill();c.stroke();c.restore();
-      for(let k=0;k<12;k++){const a=k*TAU/12;line(c,[[540+Math.cos(a)*38,700+Math.sin(a)*38],[540+Math.cos(a)*55,700+Math.sin(a)*55]],P.lineWhite,1.2,.58*core);}
-    }
+      // received seed arrives as the same gold continuity point, then becomes biological possibility
+      const seedLift=L.seg(t,0,.35,'outBack');
+      const sx=lerp(540,540,seedLift),sy=lerp(920,700,seedLift);
+      L.glowDot(c,sx,sy,8,{color:P.schemCycle,core:P.glow,rays:8,seed:sd('seed'),intensity:.65+.35*seedLift,glow:4.4,twinkle:.03});
 
-    // whole-film fragments orbit and settle
-    const settle=clamp((t-.80)/.45);
-    for(let i=0;i<20;i++){
-      const type=i%5,base=i*TAU/20+.2*Math.sin(i*1.9),rot=base+(1-settle)*.22*Math.sin(t*1.5+i);
-      const r=240+(i%4)*45-25*settle;
-      const a=(.12+(i%3)*.05)*(1-.30*settle);
-      fragment(c,P,type,a,rot,r);
-    }
+      // one founding cell gathers around the point
+      const gather=L.seg(t,.18,.55,'outExpo');
+      if(gather>0){
+        const r=lerp(16,118,gather);
+        membrane(c,L,P,540,700,r,r*.94,sd('mother'),gather);
+        const clip=L.ellipsePts(540,700,Math.max(8,r-12),Math.max(8,r*.94-12),42);
+        L.stipple(c,clip,{spacing:17,r:[.5,1.2],density:.28*gather,color:P.paleBlue,alpha:.13+.12*gather,seed:sd('mother-stipple'),boilAmp:.12});
+      }
 
-    // division flash and two daughter cores
-    const div=clamp((t-.72)/.18);
-    if(div>0){
-      c.save();c.strokeStyle=P.magenta;c.lineWidth=3;c.globalAlpha=(1-div)*.9;c.beginPath();c.arc(540,700,80+80*div,0,TAU);c.stroke();c.restore();
-      const sep=38*div;
-      for(const sx of [-sep,sep]){
-        c.save();c.fillStyle=P.glow;c.strokeStyle=P.schemSelf;c.lineWidth=1.8;c.globalAlpha=.9;c.beginPath();c.arc(540+sx,700,14,0,TAU);c.fill();c.stroke();c.restore();
+      // closing division, mirroring shot 02 without claiming literal repetition of the same person
+      const div=L.seg(t,.78,1.18,'outBack');
+      if(div>0){
+        const sep=lerp(0,62,div);
+        c.save();c.globalAlpha=1-L.seg(t,.78,.92,'outQuad');
+        membrane(c,L,P,540,700,118,112,sd('mother-fade'),1);
+        c.restore();
+        daughter(c,L,P,540-sep,700,66,sd('d0'),div);
+        daughter(c,L,P,540+sep,700,66,sd('d1'),div);
+
+        const flash=t-.78;
+        if(flash>=0&&flash<.25){
+          const fp=clamp(flash/.25);
+          L.guideCircle(c,540,700,55+105*L.ease.outExpo(fp),{color:P.magenta,alpha:(1-fp)*.62,width:2.5,quadrants:8});
+        }
+      }
+
+      // cycle geometry resets to opening state rather than merely placing a decorative circle at the end
+      const reset=L.seg(t,.95,1.42,'outExpo');
+      if(reset>0){
+        L.guideCircle(c,540,700,150+34*reset,{color:P.schemCycle,alpha:.22+.28*reset,width:1.6,dash:[6,8]});
+        c.save();
+        c.strokeStyle=P.schemCycle;
+        c.lineWidth=2.2;
+        c.globalAlpha=.3+.55*reset;
+        c.beginPath();
+        c.arc(540,700,222,-Math.PI*.85,-Math.PI*.85+TAU*.84*reset);
+        c.stroke();
+        const a=-Math.PI*.85+TAU*.84*reset;
+        const ex=540+Math.cos(a)*222,ey=700+Math.sin(a)*222;
+        c.fillStyle=P.schemCycle;
+        c.beginPath();
+        c.moveTo(ex+Math.cos(a+Math.PI/2)*11,ey+Math.sin(a+Math.PI/2)*11);
+        c.lineTo(ex+Math.cos(a)*18,ey+Math.sin(a)*18);
+        c.lineTo(ex+Math.cos(a-Math.PI/2)*11,ey+Math.sin(a-Math.PI/2)*11);
+        c.closePath();c.fill();
+        c.restore();
+      }
+
+      progressGlyph(c,L,17);
+
+      // native closing wordmark, deliberately the only schematic text in the film
+      const wm=L.seg(t,1.0,1.42,'outQuad');
+      if(wm>0){
+        L.text(c,'human',540,1470,{size:44,weight:300,color:P.lavender,alpha:.84*wm,align:'center',baseline:'alphabetic',tracking:'0.12em'});
       }
     }
-
-    progressGlyph(c,L,17);
-
-    // Closing wordmark, only text in schematic language.
-    const kWord=clamp((t-1.08)/.28);
-    if(kWord>0){
-      L.text(c,'human',540+0.06*44,1470,{size:44,weight:300,tracking:'0.12em',color:P.lavender,alpha:.85*kWord,align:'center'});
-    }
-
-    // final clean G1 hold for the loop
-    const hold=clamp((t-1.25)/.20);
-    if(hold>0){
-      c.save();c.strokeStyle=P.schemCycle;c.lineWidth=3;c.globalAlpha=.9;c.beginPath();c.arc(540,700,150,0,TAU);c.stroke();c.restore();
-    }
-  }});
+  });
 })();
