@@ -78,18 +78,18 @@ Status: complete
 - then visual snapshot verification
 
 ### P8 — native whole-film checks
-Status: in progress
+Status: complete
 - one native six-check job
 - one whole-film contact-sheet job
 - inspect actual rendered frames
 
 ### P9 — critic waves
-Status: pending
+Status: complete
 - apply only native Procedural Film critic criteria
 - correction commits are bounded and separately verified
 
 ### P10 — preview / audio / master
-Status: pending
+Status: complete
 - audio QA
 - preview render
 - final master render
@@ -116,9 +116,28 @@ Status: pending
 - 17 handoff: initial `09a5b19f-41dc-4c8a-bb38-e88764f44d36`; corrected `9520fc32-f111-44b5-a22f-53e5a7ef9bbb` — hand transfer moved into actual hands at G4 and re-inspected
 - 18 seed-loop: `45fa10a3-8ff6-471e-9891-f65286dd40e5` — inspected, accepted
 
-## Current durable checkpoint
+## Final delivery receipts
+
+- production commit: `f80f4b4d2f90e13684cb460829ac1bbce2ba5724`
+- final native six-check: `ef4863da-92a9-472f-ae2f-cba5f81d6510` — PASS 6/6
+- final whole-film 24-sample sheet: `0ad47278-ec9c-40fd-8d20-12bdd89fee8f`
+- critic report: `docs/V2_CRITIC_REPORT.md`
+- audio QA: `54983664-97e6-44ea-a3f4-85f7cfed1170`
+- preview: `8a7b1b4b-f358-4677-9ddf-bbe52bf8e3a8/output/preview.mp4`, SHA-256 `b53473fff8bd576da822ddf488f22260fc5d2355fc193c7d8e4b9c04c5aefa4c`
+- master: `23227771-2424-4608-b1b7-06feef20642b/output/master.mp4`, 1080×1920, 32.000 s, 768 frames, SHA-256 `4f396d691ed749a842f9084762dc62f1bc3f91492aa02127148d54f3113af1d2`
+- final HTML player: `df390f0c-91e5-4b7e-bb60-60f5ec23dc8c/output/dist/human-life-cycle-native-eval.html`, SHA-256 `23ce1a6dd3fca6e2138b544b629e35fe9042394b5d4e78daa5fb86c90541b4b3`
+- shot captions: `exports/human-life-cycle-native-eval-shots.md`
+
+## Final critic corrections
+
+- scene 09: foreground passer rebuilt and social field re-staged;
+- scene 11: reciprocal relation reads through body/hand action;
+- scene 17: ambiguous ghost/high-five staging removed; G4 transfers between actual hands.
+
+## Final durable checkpoint
 
 - branch: `film/human-life-cycle-native-eval-v2`
-- current production head: `e336be72ca39720ab5ab8e4d256f46b89d4e6cb9`
-- active runtime job: `57f1c4cf-30a5-435a-8a36-4295bfb00df0` (native six-check)
-- next action: resume that exact job; if green, launch one whole-film contact-sheet job; then native critic waves
+- production commit: `f80f4b4d2f90e13684cb460829ac1bbce2ba5724`
+- native workflow: Steps 0–10 complete
+- active runtime job: none
+- next action: human viewing and comparison against Butterfly Life
