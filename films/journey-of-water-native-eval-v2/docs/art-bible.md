@@ -1,4 +1,4 @@
-# Art bible: <FILM TITLE>
+# Art bible: The Journey of Water
 
 The visual rules every scene follows.
 Where this file and a scene brief disagree on a colour, weight or rule, this file wins.
