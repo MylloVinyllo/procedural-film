@@ -77,7 +77,7 @@
     // work object changes from parts to assembled small form
     const ox=545,oy=1015;
     poly(c,[[ox-70,oy-12],[ox-8,oy-55],[ox+15,oy-5],[ox-40,oy+36]],P.childSky,P.ink,2,.88);
-    poly(c,[[ox+8,oy-42],[ox+62,oy-22],[ox+48,oy+36],[ox-2,oy+10]],finish>P.EPS?P.memoryViolet:P.ageSage,P.ink,2,.88);
+    poly(c,[[ox+8,oy-42],[ox+62,oy-22],[ox+48,oy+36],[ox-2,oy+10]],finish>.5?P.memoryViolet:P.ageSage,P.ink,2,.88);
     if(finish>0)ell(c,ox+2,oy-4,18+18*finish,18+18*finish,null,P.cycleGold,2.2,.55*finish);
 
     hand(c,P,a.hx,a.hy,.80,-.35,P.selfPale);
