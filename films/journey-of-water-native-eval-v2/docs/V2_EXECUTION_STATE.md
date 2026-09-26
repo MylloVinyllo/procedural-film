@@ -25,7 +25,7 @@ The production procedure is unchanged, but execution is split into resumable tra
 - Storyboard: complete
 - Timeline: complete
 - Stub pass: complete
-- Scenes: pending
+- Scenes: in progress
 - Music: pending
 - Critic waves: pending
 - Deliver: pending
@@ -46,3 +46,11 @@ The production procedure is unchanged, but execution is split into resumable tra
 - stub-film native check: `12d01902-3cbc-489a-be09-1620831c13fd` — PASS 6/6
 - active runtime job: `4b0f3b2f-f8fb-46c5-86eb-94d99f22a6b0` (36 s half-scale stub preview render)
 - next action after this exact job: inspect the stub preview sequence, then begin dense scene implementation with per-shot six-frame QA
+
+## Dense scene implementation
+
+- dense scene batch A (01–03): implemented and six-frame reviewed
+  - 01 cloud-hero: accepted after cloud-volume/parallax correction
+  - 02 condensation-micro: accepted after density/process-inset correction
+  - 03 drop-growth: accepted on six-frame review
+- next: dense scene batch B (04–06)
