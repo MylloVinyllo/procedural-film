@@ -1,132 +1,183 @@
-// 04 Growth · T 5.5–8.0
-// Layers: blueprint base → measurement field → staged human constructions → proportion guides → progress glyph.
+// 04 · Growth · T 5.500–8.000
+// Layers: blueprint · measurement spine · four age silhouettes · proportion guides · canonical progress glyph
 (function(){
   'use strict';
   const ID='growth-ladder',TAU=Math.PI*2;
-  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-  const smooth=(u)=>{u=clamp(u);return u*u*(3-2*u);};
+  const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+  const lerp=(a,b,p)=>a+(b-a)*p;
+  const sd=(...k)=>FILM.lib.hash(ID,...k)&0x7fffffff;
 
-  function line(c,pts,col,w=2,a=1,dash=null){
-    c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.lineCap='round';c.lineJoin='round';if(dash)c.setLineDash(dash);
-    c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)c.lineTo(pts[i][0],pts[i][1]);c.stroke();c.restore();
-  }
-  function ell(c,x,y,rx,ry,col,w=2,a=1,rot=0){
-    c.save();c.strokeStyle=col;c.lineWidth=w;c.globalAlpha=a;c.beginPath();c.ellipse(x,y,rx,ry,rot,0,TAU);c.stroke();c.restore();
-  }
-  function prog(c,L,n){
-    const P=L.pal,cx=900,cy=300,r=72;
-    c.save();c.lineCap='round';
-    for(let i=0;i<18;i++){
-      c.strokeStyle=i<n?P.lavender:(i===n?P.schemCycle:P.grid);
-      c.globalAlpha=i<n?.28:(i===n?1:.22);c.lineWidth=i===n?4:2;
-      c.beginPath();c.arc(cx,cy,r,-Math.PI/2+i*TAU/18,-Math.PI/2+(i+.72)*TAU/18);c.stroke();
-    } c.restore();
-  }
-
-  function field(c,P){
-    // Main vertical spine
-    line(c,[[195,1320],[195,355]],P.lineWhite,1.6,.62);
-    for(let k=0;k<43;k++){
-      const y=1320-k*22;
-      const long=k%5===0;
-      line(c,[[195-(long?32:18),y],[195+(long?32:18),y]],P.lavender,long?1.7:1,.25+(long?.2:0));
+  // Canonical progress glyph. Copy this function byte-for-byte into every schematic scene.
+  function progressGlyph(ctx,L,current){
+    const P=L.pal;
+    const cx=900,cy=300,r=72,n=18;
+    ctx.save();
+    ctx.lineCap='round';
+    for(let i=0;i<n;i++){
+      const a0=-Math.PI/2+(i/n)*TAU;
+      const a1=-Math.PI/2+((i+.72)/n)*TAU;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1);
+      if(i<current){
+        ctx.strokeStyle=L.rgba(P.lavender,.28);
+        ctx.lineWidth=2;
+      }else if(i===current){
+        ctx.strokeStyle=P.schemCycle;
+        ctx.lineWidth=4;
+      }else{
+        ctx.strokeStyle=L.rgba(P.grid,.22);
+        ctx.lineWidth=2;
+      }
+      ctx.stroke();
     }
-    // Horizontal construction baselines
-    for(const y of [1260,1110,930,720,520]){
-      line(c,[[260,y],[910,y]],P.grid,1,.18,[8,10]);
-    }
-    // Faint envelopes
-    for(const [x,y,rx,ry] of [[420,1130,120,190],[520,930,145,290],[650,760,170,390],[790,680,185,470]]){
-      ell(c,x,y,rx,ry,P.lavender,1,.10);
-    }
-    // Shoulder / pelvis ruler banks
-    for(let k=0;k<10;k++){
-      const y=430+k*95;
-      line(c,[[910,y],[930,y]],P.lavender,1,.16);
-    }
+    ctx.restore();
   }
 
-  function human(c,P,x,ground,s,alpha,stage,tint){
-    c.save();c.globalAlpha=alpha;
-    const headH=stage===0?88*s:stage===1?92*s:stage===2?88*s:84*s;
-    const headW=headH*.76;
-    const bodyH=(stage===0?160:stage===1?300:stage===2?430:500)*s;
-    const sh=(stage===0?78:stage===1?110:stage===2?132:150)*s;
-    const pel=(stage===0?82:stage===1?88:stage===2?100:112)*s;
-    const top=ground-bodyH-headH*.78;
-    // cranium + jaw
-    ell(c,x,top,headW*.56,headH*.55,tint,2.4,1,-.04);
-    line(c,[[x-headW*.4,top+headH*.15],[x-headW*.25,top+headH*.45],[x,top+headH*.56],[x+headW*.3,top+headH*.36]],tint,2.0,1);
-    // shoulder and ribcage wedge
-    line(c,[[x-sh*.52,top+headH*.62],[x-sh*.34,top+headH*1.4],[x-sh*.28,top+headH*2.3],[x+sh*.28,top+headH*2.3],[x+sh*.34,top+headH*1.4],[x+sh*.52,top+headH*.62]],tint,2.3,1);
-    // pelvis
-    const py=top+headH*2.35;
-    line(c,[[x-pel*.5,py],[x-pel*.35,py+pel*.55],[x+pel*.35,py+pel*.55],[x+pel*.5,py]],tint,2.3,1);
-    // arms
-    const ay=top+headH*.9,elY=top+headH*1.85,handY=py+30*s;
-    line(c,[[x-sh*.45,ay],[x-sh*.67,elY],[x-sh*.5,handY]],tint,2.5,1);
-    line(c,[[x+sh*.45,ay],[x+sh*.63,elY],[x+sh*.48,handY]],tint,2.5,1);
-    // legs
-    const hipY=py+pel*.5;
-    const kneeY=ground-(stage===0?28:bodyH*.27);
-    line(c,[[x-pel*.24,hipY],[x-pel*.34,kneeY],[x-pel*.30,ground]],tint,2.7,1);
-    line(c,[[x+pel*.24,hipY],[x+pel*.30,kneeY],[x+pel*.34,ground]],tint,2.7,1);
-    // internal axes
-    line(c,[[x,top-headH*.1],[x,ground]],P.lavender,1,.18);
-    line(c,[[x-sh*.52,ay],[x+sh*.52,ay]],P.paleBlue,1,.26);
-    line(c,[[x-pel*.5,py],[x+pel*.5,py]],P.paleBlue,1,.22);
-    // joint ticks
-    for(const [jx,jy] of [[x-sh*.67,elY],[x+sh*.63,elY],[x-pel*.34,kneeY],[x+pel*.30,kneeY]]){
-      line(c,[[jx-9*s,jy],[jx+9*s,jy]],P.lineWhite,1.2,.42);
+  function path(c,pts){
+    c.beginPath();
+    for(let i=0;i<pts.length;i++)i?c.lineTo(pts[i][0],pts[i][1]):c.moveTo(pts[i][0],pts[i][1]);
+  }
+
+  function silhouette(c,L,x,base,h,stage,p,seed){
+    const P=L.pal;
+    if(p<=0)return;
+    const headR=stage===0?h*.105:stage===1?h*.09:stage===2?h*.072:h*.068;
+    const headY=base-h+headR*1.25;
+    const shoulderY=headY+headR*1.45;
+    const pelvisY=base-h*.42;
+    const kneeY=base-h*.21;
+    const shoulder=stage===0?h*.12:stage===1?h*.15:stage===2?h*.17:h*.19;
+    const pelvis=stage===0?h*.13:stage===1?h*.14:stage===2?h*.145:h*.15;
+
+    c.save();
+    c.globalAlpha=.18+.82*p;
+    c.lineCap='round';c.lineJoin='round';
+
+    // outer double-line anatomy
+    c.strokeStyle=P.lavender;c.lineWidth=2.4;
+    c.beginPath();
+    c.ellipse(x,headY,headR*.86,headR,0,0,TAU);
+    c.moveTo(x-shoulder,shoulderY);
+    c.quadraticCurveTo(x-shoulder*.55,pelvisY-h*.12,x-pelvis,pelvisY);
+    c.lineTo(x-pelvis*.8,base-h*.34);
+    c.lineTo(x-h*.075,kneeY);
+    c.lineTo(x-h*.06,base);
+    c.moveTo(x+shoulder,shoulderY);
+    c.quadraticCurveTo(x+shoulder*.55,pelvisY-h*.12,x+pelvis,pelvisY);
+    c.lineTo(x+pelvis*.8,base-h*.34);
+    c.lineTo(x+h*.075,kneeY);
+    c.lineTo(x+h*.06,base);
+    c.moveTo(x-shoulder*.95,shoulderY+h*.02);
+    c.lineTo(x-shoulder*1.22,base-h*.48);
+    c.lineTo(x-shoulder*.82,base-h*.28);
+    c.moveTo(x+shoulder*.95,shoulderY+h*.02);
+    c.lineTo(x+shoulder*1.22,base-h*.48);
+    c.lineTo(x+shoulder*.82,base-h*.28);
+    c.stroke();
+
+    c.strokeStyle=L.rgba(P.lavender,.45);c.lineWidth=1.1;
+    c.beginPath();
+    c.ellipse(x,headY,headR*.69,headR*.83,0,0,TAU);
+    c.moveTo(x-shoulder*.85,shoulderY+8);c.lineTo(x+shoulder*.85,shoulderY+8);
+    c.moveTo(x-pelvis,pelvisY);c.lineTo(x+pelvis,pelvisY);
+    c.moveTo(x,shoulderY);c.lineTo(x,pelvisY);
+    c.stroke();
+
+    // internal proportional ticks
+    c.strokeStyle=L.rgba(P.lineWhite,.36);c.lineWidth=1;
+    for(let i=1;i<7;i++){
+      const yy=base-h+i*h/7;
+      const w=stage===0?22:18;
+      c.beginPath();c.moveTo(x-w,yy);c.lineTo(x+w,yy);c.stroke();
     }
+
+    // stage-specific structure
+    if(stage===0){
+      // infant: flexed limbs / wider head cue
+      c.strokeStyle=P.schemSelf;c.lineWidth=2.2;
+      c.beginPath();c.arc(x,headY,headR*1.02,0,TAU);c.stroke();
+    }
+    if(stage===1){
+      // exact G2 head at dominant child position when x=540/base chosen
+      L.guideCircle(c,x,headY,headR*1.2,{color:P.schemSelf,alpha:.35,width:1.3,dash:[4,6]});
+    }
+    if(stage>=2){
+      // shoulder / pelvis angle guides
+      c.strokeStyle=L.rgba(P.paleBlue,.45);c.lineWidth=1.1;
+      c.beginPath();c.moveTo(x-shoulder,shoulderY);c.lineTo(x+shoulder,shoulderY-3);c.stroke();
+      c.beginPath();c.moveTo(x-pelvis,pelvisY);c.lineTo(x+pelvis,pelvisY+3);c.stroke();
+    }
+
+    // glow at sternum marks currently introduced stage
+    L.glowDot(c,x,shoulderY+h*.14,4.5,{color:P.schemSelf,core:P.glow,rays:4,seed,intensity:.45+.55*p,glow:3.2,twinkle:.04});
     c.restore();
   }
 
-  function stageAlpha(t,start,end){
-    const a=smooth((t-start)/.20);
-    const b=end==null?1:1-smooth((t-end)/.22);
-    return clamp(a*b);
+  function ruler(c,L){
+    const P=L.pal;
+    c.save();
+    c.strokeStyle=L.rgba(P.lavender,.5);c.lineWidth=1.4;
+    c.beginPath();c.moveTo(275,410);c.lineTo(275,1430);c.stroke();
+    for(let y=430,i=0;y<=1430;y+=40,i++){
+      const major=i%5===0,len=major?34:16;
+      c.strokeStyle=major?L.rgba(P.lineWhite,.55):L.rgba(P.lavender,.34);
+      c.lineWidth=major?1.6:1;
+      c.beginPath();c.moveTo(275-len/2,y);c.lineTo(275+len/2,y);c.stroke();
+    }
+    c.restore();
+    L.bracket(c,310,1390,310,520,{offset:0,cap:18,color:P.lavender,alpha:.4,width:1.2,p:1});
   }
 
   FILM.scene({id:ID,draw(c,tIn,info){
     const L=info.lib,P=L.pal,t=clamp(tIn,0,info.dur);
-    L.blueprint(c,{seed:4001});field(c,P);
-    // Stage appearance: infant → child → adolescent → adult
-    const specs=[
-      {x:390,g:1280,s:.86,a:stageAlpha(t,0,null),stage:0},
-      {x:515,g:1280,s:.84,a:stageAlpha(t,.45,null),stage:1},
-      {x:660,g:1280,s:.86,a:stageAlpha(t,.95,null),stage:2},
-      {x:790,g:1280,s:.88,a:stageAlpha(t,1.45,null),stage:3},
+    L.blueprint(c,{seed:sd('blueprint'),center:[540,840],circles:5,diagonals:4});
+    progressGlyph(c,L,3);
+    ruler(c,L);
+
+    // floor / baseline and shared vertical body axis
+    c.save();
+    c.strokeStyle=L.rgba(P.lavender,.3);c.lineWidth=1.3;
+    c.beginPath();c.moveTo(340,1390);c.lineTo(810,1390);c.stroke();
+    c.setLineDash([8,10]);c.beginPath();c.moveTo(540,430);c.lineTo(540,1450);c.stroke();c.restore();
+
+    const stages=[
+      {x:390,base:1370,h:290,stage:0,t0:0},
+      {x:500,base:1370,h:430,stage:1,t0:.5},
+      {x:625,base:1370,h:560,stage:2,t0:1.0},
+      {x:755,base:1370,h:690,stage:3,t0:1.5},
     ];
-    specs.forEach((q,i)=>{
-      let a=q.a;
-      if(t>2.0 && i!==1)a*=1-smooth((t-2.0)/.35);
-      const tint=i===1?P.schemSelf:P.lavender;
-      human(c,P,q.x,q.g,q.s,a,q.stage,tint);
-      // stage height brackets
-      if(a>.03){
-        const y0=1280-(i===0?245:i===1?445:i===2?620:735);
-        line(c,[[q.x+86,y0],[q.x+112,y0],[q.x+112,1280],[q.x+86,1280]],i===1?P.schemSelf:P.lavender,1.4,a*.55);
-      }
+    stages.forEach((s,i)=>{
+      const p=L.seg(t,s.t0,s.t0+.28,'outBack');
+      silhouette(c,L,s.x,s.base,s.h,s.stage,p,sd('stage',i));
+      // height bracket for each
+      L.bracket(c,s.x-55,s.base,s.x-55,s.base-s.h,{offset:0,cap:8,color:i===1?P.schemSelf:P.lavender,alpha:.18+.22*p,width:1,p});
     });
 
-    // G2 exact child-head construction appears and becomes dominant late.
-    const g=smooth((t-1.9)/.45);
-    if(g>0){
-      c.save();c.globalAlpha=g;
-      c.strokeStyle=P.schemSelf;c.lineWidth=2.8;
-      c.beginPath();c.ellipse(540,720,72,92,-.03,0,TAU);c.stroke();
-      c.globalAlpha=g*.34;c.lineWidth=1.1;
-      c.beginPath();c.ellipse(540,720,58,78,-.03,0,TAU);c.stroke();
-      line(c,[[540,812],[540,900]],P.schemSelf,2,g*.7);
+    // At the final half-beat, child becomes dominant and morphs toward exact G2
+    const d=L.seg(t,2.0,2.5,'outExpo');
+    if(d>0){
+      c.save();
+      c.globalAlpha=d;
+      // exact G2 ellipse, screen-fixed
+      c.strokeStyle=P.lineWhite;c.lineWidth=2.4;c.beginPath();c.ellipse(540,720,72,92,0,0,TAU);c.stroke();
+      c.strokeStyle=L.rgba(P.schemSelf,.55);c.lineWidth=1.2;c.beginPath();c.ellipse(540,720,61,80,0,0,TAU);c.stroke();
+      // jaw and neck around invariant ellipse
+      c.strokeStyle=P.lavender;c.lineWidth=1.6;c.beginPath();
+      c.moveTo(498,748);c.quadraticCurveTo(508,790,540,804);c.quadraticCurveTo(572,790,582,748);
+      c.moveTo(520,795);c.lineTo(516,842);c.moveTo(560,795);c.lineTo(564,842);
+      c.stroke();
       c.restore();
+      L.ticks(c,540,720,{r:106,n:20,len:8,major:5,majorLen:15,color:P.lavender,alpha:.25*d,width:1});
     }
-    // motion arrows between developmental stages
-    const a=smooth((t-.3)/1.6);
-    if(a>0){
-      c.save();c.strokeStyle=P.paleBlue;c.globalAlpha=.28*a;c.lineWidth=1.5;c.setLineDash([10,10]);
-      c.beginPath();c.moveTo(390,1020);c.bezierCurveTo(470,880,600,760,790,600);c.stroke();c.restore();
+
+    // growth-flow arrows connect the stages but remain secondary
+    c.save();c.strokeStyle=L.rgba(P.paleBlue,.4);c.fillStyle=P.paleBlue;c.lineWidth=1.6;
+    for(let i=0;i<3;i++){
+      const a=stages[i],b=stages[i+1],p=L.seg(t,.35+i*.5,.65+i*.5,'outExpo');
+      if(p<=0)continue;
+      const x1=a.x+35,y1=a.base-a.h*.55,x2=lerp(x1,b.x-35,p),y2=lerp(y1,b.base-b.h*.55,p);
+      c.beginPath();c.moveTo(x1,y1);c.quadraticCurveTo((x1+x2)/2,y1-40,x2,y2);c.stroke();
     }
-    prog(c,L,3);
+    c.restore();
   }});
 })();
