@@ -45,37 +45,58 @@
   }
 
   function cloudLobe(c,L,P,o,t,idx){
-    const drift=Math.sin((L.onTwos(t)+o.phase)*1.7+idx)*o.drift;
-    const x=o.x+drift,y=o.y+Math.cos((L.onTwos(t)+o.phase)*1.2+idx)*o.drift*.35;
-    const pts=L.ellipsePts(x,y,o.rx,o.ry,44,o.rot||0);
+    const q=L.onTwos(t),focus=L.seg(t,1.0,1.5,'inOutCubic');
+    const drift=Math.sin((q+o.phase)*1.7+idx)*o.drift;
+    const sx=1+(o.depth||.5)*.22*focus,sy=1+(o.depth||.5)*.15*focus;
+    const bx=540+(o.x-540)*(1+(o.depth||.5)*.28*focus);
+    const by=720+(o.y-720)*(1+(o.depth||.5)*.18*focus);
+    const x=bx+drift,y=by+Math.cos((q+o.phase)*1.2+idx)*o.drift*.45;
+    const pts=[],n=72,seed=sd('lobe-shape',idx);
+    for(let i=0;i<n;i++){
+      const a=i/n*TAU;
+      const scallop=1
+        +.065*Math.sin(a*3+idx*.7)
+        +.04*Math.sin(a*5+1.3+idx)
+        +.025*L.noise1(i*.23,seed);
+      const rx=o.rx*sx*scallop,ry=o.ry*sy*(1+.035*Math.sin(a*4+idx*.3));
+      const cr=Math.cos(o.rot||0),sr=Math.sin(o.rot||0);
+      const px=Math.cos(a)*rx,py=Math.sin(a)*ry;
+      pts.push([x+px*cr-py*sr,y+px*sr+py*cr]);
+    }
     c.save();c.globalAlpha=o.alpha;
     c.fillStyle=o.fill;c.beginPath();L.tracePath(c,pts,true);c.fill();
-    // underside modelling only
-    const lower=pts.filter(p=>p[1]>y-o.ry*.05);
-    if(lower.length>8){
-      const clip=pts;
-      L.hatch(c,clip,{angle:.78,spacing:o.hatch||12,width:1.2,color:P.cloudShade,alpha:.34,density:(hx,hy)=>clamp((hy-y)/(o.ry*.95))*.8,length:[18,65],seed:sd('lobe-h',idx)});
-    }
-    L.inkPath(c,pts,{closed:true,color:P.inkSoft,width:o.outline||1.8,alpha:.45,seed:sd('lobe',idx),wobble:1.4,tremble:.3,boilAmp:.45});
+    L.hatch(c,pts,{angle:.78,spacing:o.hatch||11,width:1.15,color:P.cloudShade,alpha:.42,
+      density:(hx,hy)=>clamp((hy-(y-o.ry*.08))/(o.ry*.9))*.82,length:[16,62],seed:sd('lobe-h',idx),clip:true});
+    L.inkPath(c,pts,{closed:true,color:P.inkSoft,width:o.outline||1.8,alpha:.5,seed:sd('lobe',idx),wobble:1.25,tremble:.25,boilAmp:.38});
+    // a short inner fold makes the cloud read as volume rather than overlapping circles
+    const fold=[
+      [x-o.rx*.48,y+o.ry*.08],[x-o.rx*.18,y+o.ry*.17],[x+o.rx*.12,y+o.ry*.12],[x+o.rx*.42,y+o.ry*.22]
+    ];
+    L.inkPath(c,L.smoothPts(fold,false,4),{color:P.cloudShade,width:1.2,alpha:.22,seed:sd('fold',idx),wobble:.8,tremble:.18,boilAmp:.28,taper:[7,10]});
     c.restore();
   }
 
   const back=[
-    {x:180,y:390,rx:300,ry:230,fill:'#E2E0D9',alpha:.68,phase:.2,drift:9},
-    {x:475,y:320,rx:350,ry:260,fill:'#E8E3D7',alpha:.74,phase:.8,drift:8},
-    {x:850,y:430,rx:360,ry:250,fill:'#D7D8D2',alpha:.68,phase:1.3,drift:10},
-    {x:220,y:760,rx:330,ry:280,fill:'#D8D6CF',alpha:.75,phase:.5,drift:12},
-    {x:820,y:780,rx:380,ry:310,fill:'#D1D2CF',alpha:.72,phase:1.1,drift:11},
+    {x:90,y:330,rx:245,ry:205,fill:'#E2E0D9',alpha:.55,phase:.2,drift:16,depth:.25,rot:-.08},
+    {x:350,y:285,rx:275,ry:225,fill:'#E8E3D7',alpha:.62,phase:.8,drift:14,depth:.28,rot:.05},
+    {x:675,y:320,rx:300,ry:235,fill:'#D9D9D4',alpha:.6,phase:1.2,drift:15,depth:.3,rot:-.04},
+    {x:970,y:390,rx:270,ry:220,fill:'#E4E1D9',alpha:.6,phase:1.6,drift:16,depth:.32,rot:.08},
+    {x:180,y:650,rx:290,ry:245,fill:'#D7D7D2',alpha:.67,phase:.5,drift:18,depth:.38,rot:.06},
+    {x:860,y:690,rx:320,ry:260,fill:'#D3D4D0',alpha:.66,phase:1.1,drift:17,depth:.4,rot:-.07},
   ];
   const mid=[
-    {x:120,y:1010,rx:300,ry:260,fill:'#E8E3D7',alpha:.88,phase:.7,drift:13,hatch:10},
-    {x:405,y:940,rx:320,ry:250,fill:'#E3DFD5',alpha:.9,phase:1.5,drift:10,hatch:10},
-    {x:720,y:1000,rx:340,ry:280,fill:'#DEDCD3',alpha:.9,phase:.1,drift:12,hatch:10},
-    {x:1020,y:980,rx:300,ry:250,fill:'#E6E1D8',alpha:.86,phase:1.8,drift:9,hatch:10},
+    {x:55,y:950,rx:265,ry:235,fill:'#E9E4DA',alpha:.84,phase:.7,drift:22,hatch:9,depth:.55,rot:.08},
+    {x:320,y:940,rx:285,ry:230,fill:'#E1DED5',alpha:.87,phase:1.5,drift:20,hatch:9,depth:.6,rot:-.06},
+    {x:765,y:935,rx:305,ry:245,fill:'#DCDAD2',alpha:.88,phase:.1,drift:21,hatch:9,depth:.62,rot:.05},
+    {x:1040,y:965,rx:270,ry:225,fill:'#E7E2D9',alpha:.82,phase:1.8,drift:19,hatch:9,depth:.58,rot:-.04},
+    {x:165,y:1200,rx:250,ry:220,fill:'#E3DFD5',alpha:.86,phase:.35,drift:21,hatch:10,depth:.66,rot:.04},
+    {x:905,y:1190,rx:285,ry:235,fill:'#DDDAD1',alpha:.86,phase:1.35,drift:20,hatch:10,depth:.67,rot:-.05},
   ];
   const front=[
-    {x:80,y:1500,rx:370,ry:300,fill:'#ECE7DC',alpha:.94,phase:.2,drift:15,hatch:11,outline:2.2},
-    {x:940,y:1490,rx:400,ry:320,fill:'#E7E2D8',alpha:.94,phase:1.2,drift:14,hatch:11,outline:2.2},
+    {x:-60,y:1510,rx:330,ry:275,fill:'#ECE7DC',alpha:.93,phase:.2,drift:28,hatch:9,outline:2.2,depth:.9,rot:.05},
+    {x:1140,y:1490,rx:360,ry:290,fill:'#E7E2D8',alpha:.93,phase:1.2,drift:27,hatch:9,outline:2.2,depth:.92,rot:-.06},
+    {x:310,y:1710,rx:300,ry:230,fill:'#EAE5DB',alpha:.9,phase:.65,drift:25,hatch:10,outline:2,depth:.86,rot:.03},
+    {x:800,y:1735,rx:330,ry:245,fill:'#E4E0D7',alpha:.91,phase:1.55,drift:24,hatch:10,outline:2,depth:.88,rot:-.03},
   ];
 
   function droplets(c,L,P,t,push){
