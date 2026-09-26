@@ -286,11 +286,17 @@
     sunset: '#E79D8F',
     dusk: '#5A4878',
     red: '#BF3F2C',
-    // 2.2 subject palette, warm — filled per film from docs/art-bible.md section 2.2.
-    // Add the subject's named colours here exactly as the art bible publishes them:
-    //     hero: '#D9772B',
-    //     heroDeep: '#B55A1C',
-    // Scene code reads them as lib.pal.<name>.
+    // 2.2 subject palette, warm — human-life-cycle-native-eval
+    selfWarm: '#C86F4B',
+    selfDeep: '#8A4934',
+    selfPale: '#E5A17D',
+    socialBlue: '#6FA6B8',
+    socialDeep: '#315E70',
+    cycleGold: '#D9A23E',
+    memoryViolet: '#80729C',
+    ageSage: '#8C9B7C',
+    birthRose: '#D9A19B',
+    childSky: '#89B9C8',
     // 2.3 cool schematic palette (blueprint plate)
     navy: '#0B1230',
     navyDeep: '#060A1C',
@@ -301,8 +307,7 @@
     paleBlue: '#9CC2EA',
     glow: '#FFF3DC',
     magenta: '#FF3D98',
-    // Subject identity tints — 1 to 3 per film, from art-bible 2.3, e.g. schemHero: '#F2A66A'.
-    // Line or dot colours only, never fills; a schematic shot uses at most one besides magenta.
+    // Subject identity tints — human-life-cycle-native-eval\n    schemSelf: '#F2A66A',\n    schemSocial: '#7CCDE0',\n    schemCycle: '#F1CB6B',\n    // Line or dot colours only, never fills; a schematic shot uses at most one besides magenta.
     // 2.4 overlay colours on illustrations
     annMagenta: '#E43D8C',
     annBlue: '#3B8EE0',

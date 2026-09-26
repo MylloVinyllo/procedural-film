@@ -68,14 +68,18 @@ Stripe band B changes by act; the storyboard assigns one per act.
 
 ### 2.2 Subject palette, warm
 
-REWRITE PER FILM. One row per subject colour, named for what it colours rather than its hue
-(`hero`, `heroDeep`, `heroPale`, …). Fill from the research; 8 to 30 names is typical.
-This table publishes the final values — enter every one into the marked block in `src/lib.js`,
-which mirrors it exactly.
-
 | Name | Hex | Use |
 |---|---|---|
-| … | #… | … |
+| selfWarm | #C86F4B | Primary individual figure and individual trajectory |
+| selfDeep | #8A4934 | Deep hatching and shadow on the primary individual |
+| selfPale | #E5A17D | Lit planes and younger-stage highlight on the primary individual |
+| socialBlue | #6FA6B8 | Social-field figures, relation arcs and group rhythm |
+| socialDeep | #315E70 | Dense social clusters and secondary social hatching |
+| cycleGold | #D9A23E | Recurring cycle/progress motif and intergenerational transfer |
+| memoryViolet | #80729C | Memory traces and accumulated experience |
+| ageSage | #8C9B7C | Later-life secondary forms and quiet environmental accents |
+| birthRose | #D9A19B | Birth / early-life tender accent, used sparingly |
+| childSky | #89B9C8 | Childhood exploratory object / open-space accent |
 
 ### 2.3 Cool schematic palette (blueprint plate)
 
@@ -91,8 +95,7 @@ which mirrors it exactly.
 | glow | #FFF3DC | Nucleus cores, sun glyph, glows |
 | magenta | #FF3D98 | Moments of change only |
 
-PER FILM: add 1 to 3 subject identity tints (e.g. `schemHero #F2A66A`), here and in `src/lib.js`.
-Subject tints are line or dot colours, never fills, and a schematic shot uses at most one of them besides magenta.
+Subject identity tints:\n\n| Name | Hex | Use |\n|---|---|---|\n| schemSelf | #F2A66A | Primary individual node / body line in schematic mode |\n| schemSocial | #7CCDE0 | Social relation nodes / ties in schematic mode |\n| schemCycle | #F1CB6B | Cycle/progress glyph and intergenerational continuity |\n\nSubject tints are line or dot colours, never fills, and a schematic shot uses at most one of them besides magenta.
 
 ### 2.4 Overlay colours on illustrations
 
@@ -241,17 +244,102 @@ The baseline stays at y = 1470. If the closing diagram collides with the wordmar
 
 ## 10. Subject reference
 
-REWRITE PER FILM from the captured sources. Header line: "Sources checked on <date>: <name every
-source captured in .tmp/research/>". Then one subsection per drawable element:
+Sources checked on 2026-09-26: NICHD “About Pregnancy”; NIMH “The Teen Brain: 7 Things to Know”; WHO “Life course”; WHO Commission on Social Connection report overview.
 
-### 10.1 <element>
+### 10.1 Founding cell / early development
 
-Facts as drawing rules: sizes and ratios ("height-to-width 4 to 3"), counts ("18 ridges on the
-visible face"), poses, sequences, what shows through what, what happens first. Where the subject
-has stages, use a table with one row per stage.
+Research basis: NICHD states that pregnancy begins with conception, the fertilized egg is a zygote, and the zygote travels to the uterus as a cluster of cells that later contributes to fetus and placenta.
 
-### 10.N Mistakes to avoid
+Drawing rules:
+- Founding zygote is a single circular form, 190 to 220 px diameter when screen-fixed at the shared match-cut scale.
+- Division is shown as discrete 1 → 2 → 4 → 8 forms. Never imply an exact clock or week count.
+- Daughter cells remain similar in scale within a division event and are contained in a shared outer guide circle.
+- This is a symbolic-scientific view, not a histology plate.
 
-The wrong drawings a scene agent produces without this list — the plausible defaults that are
-wrong for this subject. Pair each with the correct drawing: "The pupa hangs head-down — never
-head-up."
+### 10.2 Newborn / infant
+
+Drawing rules:
+- Head is visibly large relative to torso: head height about one quarter of total drawn body height.
+- Limbs are short and softly flexed; hands remain small, simplified mitten-like shapes.
+- The birth shot reads through posture and scale, not anatomical detail.
+- A breath ring may expand from chest level as an overlay, but is symbolic.
+
+### 10.3 Child
+
+Drawing rules:
+- Head proportion reduces relative to total height compared with infant.
+- First-step pose has a wide base, arms away from the torso, torso slightly forward.
+- Later childhood poses are more open and energetic: running, reaching, turning.
+- The individual path is drawn as a selfWarm line behind or under the child, never through the body.
+
+### 10.4 Adolescent
+
+Research basis: NIMH says adolescence is an important period of brain development, maturation continues into the mid-to-late twenties, and changes in systems involved in social processes increase focus on peer relationships and social experiences.
+
+Drawing rules:
+- Silhouette lengthens toward adult proportion over the shot.
+- Peer figures enter before the primary figure turns toward them.
+- Blueprint network may show connection refinement, but never claims to be a literal connectome.
+- Social salience is shown by attention arcs and peer-node activation, not by a stereotype of rebellion.
+
+### 10.5 Adult individual
+
+Drawing rules:
+- Adult hero is approximately 720 px tall in full-body illustrated shots.
+- Head: 105 to 120 px high; shoulder width: 250 to 290 px.
+- Primary figure always retains selfWarm outline or trajectory when inside a group.
+- Stance is asymmetric enough to feel drawn and alive; avoid mannequin symmetry.
+
+### 10.6 Social field / relationships
+
+Research basis: WHO’s Commission on Social Connection treats social isolation, loneliness and social connection as consequential to health and well-being; WHO’s life-course framing includes psychosocial and environmental factors throughout life.
+
+Drawing rules:
+- A social field is not a uniform crowd. Use clusters of 2 to 5 figures with visible gaps between clusters.
+- Relationship ties vary in length and thickness; do not connect every node to every other node.
+- Primary individual node remains schemSelf; social nodes use lavender or schemSocial.
+- Close bonds are shown as reciprocal gestures or paired arcs, not as crowd density alone.
+- Group motion may synchronize on a beat, but the primary individual briefly keeps its own phase to preserve the “I within We” idea.
+
+### 10.7 Life-course continuity
+
+Research basis: WHO describes a life-course approach spanning a good start to life, development in childhood/adolescence/youth, adult health and well-being, healthy ageing and dignified death, with trajectories shaped over time and across generations.
+
+Drawing rules:
+- The film uses one continuous selfWarm path across life stages.
+- Earlier stages leave faint memoryViolet traces in later schematic shots.
+- Intergenerational continuity is represented by a cycleGold point passed from older to younger figure.
+- The new path begins after the handoff; it is not the same person literally repeating.
+
+### 10.8 Older adult
+
+Drawing rules:
+- Same identity cues as adult hero, not a new generic elderly figure.
+- Slightly reduced standing height through posture, not skeletal shrinkage.
+- Shorter step length and longer held poses create age rhythm.
+- At least one social relation remains visible so ageing is not equated with isolation.
+
+### 10.9 Recurring progress glyph
+
+- Position: centre (900, 300), safely inside the house schematic convention.
+- 18 equal arcs, one per shot.
+- Completed arcs: lavender at 28%; current arc: schemCycle at 100%; future arcs: grid at 22%.
+- The glyph is canonical in shot 02 and copied verbatim to every later schematic scene.
+- It is informational structure, not a clock or medical measure.
+
+### 10.10 Shared symbolic geometry
+
+- G1 cycle halo: centre (540, 700), radius 150 px. It appears behind the opening adult, becomes the founding cell guide in shot 02 and returns in shot 18.
+- G2 individual trajectory: screen-fixed entry point (220, 1320) and exit point (860, 760) where used for cross-shot handoffs.
+- G3 social node: centre (540, 820), radius 48 px in schematic system views.
+- G4 transfer point: radius 18 px, cycleGold, passed between generations at screen position around (540, 900) before expanding to G1.
+
+### 10.11 Mistakes to avoid
+
+- Wrong: individual human means socially isolated. Correct: the primary individual remains visually distinct inside relationships.
+- Wrong: social human means a faceless, homogeneous crowd. Correct: show varied clusters, reciprocal gestures and unequal ties.
+- Wrong: adolescence is represented as rebellion or irrationality. Correct: show continued development and increased social salience only.
+- Wrong: the network is a literal brain map or quantified social graph. Correct: it is symbolic system language.
+- Wrong: ageing equals collapse or loneliness. Correct: change posture and tempo while preserving identity and at least one relation.
+- Wrong: the final child/cell is the same person reincarnated. Correct: the loop is symbolic and intergenerational.
+- Wrong: exact embryological timing is implied by the cell animation. Correct: show only the broad 1 → 2 → 4 → 8 visual sequence.
