@@ -24,7 +24,7 @@ The production procedure is unchanged, but execution is split into resumable tra
 - Art Bible: complete
 - Storyboard: complete
 - Timeline: complete
-- Stub pass: in progress
+- Stub pass: complete
 - Scenes: pending
 - Music: pending
 - Critic waves: pending
@@ -43,5 +43,6 @@ The production procedure is unchanged, but execution is split into resumable tra
 - stubgen job: `505cc93a-afd5-4530-bf9c-9e14dff3f598` — SUCCEEDED
 - all 20 scene stubs committed
 - current stub production head: `a4b2c3d232855d4bfd5e518d537a349b73d18d6a`
-- active runtime job: `12d01902-3cbc-489a-be09-1620831c13fd` (native check of complete stub film)
-- next action after this exact job: if green, render/watch the full stub tracer, then begin dense scene implementation with per-shot six-frame QA
+- stub-film native check: `12d01902-3cbc-489a-be09-1620831c13fd` — PASS 6/6
+- active runtime job: `4b0f3b2f-f8fb-46c5-86eb-94d99f22a6b0` (36 s half-scale stub preview render)
+- next action after this exact job: inspect the stub preview sequence, then begin dense scene implementation with per-shot six-frame QA
