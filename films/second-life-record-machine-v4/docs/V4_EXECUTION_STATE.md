@@ -19,8 +19,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Art Bible delta | COMPLETE | Myllo product model + labels + G8 before/after + proof sheet + green fixture gate | Storyboard delta |
 | Storyboard delta | COMPLETE | 36 s / 12 shots / five-beat cleaning block / self-review closed | Timeline |
 | Timeline | COMPLETE | 36 s / 12-shot timeline + cue grid | Stub/sequence validation |
-| Stub/sequence validation | IN PROGRESS | stubgen + clean 12-scene stub tree + green gate + sequence sheet | finish preview |
-| Scenes | PENDING | scene sheets | after sequence validation |
+| Stub/sequence validation | COMPLETE | green gate + 12-shot sheet + 36 s half-scale stub preview | Scenes |
+| Scenes | IN PROGRESS | product-first dense batch 05–09, then retained story scenes | scene sheets + batch gates |
 | Music/SFX | PENDING | audio QA | after scenes |
 | Critic waves | PENDING | whole-film sheet + fixes | after audio |
 | Deliver | PENDING | preview/master | after critic |
@@ -295,3 +295,46 @@ Exact resume:
 2. do not queue a second preview unless it explicitly fails;
 3. on success close Stub/sequence validation;
 4. open dense Scenes with product-first batch 05–09 before polishing retained story scenes.
+
+
+### TX-V4-006 result — Stub / sequence validation
+
+Half-scale stub preview:
+- job `7e7ddf2b-2553-418d-8c10-36ce391b7729` — SUCCEEDED
+- 864 frames / 36.000 s / 540×960
+- audio 36.000 s, 48 kHz stereo, peak 0.391
+- artifact `output/preview.mp4`
+- size 9,288,868 bytes
+- SHA-256 `84b77d0734c3e12cda6790c364aaded9490953d1512d60bbeb1767cd2f202c5f`
+
+Sequence validation:
+- shot order and duration are frozen before dense work;
+- native stub gate is green;
+- no dense scene work was started before the preview completed.
+
+Stub / sequence validation: COMPLETE.
+
+## Active transaction
+
+**TX-V4-007 — Dense Scenes**
+
+Implementation order is intentionally product-first:
+
+**Batch A: 05–09**
+- 05 reveal-myllo
+- 06 pump-solution
+- 07 brush-reverse
+- 08 vacuum-collect
+- 09 grooves-before-after
+
+Why first:
+- these are the semantic bottleneck identified by the V3 human review;
+- they must prove machine identity / physical process before resources are spent repolishing the already-understandable discovery/playback scenes.
+
+Batch acceptance:
+- six-frame sheet for each scene;
+- quarter-scale object/stage readability;
+- button/action causality;
+- wet-film physicality;
+- before/after groove matching;
+- batch native gate before moving to 01–04 / 10–12.
