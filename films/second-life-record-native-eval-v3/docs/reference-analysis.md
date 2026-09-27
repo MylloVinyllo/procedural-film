@@ -1,81 +1,235 @@
-> **EXAMPLE — the analysis that fixed the house style** (paper plate vs blueprint plate, hard cuts, synthesised sound landing on cuts). A new film in the house style skips this document entirely.
-> Run the same method only when the user names a different look: step through the reference video in a browser at roughly 1-second intervals, take written notes only (no saved frames), and finish with a numbered "Style rules to carry over" list. That list then rewrites art-bible sections 1–9 before planning continues.
+# Reference analysis — V3 animated comic
 
-# Reference analysis: Kevin Ngo, "The life of a fruit fly"
+Date: 2026-09-27
 
-Source: https://x.com/kevin_t_ngo/status/2099858454043349342 (posted 15 Sep 2026, 633K views).
-Analysed 16 Sep 2026 by stepping through the video in a browser at roughly 1-second intervals.
-No frames were saved; everything below is a written description.
+## Why a reference analysis is required
 
-## What the author said about how it was made
+V3 deliberately leaves the native Procedural Film house look. The target is no longer the default alternating paper/blueprint educational film. It is a **short animated comic** whose first job is to tell a concrete story clearly.
 
-The author describes the piece as one HTML file in which Claude Opus 5 drew every frame with JavaScript on a canvas and composed the music and sound effects, also in JavaScript.
-Each of his pieces was built by showing the model his previous piece as the reference.
-He credits the model's habit of writing a lot of code for the density of detail, and keeps the cutting fast because slower cutting stops reading as animation.
+This document therefore freezes a new visual/editing grammar before research, art-bible design or storyboard work.
 
-## Format
+## Reference A — comic-animation vocabulary
 
-1080x1080 square, 27 seconds, music and sound effects throughout.
-Our version is 1080x1920 vertical (YouTube Shorts), so compositions must be re-thought for a tall frame, not cropped.
+Primary video reference:
+- **SPIDER-MAN: INTO THE SPIDER-VERSE | Official Trailer**
+- Sony Pictures Animation
+- https://www.youtube.com/watch?v=pDsxJzLlq5U
 
-## Shot-by-shot (approximate times)
+Production descriptions used to cross-check the transferable visual principles:
+- Sony Pictures trailer announcement: https://www.sonypictures.com/corp/press_releases/2018/06_18/060618_spiderversetrailer.html
+- Adobe MAX production article: https://blog.adobe.com/en/publish/2018/10/15/enter-the-spider-verse-at-adobe-max
+- Sony Pictures Animation project page: https://www.sonypicturesanimation.com/projects/films/spider-man-spider-verse
 
-| Time | Mode | What is on screen |
-|---|---|---|
-| 0.0-1.2 | Illustrated | Cold open on the hero: adult fly standing on an orange's peel, huge in frame. Background of wide diagonal cream and pale-yellow stripes. A small dew droplet sits on the peel. |
-| 1.2-2.0 | Schematic | Cut to near-black navy. A single tiny white star-burst spark in the middle. The beginning. |
-| 2.0-6.0 | Schematic | Blueprint of the egg: a long rounded capsule drawn with a double pale-lavender outline, filled with a fine hexagonal cell lattice. Two paddle-shaped filaments rise from the top. Two glowing nuclei with short radial ticks (cell division). Behind: a faint large concentric circle, long diagonal guide lines crossing the frame, a small measurement bracket in a corner. |
-| 6.0-7.0 | Schematic | Same egg, camera pushed in. The lattice becomes a dense dotted stipple (the larva forming). A segmented bar-chart-like glyph appears top right. Magenta radiating lines burst from the bottom end: hatching. |
-| 7.0-9.0 | Illustrated | The larva: a translucent white segmented body with ruled segment lines, a faint orange gut line, black mouth hooks. It crawls diagonally across a warm tan field of rounded pebble-like cells (fruit flesh or yeast), each cell outlined in brown ink with hatched shading. It chews into one cell, crumbs scatter. |
-| 9.0-10.0 | Schematic | The pupa as a dark rounded-rectangle outline. Inside, a tangled cellular network (the metamorphosis soup). Thin curved lines radiate outward to small circular nodes, like a network diagram. |
-| 10.0-12.0 | Illustrated | Back on the orange. The adult fly stands beside its empty puparium, a dark brown case with the lid popped open. Diagonal stripe background returns. |
-| 12.0-13.0 | Illustrated macro | Extreme close-up of the compound eye: a circle of hexagonal facets outlined in brown hatching. The facets are tinted yellow, cream and dark, and together form a coarse mosaic picture of what the fly sees. |
-| 13.0-14.0 | Schematic | Nervous system cross-section: two large oval eyes left and right with pale blue fibre bundles converging in the middle, small coloured organ circles. |
-| 14.0-16.0 | Illustrated | Top-down: a teal-rimmed plate with white rim dots, a halved peach, a cluster of purple grapes, a banana, on a wood-grain table with hatched shadows. The fly flies over it. Thin coloured annotation arcs (magenta, blue, yellow) trace its flight. |
-| 16.0-18.0 | Illustrated | Camera pulls back. The plate is at the frame edge, a large circular object with radial spokes (a ceiling fan or lamp seen from below), long straight black lines crossing, the fly small with a thin blue trajectory line and circular motion rings. |
-| 18.0-19.0 | Illustrated | The fly next to a dense cross-hatched mass on the wood. Red radiating arcs and a red arrow: a smell or danger cue. |
-| 19.0-21.0 | Illustrated | Courtship. Two flies face to face on the peel surface, red eyes. One vibrates a wing and concentric yellow and pink rings pulse out (the wing song). Background at the top: a window with the sun in a frame, a pink sunset band. |
-| 21.0-23.0 | Illustrated | Egg laying. The female deposits white egg capsules in a row. The window sun is setting; a purple band of sky. |
-| 23.0-24.5 | Illustrated | Night. Purple sky with stars, a crescent moon with rays, the window frame, and tally marks scratched on the wall counting the days. The fly rests beside a row of eggs. |
-| 24.5-26.0 | Illustrated | Morning. A green leaf with hatched veins. A large dew drop on it acts as a fisheye lens, refracting the window and a fly inside it. A young fly at left, the orange at the bottom right, the sun with drawn rays in the window. Big faint construction arcs overlay the whole frame. |
-| 26.0-27.0 | Schematic | Back to the egg blueprint from the start, two nuclei glowing: the cycle loops. A thin rounded lowercase wordmark bottom right. |
+Sony describes the film as having a deliberately new / groundbreaking visual style. Adobe's production account is more useful for V3 because it names the visual ingredients: a collage of 2D illustration, 3D animation and classic comic elements including **halftone patterns, chromatic aberrations and sharp shadows**, with custom brushes used to keep the visual language consistent across artists.
 
-## Measured: the cadence and the grain
+V3 uses those observations as a vocabulary reference only. It does **not** reproduce Spider-Verse characters, costumes, compositions, branding or proprietary designs.
 
-Drawn on twos at 24 fps: frame-to-frame difference alternates large, small, large, small for the whole 27 s.
-On the paper shots the held frame still differs by about 0.3 to 1.4 average luma levels, so a fine grain changes every frame.
-On the navy schematic shots the held frame differs by 0.01 to 0.08, the encoder's own noise floor, so those plates are frozen.
-Our house style re-seeds the grain at 12 fps on both plates instead, so the two frames of a pair are one identical image (art bible 4.3).
-That is a deliberate difference from the reference, not an oversight.
+### What matters for V3
 
-Measured 17 Sep 2026 with:
+The relevant lesson is not “make it look like Spider-Man.”
 
-```bash
-ffmpeg -i fly.mp4 -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null -
-```
+The relevant lesson is that a comic-derived moving image can remain richly cinematic when:
+- the drawing style is strong enough to survive motion;
+- the character pose reads before fine detail;
+- graphic print devices are used selectively to describe tone, depth and impact;
+- comic devices are integrated with camera and editing instead of pasted on top;
+- different motion cadences can coexist in one shot;
+- colour and line treatment participate in storytelling.
 
-## Style rules to carry over
+### Transferable visual observations
 
-1. **Two alternating visual modes.** Warm hand-illustrated scenes and cool scientific-blueprint scenes, cut against each other roughly every 1 to 2.5 seconds. The schematic shots explain what is happening inside; the illustrated shots show the life.
-2. **Illustrated mode.**
-   Cream paper base with visible grain.
-   Dark brown ink outlines, slightly irregular, sometimes doubled.
-   Tone is built from directional hatching (parallel strokes clipped to the shape) and cross-hatching for shadow, not from gradients.
-   Flat, muted, warm colours: orange, tan, ochre, dusty rose, sage green, teal.
-   Faint construction lines extend past the forms.
-   Wide diagonal stripes as a recurring background device.
-3. **Schematic mode.**
-   Deep navy background, thin pale lavender and white linework at partial opacity.
-   Hexagonal cell lattices, stippled fills, glowing star-like nuclei with radial ticks.
-   Guide geometry behind everything: large faint circles, long diagonal lines, measurement brackets and ticks.
-   One hot accent colour (magenta) reserved for moments of change.
-4. **Motion-graphic overlays on illustrations.** Thin coloured circles, arcs, rings and straight guide lines drawn over the illustrated scenes to show flight paths, sound, smell and attention.
-5. **Editing.**
-   Hard cuts, fast.
-   Match cuts on shape (the egg outline in schematic cuts to the real egg).
-   Push-ins to macro (the eye) and pull-backs to reveal scale (plate to table to room).
-   Time passing is shown with a window motif (sun, sunset, moon) and tally marks.
-   The film ends where it began, so it loops.
-6. **Density.** Every frame is busy with fine detail: hundreds of hatch strokes, lattice cells, grain. The author credits the model's tendency to write a lot of code for the quality.
-7. **Animation feel.** Snappy, not floaty. Movement reads like drawn animation.
-8. **Sound.** Music and effects are synthesised in JavaScript and land on the cuts.
+#### Character and silhouette
+
+Comic animation gives the character a strong outer contour and a pose whose action reads at thumbnail scale.
+
+For V3 this means:
+- head angle, shoulder angle, elbow and hand must carry the action;
+- facial detail supports the pose but never replaces it;
+- the record must remain a true circular disc with an unmistakable centre label and spindle hole;
+- hand-to-object contact must be visibly plausible.
+
+#### Print / ink surface
+
+The image should feel drawn and printed rather than like a smooth vector infographic.
+
+Useful devices:
+- black / near-black contour lines;
+- a second thinner interior line for folds, facial planes and object construction;
+- halftone dots for midtones;
+- short hatch groups for deep shade;
+- sharp two-value cast shadows;
+- tiny registration offsets only for specific expressive moments.
+
+Do not cover every surface with every texture. The image needs a hierarchy.
+
+#### Depth
+
+Depth is produced through:
+- foreground crops;
+- overlapping forms;
+- line-weight changes;
+- larger, darker foreground shapes;
+- paler / simpler background shapes;
+- panel crop and camera scale;
+- occasional offset print layers.
+
+V3 should not depend on soft blur, photorealistic depth of field or gradients.
+
+#### Comic-panel grammar
+
+A comic frame can contain one panel or several.
+
+Useful operations for V3:
+- vertical split panel for simultaneous “ear hears noise / stylus hits groove” information;
+- narrow inset panel for a macro detail;
+- panel border becoming a wipe;
+- one panel pushing another away;
+- circular record edge becoming a panel mask;
+- full-bleed impact frame when the stylus first lands;
+- small reaction panel for the protagonist's face.
+
+Panels are narrative containers, not decoration. A split is justified only when the viewer understands why two views are shown together.
+
+#### Expressive effects
+
+Use sparingly:
+- speed lines for a quick hand movement;
+- vibration lines around speaker / stylus during dirty playback;
+- small printed sound words for a crackle or brush swipe;
+- chromatic misregistration / offset line only during unpleasant playback;
+- radial impact lines when the stylus drops;
+- clean concentric music rings only after the second playback.
+
+The “bad sound” and “good sound” states must look different even on mute.
+
+#### Motion cadence
+
+V3 keeps a drawn-animation feeling:
+- character pose changes mainly on twos;
+- hand motion can use held key poses with short in-betweens;
+- record rotation is smooth enough to read mechanically;
+- camera can move at 24 fps;
+- environmental micro-motion stays subordinate;
+- impact frames may be only 1–2 frames;
+- reaction holds are allowed when the pose itself is strong.
+
+The film should avoid universal floaty easing.
+
+#### Colour scripting
+
+Colour should change with story state.
+
+Proposed V3 narrative colour logic:
+- discovery: warm neutral paper / amber room;
+- problem: cool/desaturated shadow, magenta/cyan registration noise;
+- cleaning: crisp teal / cream / black with a small amber highlight;
+- second playback: warm amber returns with deeper saturated accent colours;
+- final listening: richest, most stable palette of the film.
+
+The film should not signal “dirty” by simply making everything brown.
+
+#### Sound-picture linkage
+
+Comic sound needs graphic counterparts.
+
+Examples:
+- first stylus landing: physical click + a tiny impact burst;
+- dirty groove: crackle in audio + broken short vibration marks / misregistration;
+- brush stroke: dry sweep + parallel motion strokes;
+- vacuum / cleaning pass: low mechanical layer + travelling suction/contact line;
+- second stylus landing: same framing and physical click as first playback, but no chaotic noise layer;
+- clean music: stable motif + smooth concentric graphic movement.
+
+The repeated first/second playback is the film's proof, so audio and drawing must mirror one another.
+
+## Reference B — repository Butterfly benchmark
+
+Internal benchmark:
+- project: `examples/butterfly-life`
+- V3 benchmark sheet job: `d346d922-3c6e-4676-8313-a95553c9b05b`
+- 24 requested samples; 17 story shots represented by the runtime sheet.
+
+Butterfly is not the V3 art style. It is the **density / authored-finish benchmark**.
+
+The qualities carried forward are:
+- each frame contains subject-specific structure rather than generic decoration;
+- foreground, subject and background are all designed;
+- macro inserts reveal real detail instead of substituting symbols;
+- the film changes scale aggressively;
+- repeated geometry supports match cuts;
+- annotations are meaningful;
+- secondary objects help establish environment and scale;
+- shots have several temporal states instead of one object sliding across a static background;
+- the film's strongest transitions preserve a recognisable form while the surrounding world changes.
+
+V3 must reach that kind of authored density while remaining much easier to understand narratively.
+
+## What V3 deliberately does differently from both references
+
+1. It is a domestic human story, not a superhero spectacle and not a biological explainer.
+2. It uses a stable recurring protagonist across the whole film.
+3. It prefers concrete actions over diagrams.
+4. It treats the record / turntable / cleaning tools as props whose geometry must stay consistent.
+5. It uses comic panels as the main narrative architecture.
+6. It reserves abstract graphic effects for sound, attention, impact and transition support.
+7. It is shorter and quieter than the Spider-Verse reference. Density must not become visual shouting.
+8. It does not use the native paper-vs-blueprint alternation as its core grammar.
+
+## V3 scene-quality implications
+
+A production scene is not accepted merely because:
+- the code is deterministic;
+- the composition is attractive;
+- there is visible motion;
+- a subject expert can infer what the shapes mean.
+
+A V3 scene is accepted only when the dominant action is nameable from a still and remains clear across the six-frame sheet.
+
+Examples:
+- not “a circle with moving marks,” but “a vinyl record being inspected under a lamp”;
+- not “a hand-like polygon moves over lines,” but “a brush is visibly contacting the grooves”;
+- not “noise graphics appear,” but “the listener reacts to crackle during playback”;
+- not “warm colours return,” but “the same person visibly relaxes and enjoys the second playback.”
+
+## Style rules to carry over into art-bible sections 1–9
+
+1. **Comic readability before motion.** Every shot must read as a still panel before animation is added.
+2. **Stable character model.** The protagonist has fixed head/body/hand proportions, hairstyle, clothing silhouette and a small library of canonical poses.
+3. **Stable prop model.** Record, turntable, tonearm, stylus, brush and cleaning setup each get explicit drawable geometry and proportions.
+4. **Strong contour hierarchy.** Outer character/hero-prop contour is thickest; internal construction is lighter; environment linework is lightest.
+5. **Print texture hierarchy.** Halftone for broad midtone, hatching for deep shade, sparse stipple for dust/grit. Do not stack all three everywhere.
+6. **Sharp graphic shadows.** Prefer two-value cast/form shadows to soft gradients.
+7. **Panels are story mechanics.** Gutters, insets and splits must expose action, reaction or detail. They are never filler.
+8. **One dominant verb per shot.** Find, inspect, play, hear, decide, clean, return, lower, listen.
+9. **Primary motion is literal action.** Hands grip, record rotates, tonearm pivots, brush contacts grooves, stylus descends.
+10. **Secondary motion supports material reality.** Dust moves, sleeve flexes, cable / cloth shifts, small reflections travel, speaker cone reacts.
+11. **Motion cadence is mixed.** Characters mostly on twos; mechanical rotation and camera can be smooth; impact accents may be single-frame.
+12. **Dirty playback has a controlled distortion language.** Crackle, short magenta/cyan registration offsets, broken vibration marks. Never apply the effect continuously to the whole film.
+13. **Clean playback mirrors the dirty playback.** Reuse camera geometry and prop positions so the improvement is immediately comparable.
+14. **Sound effects get graphic counterparts.** Click, crackle, sweep and music each have distinct visual marks.
+15. **Colour is scripted by story state.** Warm discovery → colder problem → crisp cleaning → richest stable final palette.
+16. **Foreground crops create depth.** At least some illustrated shots use large cropped objects or hands in the foreground rather than flat centred layouts.
+17. **Environment is specific.** Shelf, sleeve, lamp, turntable controls, table edge and listening-room objects establish a believable place.
+18. **Macro detail must be concrete.** Groove, dust, stylus, brush fibres and cleaning contact are drawn recognisably, not replaced by explanatory icons.
+19. **Match cuts preserve concrete geometry.** Record circle, spindle centre, tonearm angle, hand position or panel edge can survive a transition.
+20. **Density is authored, not random.** Every extra mark must describe material, depth, action, sound or environment.
+21. **No default blueprint interludes.** A technical insert is allowed only if it remains visibly tied to the physical record/turntable/action.
+22. **Butterfly-level scene investment is the finish benchmark.** A hero scene may require hundreds of deliberate marks and multiple motion systems.
+23. **Quarter-scale story test.** On the 24-sample whole-film sheet, the narrative spine must still be recoverable without reading the storyboard.
+24. **Unaided human comprehension is final.** The user must understand the film without being told what each shape represents.
+
+## Reference-analysis acceptance
+
+The style direction is now sufficiently specific to rewrite the native art-bible house sections 1–9.
+
+The next native stage is **Research**, not Storyboard.
+
+Research must establish the concrete physical story:
+- record / sleeve / turntable geometry relevant to drawing;
+- visible dust / debris and groove contamination;
+- stylus-groove contact and noisy playback cues;
+- a truthful record-cleaning sequence;
+- handling rules that keep the record visibly plausible;
+- the visual distinction between pre-clean and post-clean states.
+
+Only after those phases have authoritative sources captured under `.tmp/research/` should the V3 art bible be written.
