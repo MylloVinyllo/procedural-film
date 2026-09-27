@@ -41,7 +41,7 @@ If the ChatGPT stream times out:
 | Scenes | COMPLETE | 10 production scenes + batch sheets + full gate | Music |
 | Music | COMPLETE | cue-matched score + tuned headroom + audio QA | Critic waves |
 | Critic waves | IN PROGRESS | 24-sample whole-film sheet + preview + P1/P2 fixes | final gate |
-| Deliver | PENDING | preview/master/shots list | after critic |
+| Deliver | IN PROGRESS | preview + master only; HTML player intentionally skipped | render preview |
 
 ## User-approved priorities
 
@@ -615,3 +615,50 @@ Exact resume:
 2. if green with no persistent cost warning, close Critic waves;
 3. start Deliver with preview, then master;
 4. do not spend time on the HTML player in V3.
+
+
+### TX-V3-013 final result — Critic waves
+
+Persistent cost warning found on the first final gate:
+- job `4806ba5a-fe21-4969-b3a7-5256946ebb66`
+- max swept cost 157 ms on `second-play`, above the 150 ms native threshold.
+
+Targeted fix:
+- reduced non-story table-grain render cost in scene 09 without changing G2/G3 playback geometry, timing, record identity or clean-state proof.
+- fix commit `df552f1ded781799f40218d8fec390ab4368d2db`
+
+Fresh scene-09 evidence:
+- six-frame job `a7873483-502e-4981-9b47-dc27e52ef57c` — SUCCEEDED
+- composition / tonearm sequence / macro inset / clean playback remain intact.
+
+Final native critic gate:
+- job `8fa3f117-04d4-4315-9efe-e518134ca746` — SUCCEEDED / 6 PASS
+- media PASS
+- determinism PASS
+- sources PASS
+- timeline PASS
+- draw PASS
+- cost PASS
+- max swept frame cost: 107 ms
+- median: 64 ms
+- mean: 61 ms
+- result: `OK in 31.6s`
+
+Critic waves: COMPLETE.
+
+## Active transaction
+
+**TX-V3-014 — Deliver**
+
+User priority:
+- do not spend time/resources on the HTML player in V3;
+- deliverable priority is the actual film.
+
+Exact next actions:
+1. render half-scale preview from source commit `df552f1ded781799f40218d8fec390ab4368d2db`;
+2. record preview artifact path / size / SHA-256;
+3. render 1080×1920 master from the same source commit;
+4. record master artifact path / size / SHA-256;
+5. close V3 deliver with a concise viewing note.
+
+If the stream times out during either render, resume the exact recorded job ID and do not duplicate the render.
