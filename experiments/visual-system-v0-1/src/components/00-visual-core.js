@@ -13,10 +13,13 @@
     const base=Math.atan2(dy,dx);
     const ca=clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1);
     const a=base+Math.acos(ca)*(bend>=0?1:-1);
+    const wrist=[shoulder[0]+Math.cos(base)*d,shoulder[1]+Math.sin(base)*d];
     return {
       shoulder:shoulder.slice(),
       elbow:[shoulder[0]+Math.cos(a)*l1,shoulder[1]+Math.sin(a)*l1],
-      wrist:target.slice()
+      wrist,
+      requested:target.slice(),
+      overreach:Math.max(0,raw-(l1+l2))
     };
   }
 
