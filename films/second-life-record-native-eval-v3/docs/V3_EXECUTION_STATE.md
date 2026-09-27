@@ -38,8 +38,8 @@ If the ChatGPT stream times out:
 | Storyboard | COMPLETE | `docs/storyboard.md`, 30 s / 10 shots / self-review closed | Timeline |
 | Timeline | COMPLETE | `src/timeline.js`, exact storyboard data / cues | Stub pass |
 | Stub pass | COMPLETE | six-check + preview + 10-shot sheet | Scenes |
-| Scenes | IN PROGRESS | isolated scene batches with six-frame review | continue batch B |
-| Music | PENDING | `src/music.js` + audio QA | after scenes |
+| Scenes | COMPLETE | 10 production scenes + batch sheets + full gate | Music |
+| Music | IN PROGRESS | replace demo score with V3 cue-matched composition | audio QA + gate |
 | Critic waves | PENDING | whole-film sheet + fresh corrections | after music |
 | Deliver | PENDING | preview/master/shots list | after critic |
 
@@ -486,3 +486,46 @@ Required:
 - reaction must visibly change from concern to relief without explanatory text;
 - final 1.5 s must open into the warm full listening room with the turning record still visible;
 - six-frame sheets and a fresh full gate before Scenes can close.
+
+
+### TX-V3-011 result — Scene batch E (09–10)
+
+Implementation:
+- 09 `second-play`: `4012c23253f0a286cb43b7e4833281d89e4db556`
+- 10 `enjoy-music`: `873c865e9de7c13b7fbc87856d5361bda48a6f08`
+- 10 seated-relief correction: `6e50e8742d38ad59cc659803c97cdb2f4b1fbb86`
+
+Six-frame evidence:
+- 09 job `eff83b33-a851-4f4f-bcd9-be2ad7778c0b` — SUCCEEDED
+- 10 initial job `4334ac06-b5e3-45eb-b643-afccc83f1677` — SUCCEEDED
+- 10 corrected job `144132bc-e0db-4ab3-9f57-383f5cdf2c57` — SUCCEEDED
+
+Visual acceptance:
+- 09 mirrors scene 03 turntable / tonearm / macro timing and G2/G3 geometry while visibly reducing contamination and removing problem distortion.
+- cleanGold/cleanTeal graphics appear only after physical stylus contact.
+- 10 opens as the scene-04 reaction/source mirror and then expands into the full warm listening room.
+- final pose was corrected so the protagonist is unmistakably seated, eyes softened/closed, hands resting and legs grounded; the final verb now reads as ENJOY rather than merely “stand near equipment”.
+- P1 issue found in first 10 pass: final seated state ambiguous.
+- P1 fix: VERIFIED on fresh six-frame sheet.
+
+Fresh native scene-complete gate:
+- job `c7cf3439-c633-4f2d-a480-a337cab62555` — SUCCEEDED / 6 PASS
+- max swept frame cost: 111 ms
+- determinism / media / sources / timeline / draw / cost all PASS
+
+Scenes stage: COMPLETE.
+
+## Active transaction
+
+**TX-V3-012 — Music**
+
+Required:
+- replace foundation demo score, not merely layer extra SFX over it;
+- implement the storyboard cue list against the existing native audio engine;
+- first half remains sparse and observational;
+- dirty playback T 9–12 must use physical click/crackle/interruption rather than cinematic “danger” music;
+- T 15 cleaning hinge introduces a clearer teal/clean tonal identity;
+- vacuum / brush / handling cues remain tied to physical actions;
+- T 24–27 mirrors the first playback sound mechanics without crackle;
+- T 27–30 opens into a stable warm motif without overpowering comprehension;
+- run native audio QA and then the full gate before Critic waves.
