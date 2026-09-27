@@ -28,7 +28,14 @@
 
   function drawTable(c){
     c.fillStyle=P.table;c.fillRect(0,0,1080,1920);
-    for(let i=0;i<30;i++)line(c,[[-50,70+i*62],[1130,80+i*62+10*Math.sin(i*.8)]],sd('grain',i),1,P.inkSoft,.12);
+    // Static wood grain is deliberately cheap: preserve room identity without spending
+    // procedural ink-path cost before the actual playback action begins.
+    c.save();c.strokeStyle=P.inkSoft;c.lineWidth=1;c.globalAlpha=.10;
+    for(let i=0;i<18;i++){
+      const y=92+i*98;
+      c.beginPath();c.moveTo(-40,y);c.lineTo(1120,y+8*Math.sin(i*.8));c.stroke();
+    }
+    c.restore();
     fill(c,[[0,0],[430,0],[120,1920],[0,1920]],P.paperDeep,.13);
     fill(c,[[1080,0],[880,0],[1020,1920],[1080,1920]],P.sunset,.05);
     c.strokeStyle=P.comicBorder;c.lineWidth=5;c.strokeRect(18,18,1044,1884);
