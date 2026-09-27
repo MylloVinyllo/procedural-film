@@ -365,3 +365,24 @@ Exact next actions:
 2. correct any P1 semantic failures in Batch A;
 3. run native six-check for Batch A head;
 4. only after green Batch A gate, proceed to retained story scenes 01–04 / 10–12.
+
+
+### TX-V4-007 Batch A critic correction checkpoint
+
+Fresh first-pass scene sheets exposed opaque-transition failures:
+- 07 first sheet job `b838745e-a9ef-4e3e-a730-970c39a04e29`
+  - P1: macro entered as transparent overlay / ghosted machine
+- 08 first sheet job `9ab21fd4-fbbd-4b2c-99f5-2a7888c5c06c`
+  - P1: vacuum macro entered as transparent overlay / ghosted machine
+- 09 first sheet job `f7d55fa0-7862-452f-93cf-9bc031aa8736`
+  - P1: BEFORE/AFTER → physical-record resolve used alpha crossfade and produced a double-exposure state
+
+Corrections:
+- 07 opaque macro reveal: `0e555487fb82139ea28717981f38c65761119f2d`
+- 08 opaque macro reveal: `5c58a229d2d286ee40d520c55d073ea647755fb1`
+- 09 opaque spatial wipe into physical record: `dbb21393a9504136182fbd055260a4da96d9eb3f`
+
+Exact next action:
+1. re-snap 07, 08, 09 from the corrected head;
+2. if opaque transitions read cleanly, run Batch A native six-check;
+3. only then proceed to 01–04 / 10–12.
