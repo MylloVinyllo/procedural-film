@@ -22,8 +22,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Stub/sequence validation | COMPLETE | green gate + 12-shot sheet + 36 s half-scale stub preview | Scenes |
 | Scenes | COMPLETE | product-first batch 05–09 + accepted V3 story scenes 01–04/10–12 + whole-film sheet + green gate | Music/SFX |
 | Music/SFX | COMPLETE | 36 s score + Myllo process SFX + audio QA + green gate | Critic waves |
-| Critic waves | IN PROGRESS | 24-sample whole-film sheet + transition review | final visual gate |
-| Deliver | PENDING | preview/master | after critic |
+| Critic waves | COMPLETE | whole-film sheet + product transition sheets + green post-audio gate | Deliver |
+| Deliver | IN PROGRESS | preview → master; HTML player skipped | render preview |
 | Human review | PENDING | viewer notes | after master |
 
 ## V3 baseline
@@ -525,3 +525,49 @@ Exact next actions:
 3. if any transparent/ambiguous midpoint remains, correct and re-snap;
 4. run final native gate after any correction;
 5. then Deliver: preview → master, no HTML-player work.
+
+
+### TX-V4-009 result — Critic waves
+
+Fresh whole-film critic sheet:
+- job `a4be80f1-c963-4d21-8de1-049936f5a025` — SUCCEEDED
+- runtime produced one representative sample per each of the 12 shots
+- the twelve-verb narrative remains recoverable at quarter scale
+
+Cleaning-stage critic evidence retained from dense implementation:
+- 05 product reveal sheet `0f2e6e2d-5fbd-4f6a-bd06-e6c9742228d6`
+- 06 solution/feed sheet `4b52eaef-c3ec-45f2-86cc-2613299036f3`
+- 07 corrected opaque macro sheet `8b3cab90-9481-4153-b549-36ecca43990b`
+- 08 corrected opaque vacuum macro sheet `447d3881-fc20-4459-8a64-e0fb0b928d01`
+- 09 corrected BEFORE/AFTER resolve sheet `819e14f2-d60f-474d-a660-7d1ef7ebf978`
+
+Critic conclusions:
+- Myllo washer now reads as a dedicated black machine with body depth, clamp, asymmetric working nodes and a white four-control front plate;
+- solution/feed, brush/REVERSE, VACUUM and BEFORE/AFTER are distinct named stages;
+- transparent double-exposure transitions found during Batch A were corrected before this critic pass;
+- BEFORE/AFTER groove evidence is concrete rather than a colour-state metaphor;
+- first/second playback remains mirrored around the expanded cleaning block.
+
+Final technical gate for unchanged source:
+- job `49905fcf-f35a-400a-bea1-cf63e114a5fa` — SUCCEEDED / 6 PASS
+- max swept cost 120 ms
+- audio QA also green
+
+No additional P1/P2 source changes are required before human viewing.
+
+Critic waves: COMPLETE.
+
+## Active transaction
+
+**TX-V4-010 — Deliver**
+
+User priority remains:
+- actual film first;
+- no HTML-player repair/build work.
+
+Exact next actions:
+1. render half-scale preview from current V4 head;
+2. record artifact path / size / SHA-256;
+3. render 1080×1920 master;
+4. record artifact path / size / SHA-256;
+5. mark Deliver COMPLETE and hand V4 to human review.
