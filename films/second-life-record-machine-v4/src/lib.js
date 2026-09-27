@@ -2122,6 +2122,79 @@
     v4FillPoly(ctx, lib.ellipsePts(cx, cy, rx, ry, 56), fill, stroke, width, alpha);
   }
 
+  function v4SolidCapsule(ctx, a, b, width, fill, stroke = pal.inkSoft, strokeWidth = 2.5, alpha = 1) {
+    const dx=b[0]-a[0], dy=b[1]-a[1], len=Math.max(1,Math.hypot(dx,dy)), ang=Math.atan2(dy,dx);
+    const pts=lib.capsulePts((a[0]+b[0])/2,(a[1]+b[1])/2,len+width,width/2,ang,40);
+    v4FillPoly(ctx,pts,fill,stroke,strokeWidth,alpha);
+    return pts;
+  }
+
+  /**
+   * v4GripHand(ctx,{x,y,rot,scale,grip,alpha})
+   * A compact anatomical comic hand. The wrist, palm, finger group and opposing thumb
+   * are separate shapes so a grip reads as a grip rather than a mitten blob.
+   */
+  lib.v4GripHand = (ctx,o={}) => {
+    const x=o.x||0,y=o.y||0,rot=o.rot||0,scale=o.scale!=null?o.scale:1;
+    const alpha=o.alpha!=null?o.alpha:1, grip=o.grip||'edge';
+    ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(scale,scale);ctx.globalAlpha*=alpha;
+
+    // wrist and tapered palm
+    v4SolidCapsule(ctx,[-44,0],[5,0],38,pal.skin,pal.inkSoft,2.2,.98);
+    const palm=[[-9,-30],[30,-27],[49,-10],[46,25],[12,37],[-16,24]];
+    v4FillPoly(ctx,palm,pal.skin,pal.inkSoft,2.5,.99);
+    v4FillPoly(ctx,[[12,-26],[39,-10],[36,23],[15,29]],pal.skinShadow,null,0,.26);
+
+    // three visible fingers share the object edge but retain individual joints
+    const fan=grip==='label' ? [-.17,0,.16] : [-.25,-.05,.14];
+    for(let i=0;i<3;i++){
+      const yy=-20+i*18;
+      const a=fan[i];
+      const p0=[31,yy], p1=[70+Math.cos(a)*8,yy+Math.sin(a)*20];
+      v4SolidCapsule(ctx,p0,p1,13,pal.skin,pal.inkSoft,1.6,.99);
+      ctx.save();ctx.strokeStyle=pal.skinShadow;ctx.lineWidth=1.2;ctx.globalAlpha*=.38;
+      ctx.beginPath();ctx.moveTo(52,yy-4);ctx.lineTo(55,yy+5);ctx.stroke();ctx.restore();
+    }
+
+    // thumb opposes the finger group. This opposition is the critical grip cue.
+    const th0=grip==='label'?[2,12]:[-1,10];
+    const th1=grip==='label'?[52,24]:[45,31];
+    v4SolidCapsule(ctx,th0,th1,17,pal.skin,pal.inkSoft,1.9,.99);
+    ctx.save();ctx.strokeStyle=pal.skinShadow;ctx.lineWidth=1.4;ctx.globalAlpha*=.5;
+    ctx.beginPath();ctx.moveTo(-5,12);ctx.quadraticCurveTo(10,23,29,26);ctx.stroke();ctx.restore();
+    ctx.restore();
+  };
+
+  /**
+   * v4ArmIK(ctx,{shoulder,target,l1,l2,bend,...})
+   * Two-bone arm solved from the actual hand target. The hand can therefore stay locked
+   * to a record/tool while shoulder and elbow remain mechanically coherent.
+   */
+  lib.v4ArmIK = (ctx,o={}) => {
+    const S=o.shoulder||[0,0], T=o.target||[100,100];
+    const l1=o.l1||170,l2=o.l2||155,bend=o.bend!=null?o.bend:1;
+    const dx=T[0]-S[0],dy=T[1]-S[1];
+    const raw=Math.hypot(dx,dy), d=clamp(raw,Math.abs(l1-l2)+2,l1+l2-2);
+    const base=Math.atan2(dy,dx);
+    const ca=clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1);
+    const off=Math.acos(ca)*bend;
+    const ea=base+off;
+    const E=[S[0]+Math.cos(ea)*l1,S[1]+Math.sin(ea)*l1];
+    const upperW=o.upperWidth||72, foreW=o.foreWidth||56;
+    const upper=o.upperColor||pal.shirt, fore=o.foreColor||pal.skin;
+    const alpha=o.alpha!=null?o.alpha:1;
+
+    v4SolidCapsule(ctx,S,E,upperW,upper,pal.inkSoft,3.2,alpha);
+    v4SolidCapsule(ctx,E,T,foreW,fore,pal.inkSoft,2.8,alpha);
+    v4Ellipse(ctx,E[0],E[1],foreW*.42,foreW*.42,pal.skin,pal.inkSoft,2.0,alpha);
+    const wr=Math.atan2(T[1]-E[1],T[0]-E[0]);
+    if(o.drawHand!==false) lib.v4GripHand(ctx,{
+      x:T[0],y:T[1],rot:o.handRot!=null?o.handRot:wr,scale:o.handScale!=null?o.handScale:.8,
+      grip:o.grip||'edge',alpha
+    });
+    return {shoulder:S,elbow:E,wrist:T,wristAngle:wr};
+  };
+
   function v4Button(ctx, x, y, label, active) {
     ctx.save();
     ctx.strokeStyle = active ? pal.mylloRingActive : pal.mylloRing;
@@ -2141,53 +2214,66 @@
 
   function v4Node(ctx, pivotX, pivotY, engage, brush) {
     engage = clamp(engage);
-    const parkA = brush ? -1.05 : -2.05;
-    const workA = brush ? 0.62 : 2.45;
+    const parkA = brush ? -1.12 : -2.02;
+    const workA = brush ? 0.58 : 2.53;
     const a = lerp(parkA, workA, ease.inOutCubic(engage));
-    const len = brush ? 255 : 290;
-    const cx = pivotX + Math.cos(a) * len * 0.48;
-    const cy = pivotY + Math.sin(a) * len * 0.48;
+    const len = brush ? 260 : 300;
+    const axis=[Math.cos(a),Math.sin(a)], normal=[-axis[1],axis[0]];
+    const cx = pivotX + axis[0] * len * 0.49;
+    const cy = pivotY + axis[1] * len * 0.49;
 
-    // pivot column and joint
-    v4Ellipse(ctx, pivotX, pivotY, 39, 15, pal.metal, pal.inkSoft, 2.5);
-    v4FillPoly(ctx, [[pivotX-20,pivotY],[pivotX+20,pivotY],[pivotX+20,pivotY-108],[pivotX-20,pivotY-108]], pal.metal, pal.inkSoft, 2.5);
-    v4Ellipse(ctx, pivotX, pivotY-108, 22, 9, pal.white, pal.inkSoft, 1.5, 0.82);
+    // grounded pivot: base foot, vertical post, hinge. The three parts share one centre line.
+    v4Ellipse(ctx,pivotX,pivotY+5,45,17,pal.mylloEdge,pal.inkSoft,2.4,.72);
+    v4FillPoly(ctx,[[pivotX-22,pivotY+2],[pivotX+22,pivotY+2],[pivotX+22,pivotY-112],[pivotX-22,pivotY-112]],pal.metal,pal.inkSoft,2.5);
+    v4Ellipse(ctx,pivotX,pivotY-112,25,10,pal.white,pal.inkSoft,1.7,.9);
 
-    // metal cylinder
-    v4FillPoly(ctx, lib.capsulePts(cx, cy, len, brush ? 30 : 25, a, 50), pal.metal, pal.inkSoft, 2.3);
-    const tipX = pivotX + Math.cos(a) * len * 0.94;
-    const tipY = pivotY + Math.sin(a) * len * 0.94;
-    v4Ellipse(ctx, tipX, tipY, brush ? 19 : 15, brush ? 10 : 8, pal.white, pal.inkSoft, 1.2, 0.7);
+    // housing with highlight and dark underside gives the cylinder actual volume.
+    v4FillPoly(ctx,lib.capsulePts(cx,cy,len,brush?34:29,a,56),pal.metal,pal.inkSoft,2.4);
+    ctx.save();ctx.strokeStyle=pal.white;ctx.lineWidth=3;ctx.globalAlpha*=.42;
+    ctx.beginPath();
+    ctx.moveTo(cx-axis[0]*len*.37-normal[0]*7,cy-axis[1]*len*.37-normal[1]*7);
+    ctx.lineTo(cx+axis[0]*len*.34-normal[0]*7,cy+axis[1]*len*.34-normal[1]*7);
+    ctx.stroke();
+    ctx.strokeStyle=pal.mylloEdge;ctx.lineWidth=5;ctx.globalAlpha=.35;
+    ctx.beginPath();
+    ctx.moveTo(cx-axis[0]*len*.36+normal[0]*10,cy-axis[1]*len*.36+normal[1]*10);
+    ctx.lineTo(cx+axis[0]*len*.34+normal[0]*10,cy+axis[1]*len*.34+normal[1]*10);
+    ctx.stroke();ctx.restore();
 
-    if (brush) {
-      // Exaggerated bristle fringe survives quarter-scale.
-      const nx = -Math.sin(a), ny = Math.cos(a);
-      const bx = cx + nx * 30, by = cy + ny * 30;
-      ctx.save();
-      ctx.strokeStyle = engage > 0.72 ? pal.mylloBristleWet : pal.mylloBristle;
-      ctx.lineWidth = 2.4;
-      ctx.lineCap = 'round';
-      for (let i = -9; i <= 9; i++) {
-        const u = i * 8.2;
-        const x0 = bx + Math.cos(a) * u, y0 = by + Math.sin(a) * u;
-        ctx.beginPath(); ctx.moveTo(x0, y0);
-        ctx.lineTo(x0 + nx * (20 + (i & 1) * 7), y0 + ny * (20 + (i & 1) * 7));
-        ctx.stroke();
+    const tipX=pivotX+axis[0]*len*.95, tipY=pivotY+axis[1]*len*.95;
+    v4Ellipse(ctx,tipX,tipY,brush?20:16,brush?11:9,pal.white,pal.inkSoft,1.3,.82);
+
+    if(brush){
+      // paired floating goat-hair brush beds. Compression increases only near contact.
+      const compression=engage>.72 ? (engage-.72)/.28 : 0;
+      const bedX=cx+normal[0]*31, bedY=cy+normal[1]*31;
+      ctx.save();ctx.strokeStyle=engage>.72?pal.mylloBristleWet:pal.mylloBristle;
+      ctx.lineWidth=2.25;ctx.lineCap='round';
+      for(let row=0;row<2;row++){
+        for(let i=-10;i<=10;i++){
+          const u=i*8.4 + (row?4.2:0);
+          const x0=bedX+axis[0]*u+normal[0]*row*6;
+          const y0=bedY+axis[1]*u+normal[1]*row*6;
+          const br=22+(i&1)*5-compression*7;
+          const lean=(i%3-1)*2;
+          ctx.beginPath();ctx.moveTo(x0,y0);
+          ctx.lineTo(x0+normal[0]*br+axis[0]*lean,y0+normal[1]*br+axis[1]*lean);ctx.stroke();
+        }
       }
       ctx.restore();
-    } else {
-      // Vacuum slot is longer and graphically continuous.
-      const nx = -Math.sin(a), ny = Math.cos(a);
-      const sx = cx + nx * 24, sy = cy + ny * 24;
-      ctx.save();
-      ctx.strokeStyle = pal.vacuum; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    }else{
+      // collection wand: continuous velvet slot, visibly different from the brush node.
+      const sx=cx+normal[0]*24,sy=cy+normal[1]*24;
+      ctx.save();ctx.strokeStyle=pal.vacuum;ctx.lineWidth=11;ctx.lineCap='round';
       ctx.beginPath();
-      ctx.moveTo(sx - Math.cos(a) * 92, sy - Math.sin(a) * 92);
-      ctx.lineTo(sx + Math.cos(a) * 92, sy + Math.sin(a) * 92);
-      ctx.stroke();
-      ctx.restore();
+      ctx.moveTo(sx-axis[0]*104,sy-axis[1]*104);
+      ctx.lineTo(sx+axis[0]*104,sy+axis[1]*104);ctx.stroke();
+      ctx.strokeStyle=pal.white;ctx.lineWidth=2;ctx.globalAlpha*=.25;
+      ctx.beginPath();
+      ctx.moveTo(sx-axis[0]*98-normal[0]*4,sy-axis[1]*98-normal[1]*4);
+      ctx.lineTo(sx+axis[0]*98-normal[0]*4,sy+axis[1]*98-normal[1]*4);ctx.stroke();ctx.restore();
     }
-    return { angle:a, cx, cy, tipX, tipY };
+    return {angle:a,cx,cy,tipX,tipY};
   }
 
   /**
@@ -2198,79 +2284,68 @@
    *  wet 0..1, dry 0..1, reverse bool, alpha
    */
   lib.v4MylloMachine = (ctx, o = {}) => {
-    const alpha = o.alpha != null ? o.alpha : 1;
-    ctx.save();
-    ctx.globalAlpha *= alpha;
+    const alpha=o.alpha!=null?o.alpha:1;
+    const recordAlpha=o.recordAlpha!=null?clamp(o.recordAlpha):1;
+    const clampAlpha=o.clampAlpha!=null?clamp(o.clampAlpha):recordAlpha;
+    ctx.save();ctx.globalAlpha*=alpha;
 
-    const top = [[185,620],[835,620],[950,900],[110,900]];
-    const front = [[110,900],[950,900],[895,1370],[155,1370]];
-    const right = [[835,620],[950,900],[895,1370],[825,1090]];
-    v4FillPoly(ctx, front, pal.mylloBody, pal.ink, 6);
-    v4FillPoly(ctx, right, pal.mylloEdge, pal.inkSoft, 3, 0.95);
-    v4FillPoly(ctx, top, pal.mylloTop, pal.ink, 5);
+    // One coherent perspective cage. All visible planes share the same four corner rays.
+    const BL=[185,610], BR=[842,610], FR=[958,912], FL=[105,912];
+    const FBL=[155,1390], FBR=[902,1390], RBL=[820,1088];
+    const top=[BL,BR,FR,FL], front=[FL,FR,FBR,FBL], right=[BR,FR,FBR,RBL];
+    v4FillPoly(ctx,front,pal.mylloBody,pal.ink,6);
+    v4FillPoly(ctx,right,pal.mylloEdge,pal.inkSoft,3,.98);
+    v4FillPoly(ctx,top,pal.mylloTop,pal.ink,5);
 
-    // record
-    v4Ellipse(ctx, 535, 785, 310, 118, pal.vinyl, pal.vinylEdge, 5);
-    ctx.save();
-    for (let i = 0; i < 13; i++) {
-      const rr = 290 - i * 15;
-      ctx.strokeStyle = pal.groove;
-      ctx.lineWidth = i % 4 === 0 ? 1.6 : 0.8;
-      ctx.globalAlpha = i % 4 === 0 ? 0.42 : 0.28;
-      ctx.beginPath();
-      ctx.ellipse(535, 785, rr, 116 * (rr/310), 0, 0, TAU);
-      ctx.stroke();
-    }
-    ctx.restore();
+    // crisp construction seams prevent the black body from collapsing into a crooked blob.
+    ctx.save();ctx.strokeStyle=pal.white;ctx.lineWidth=2;ctx.globalAlpha*=.12;
+    ctx.beginPath();ctx.moveTo(BL[0]+18,BL[1]+13);ctx.lineTo(BR[0]-18,BR[1]+13);ctx.stroke();
+    ctx.strokeStyle=pal.inkSoft;ctx.globalAlpha=.45;ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(FL[0]+8,FL[1]+14);ctx.lineTo(FR[0]-8,FR[1]+14);ctx.stroke();ctx.restore();
 
-    // thin wet film, deliberately not a broad recolouring
-    const wet = clamp(o.wet || 0);
-    if (wet > 0) {
-      ctx.save();
-      ctx.strokeStyle = pal.mylloWetPale;
-      ctx.globalAlpha *= 0.2 + 0.35 * wet;
-      ctx.lineWidth = 8 + 4 * wet;
-      for (let k = 0; k < 3; k++) {
-        ctx.beginPath();
-        ctx.ellipse(535,785,205+k*27,78+k*10,0,0.15,5.7);
-        ctx.stroke();
+    // record lies on the same projected top plane.
+    if(recordAlpha>0){
+      ctx.save();ctx.globalAlpha*=recordAlpha;
+      v4Ellipse(ctx,535,785,310,118,pal.vinyl,pal.vinylEdge,5);
+      for(let i=0;i<13;i++){
+        const rr=290-i*15;
+        ctx.strokeStyle=pal.groove;ctx.lineWidth=i%4===0?1.6:.8;
+        ctx.globalAlpha=i%4===0?.42:.28;
+        ctx.beginPath();ctx.ellipse(535,785,rr,116*(rr/310),0,0,TAU);ctx.stroke();
       }
+      const wet=clamp(o.wet||0);
+      if(wet>0){
+        ctx.strokeStyle=pal.mylloWetPale;ctx.globalAlpha=.2+.35*wet;ctx.lineWidth=8+4*wet;
+        for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(535,785,205+k*27,78+k*10,0,.15,5.7);ctx.stroke();}
+      }
+      const dry=clamp(o.dry||0);
+      if(dry>0){
+        ctx.strokeStyle=pal.groove;ctx.globalAlpha=.55*dry;ctx.lineWidth=2.2;
+        for(let k=0;k<5;k++){const rr=215+k*20;ctx.beginPath();ctx.ellipse(535,785,rr,82+k*7,0,3.35,5.85);ctx.stroke();}
+      }
+      v4Ellipse(ctx,535,785,92,35,pal.label,pal.labelDeep,2.5);
+      const a=o.rotation||0;
+      ctx.strokeStyle=pal.white;ctx.globalAlpha=.8;ctx.lineWidth=4.5;
+      ctx.beginPath();ctx.moveTo(535,785);ctx.lineTo(535+Math.cos(a)*68,785+Math.sin(a)*25);ctx.stroke();
       ctx.restore();
     }
 
-    // dry-ahead/behind material wedge during vacuum
-    const dry = clamp(o.dry || 0);
-    if (dry > 0) {
-      ctx.save();
-      ctx.strokeStyle = pal.groove;
-      ctx.globalAlpha *= 0.55 * dry;
-      ctx.lineWidth = 2.2;
-      for (let k=0;k<5;k++) {
-        const rr=215+k*20;
-        ctx.beginPath();
-        ctx.ellipse(535,785,rr,82+k*7,0,3.35,5.85);
-        ctx.stroke();
-      }
+    // aluminium clamp is a separate physical object and can arrive after the record.
+    if(clampAlpha>0){
+      ctx.save();ctx.globalAlpha*=clampAlpha;
+      v4Ellipse(ctx,535,800,68,29,pal.metal,pal.inkSoft,2.5);
+      v4FillPoly(ctx,[[500,798],[570,798],[558,740],[512,740]],pal.metal,pal.inkSoft,2.5);
+      v4Ellipse(ctx,535,741,24,9,pal.white,pal.inkSoft,1.5,.8);
       ctx.restore();
     }
 
-    // label / rotation tick / clamp
-    v4Ellipse(ctx, 535,785,92,35,pal.label,pal.labelDeep,2.5);
-    const a = o.rotation || 0;
-    ctx.save(); ctx.strokeStyle = pal.white; ctx.globalAlpha *= .8; ctx.lineWidth = 4.5;
-    ctx.beginPath(); ctx.moveTo(535,785); ctx.lineTo(535+Math.cos(a)*68,785+Math.sin(a)*25); ctx.stroke(); ctx.restore();
-    v4Ellipse(ctx,535,800,68,29,pal.metal,pal.inkSoft,2.5);
-    v4FillPoly(ctx,[[500,798],[570,798],[558,740],[512,740]],pal.metal,pal.inkSoft,2.5);
-    v4Ellipse(ctx,535,741,24,9,pal.white,pal.inkSoft,1.5,.8);
+    const supply=v4Node(ctx,285,645,o.supply||0,true);
+    const vacuum=v4Node(ctx,790,645,o.vacuum||0,false);
 
-    const supply = v4Node(ctx,285,645,o.supply || 0,true);
-    const vacuum = v4Node(ctx,790,645,o.vacuum || 0,false);
-
-    // front control plate
-    v4FillPoly(ctx, lib.rrectPts(350,985,360,280,126,16), pal.mylloPanel, pal.mylloPanelInk, 3);
-    // quiet middle wordmark zone + thin routing rectangle
-    ctx.save(); ctx.strokeStyle = pal.mylloPanelInk; ctx.lineWidth = 1.5; ctx.globalAlpha *= .6;
-    ctx.beginPath(); ctx.roundRect(408,1066,244,119,12); ctx.stroke(); ctx.restore();
+    // signature white control plate, aligned to the front face.
+    v4FillPoly(ctx,lib.rrectPts(350,985,360,280,126,16),pal.mylloPanel,pal.mylloPanelInk,3);
+    ctx.save();ctx.strokeStyle=pal.mylloPanelInk;ctx.lineWidth=1.5;ctx.globalAlpha*=.55;
+    ctx.beginPath();ctx.roundRect(405,1070,250,112,12);ctx.stroke();ctx.restore();
     v4Button(ctx,450,1045,'START',o.active==='START');
     v4Button(ctx,610,1045,'REVERSE',o.active==='REVERSE');
     v4Button(ctx,450,1200,'PUMP',o.active==='PUMP');
@@ -2280,8 +2355,12 @@
     v4Ellipse(ctx,530,1325,12,7,pal.mylloBlueLed,null,0);
     ctx.save();ctx.fillStyle=pal.mylloBlueLed;ctx.globalAlpha*=.18;ctx.beginPath();ctx.arc(530,1325,21,0,TAU);ctx.fill();ctx.restore();
 
+    // small feet make the mass sit on the table rather than float.
+    v4Ellipse(ctx,235,1390,30,9,pal.mylloEdge,null,0,.7);
+    v4Ellipse(ctx,820,1390,30,9,pal.mylloEdge,null,0,.7);
+
     ctx.restore();
-    return { supply, vacuum };
+    return {supply,vacuum};
   };
 
   /**
