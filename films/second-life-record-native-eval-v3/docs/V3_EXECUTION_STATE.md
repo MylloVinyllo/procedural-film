@@ -594,3 +594,24 @@ Exact next actions:
 1. generate a fresh whole-film critic sheet from the current head;
 2. if the ten-shot spine remains readable, run the full native gate;
 3. if gate is fully green with no persistent cost warning, close Critic waves and queue the audio preview/master Deliver jobs.
+
+
+### TX-V3-013 critic wave 1 — fresh whole-film verification checkpoint
+
+Fresh whole-film critic sheet:
+- job `41864f44-53ee-4bb6-805d-7b96eb38c2d5` — SUCCEEDED
+- 10 story samples in order from current critic head
+- current branch head reviewed: `6f4ee4f7322bab05aedb6808d31ce4517e6f22c9`
+- scene 05 midpoint now reads as an opaque comic spatial wipe rather than a ghosted dissolve
+- scene 10 midpoint now reads as an opaque reaction/listening-room transition rather than a transparent double exposure
+- the ten-verb spine remains visually recoverable at quarter scale
+
+Active final critic gate:
+- job `4806ba5a-fe21-4969-b3a7-5256946ebb66`
+- input commit `6f4ee4f7322bab05aedb6808d31ce4517e6f22c9`
+
+Exact resume:
+1. query `4806ba5a-fe21-4969-b3a7-5256946ebb66`;
+2. if green with no persistent cost warning, close Critic waves;
+3. start Deliver with preview, then master;
+4. do not spend time on the HTML player in V3.
