@@ -662,3 +662,15 @@ Exact next actions:
 5. close V3 deliver with a concise viewing note.
 
 If the stream times out during either render, resume the exact recorded job ID and do not duplicate the render.
+
+
+### TX-V3-014 runtime checkpoint
+
+Active half-scale preview:
+- job `4e7d1797-f823-4388-ba7b-bb902b07e490`
+- source commit `df552f1ded781799f40218d8fec390ab4368d2db`
+
+Exact resume:
+1. query `4e7d1797-f823-4388-ba7b-bb902b07e490`;
+2. if succeeded, record artifact metadata;
+3. then start one master render from the same source commit.
