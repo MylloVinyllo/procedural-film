@@ -338,3 +338,30 @@ Batch acceptance:
 - wet-film physicality;
 - before/after groove matching;
 - batch native gate before moving to 01–04 / 10–12.
+
+
+### TX-V4-007 Batch A implementation checkpoint
+
+Shared product helpers:
+- `src/lib.js`
+- commit `d5220598ca2ca26ca7de20c8eed4f13a57764a17`
+- helpers: V4 process band, canonical 3/4 Myllo machine, distinct brush/vacuum nodes, groove macro
+
+Dense product scenes implemented:
+- 05 `reveal-myllo` — commit `37393933a5899c64640c5309ac6c0e732b8bbb4a`
+- 06 `pump-solution` — commit `bb6c8ebcd98de9e555b9e0b23d212ed8846a6d94`
+- 07 `brush-reverse` — commit `7b0c50b9eebb47386d230475248f2e3f4c89da76`
+- 08 `vacuum-collect` — commit `a0579077b8b854ecce73e5a145999cadbb630db4`
+- 09 `grooves-before-after` — commit `eb42c0920a7231d8173478c6be94c90b3baab6ee`
+
+Fresh visual evidence already reviewed:
+- 05 six-frame sheet job `0f2e6e2d-5fbd-4f6a-bd06-e6c9742228d6` — SUCCEEDED
+  - 3/4 black machine, top record/clamp, two working nodes, white four-control front plate and process band are readable
+- 06 six-frame sheet job `4b52eaef-c3ec-45f2-86cc-2613299036f3` — SUCCEEDED
+  - supply/brush node visibly pivots and engages; wet film remains a thin accent; groove/brush macro appears
+
+Exact next actions:
+1. generate and inspect six-frame sheets for 07, 08 and 09 from current head `eb42c0920a7231d8173478c6be94c90b3baab6ee`;
+2. correct any P1 semantic failures in Batch A;
+3. run native six-check for Batch A head;
+4. only after green Batch A gate, proceed to retained story scenes 01–04 / 10–12.
