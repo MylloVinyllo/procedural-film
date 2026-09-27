@@ -111,6 +111,17 @@
       // Owner-requested product identification plate: names the object while the machine is unobscured.
       const tag=sstep(.78,1.12,t)*(1-sstep(2.5,2.86,t));
       productLabel(c,tag);
+      if(tag>.04){
+        // Brief product-identification bracket: highlights the whole washer, not a single wand.
+        c.save();c.strokeStyle=P.cleanGold;c.lineWidth=3;c.globalAlpha=.34*tag;
+        const x=78,y=575,w=910,h=850,k=52;
+        c.beginPath();
+        c.moveTo(x+k,y);c.lineTo(x,y);c.lineTo(x,y+k);
+        c.moveTo(x+w-k,y);c.lineTo(x+w,y);c.lineTo(x+w,y+k);
+        c.moveTo(x,y+h-k);c.lineTo(x,y+h);c.lineTo(x+k,y+h);
+        c.moveTo(x+w-k,y+h);c.lineTo(x+w,y+h);c.lineTo(x+w,y+h-k);
+        c.stroke();c.restore();
+      }
 
       if(reveal>.8){
         c.save();c.strokeStyle=P.comicBorder;c.lineWidth=5;c.globalAlpha=.65*reveal;c.strokeRect(18,18,1044,1884);c.restore();
