@@ -89,14 +89,21 @@
           upperWidth:86,foreWidth:61,handScale:.68,handRot:Math.PI+.10,grip:'edge',alpha:a});
       }
 
-      // Clamp gets a short, mechanically attached hand action after the record is seated.
-      const clampHand=(clampOn)*(1-release);
-      if(clampHand>.02){
-        const target=[535,748];
-        L.v4ArmIK(c,{shoulder:[820,1280],target,l1:330,l2:280,bend:-1,
-          upperWidth:80,foreWidth:56,handScale:.62,handRot:-2.25,grip:'label',alpha:clampHand});
-        c.save();c.strokeStyle=P.metal;c.lineWidth=5;c.globalAlpha=.45*clampHand;
-        c.beginPath();c.arc(535,748,50,-.1,1.0);c.stroke();c.restore();
+      // Clamp action: enter from the top-right work side, touch the clamp, then physically retract.
+      // No cross-fade through the machine body: the limb moves away instead of becoming a ghost.
+      const clampIn=sstep(1.56,1.78,t);
+      const clampOut=sstep(2.08,2.34,t);
+      if(clampIn>.02 && clampOut<.995){
+        const parked=[960,650], contact=[535,748];
+        const phase=clampOut>0 ? 1-clampOut : clampIn;
+        const target=[lerp(parked[0],contact[0],phase),lerp(parked[1],contact[1],phase)];
+        L.v4ArmIK(c,{shoulder:[1070,760],target,l1:260,l2:245,bend:-1,
+          upperWidth:76,foreWidth:54,handScale:.60,handRot:-2.72,grip:'label',alpha:1});
+        const touch=sstep(1.74,1.90,t)*(1-sstep(2.02,2.16,t));
+        if(touch>.02){
+          c.save();c.strokeStyle=P.metal;c.lineWidth=5;c.globalAlpha=.42*touch;
+          c.beginPath();c.arc(535,748,46,-.15,.95);c.stroke();c.restore();
+        }
       }
 
       L.v4ProcessBand(c,{index:1,main:'ОЧИСТКА ПЛАСТИНКИ',p:sstep(.45,.82,t)});
