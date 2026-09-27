@@ -83,16 +83,7 @@
   }
 
   function drawGrip(c,x,y,rot,seed,a){
-    c.save();c.translate(x,y);c.rotate(rot);c.globalAlpha*=a;
-    const palm=[[-64,-42],[8,-48],[64,-17],[67,38],[8,65],[-60,30]];
-    inkFill(c,palm,P.skin,seed,4.3,.98);
-    fill(c,[[8,-45],[60,-16],[60,32],[14,40]],P.skinShadow,.26);
-    for(let i=0;i<3;i++){
-      const yy=-28+i*23;
-      inkFill(c,[[35,yy],[74,yy+2],[82,yy+15],[46,yy+18]],P.skin,seed+10+i,2.1,.98);
-    }
-    inkFill(c,[[-4,-7],[46,-1],[57,19],[10,30],[-26,12]],P.skin,seed+20,2.3,.98);
-    c.restore();
+    L.v4GripHand(c,{x,y,rot,scale:.86,grip:'edge',alpha:a});
   }
 
   function drawCarry(c,t){
@@ -115,13 +106,20 @@
       rot=lerp(.12,0,settle);
     }
 
-    // hands and disc travel together; hands fade only after disc reaches G2
+    // Disc, forearms and grip share one rigid carry frame. Elbows are solved from rim targets,
+    // so the fingers cannot drift away from the record while it travels.
     c.save();c.translate(x,y);c.scale(scale,scale);c.rotate(rot);
-    drawRecordAt(c,0,0,1,0,1,true);
     const handA=1-release;
+    const left=[Math.cos(G6.leftA)*G6.rad,Math.sin(G6.leftA)*G6.rad];
+    const right=[Math.cos(G6.rightA)*G6.rad,Math.sin(G6.rightA)*G6.rad];
     if(handA>0){
-      const left=[Math.cos(G6.leftA)*G6.rad,Math.sin(G6.leftA)*G6.rad];
-      const right=[Math.cos(G6.rightA)*G6.rad,Math.sin(G6.rightA)*G6.rad];
+      L.v4ArmIK(c,{shoulder:[-470,430],target:left,l1:300,l2:260,bend:-1,
+        upperWidth:82,foreWidth:58,drawHand:false,alpha:handA});
+      L.v4ArmIK(c,{shoulder:[470,430],target:right,l1:300,l2:260,bend:1,
+        upperWidth:82,foreWidth:58,drawHand:false,alpha:handA});
+    }
+    drawRecordAt(c,0,0,1,0,1,true);
+    if(handA>0){
       drawGrip(c,left[0],left[1],-.9,sd('gripL'),handA);
       drawGrip(c,right[0],right[1],2.16,sd('gripR'),handA);
     }
