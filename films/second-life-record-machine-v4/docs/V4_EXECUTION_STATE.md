@@ -51,3 +51,23 @@ Exact next action after scaffold commit:
 2. run native `check`;
 3. if green, close Setup and open Product reference / Research;
 4. then inspect Myllo Vinyllo manual and video references before changing the machine scenes.
+
+
+### TX-V4-001 setup runtime checkpoint
+
+Scaffold commit:
+- `e4f34493101365ab19f970e173ce429c783f2508`
+
+Smoke:
+- job `bee4f33e-4030-4856-a5ab-778fb5fbfd97` — SUCCEEDED
+- stdout: `ok [ true, 44100 ]`
+
+Active baseline native check:
+- job `919a1ec8-62c0-4c50-9bbd-7b3ba0fb92f4`
+- input commit `e4f34493101365ab19f970e173ce429c783f2508`
+
+Exact resume:
+1. query `919a1ec8-62c0-4c50-9bbd-7b3ba0fb92f4`;
+2. if green, mark Setup COMPLETE;
+3. open Product reference / Research;
+4. inspect Myllo Vinyllo manual/video before any machine-scene code is changed.
