@@ -24,11 +24,12 @@
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],r:108};
     // Press is staged as a close physical reach from behind/left of the machine.
     const root=[panelX+205,1255],scale=1.04;
-    const rest=[panelX+305,1135],target=ma.pumpButton;
+    const rest=[panelX+305,1135],target=ma.pumpButton,ra=rec.anchors(record);
     const reach=V.sstep(.08,.58,u),release=V.sstep(.76,1,u);
     const k=release>0?1-release:reach;
     const right=[V.lerp(rest[0],target[0],k),V.lerp(rest[1],target[1],k)];
-    const left=[panelX+118,1180];
+    // passive hand braces the record instead of floating beside the machine.
+    const left=ra.edge(Math.PI*.82);
     return {machine,record,character:{root,scale,leftWrist:left,rightWrist:right,leftHand:'edge',rightHand:'press'}};
   }
   V.registerAction('place-record',{sample:samplePlace});
