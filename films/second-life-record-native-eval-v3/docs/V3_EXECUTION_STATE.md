@@ -749,3 +749,24 @@ Current state:
 - after that, either open a bounded V3 correction transaction or use the findings as V4 input.
 
 If the chat stream breaks at this point, resume from the human-review stage rather than rerendering or rebuilding V3.
+
+
+## Human review result
+
+- review document: `docs/V3_HUMAN_REVIEW_RESULT.md`
+- commit: `530acd78e78c1a63ce0d9590be0bfb23dbb34675`
+- verdict: **TECHNICAL PASS**
+- V3 remains frozen.
+- next production iteration: V4 machine-cleaning refinement.
+
+V4 must carry forward:
+- same understandable story spine;
+- much clearer machine-cleaning stage;
+- recognisable Myllo Vinyllo machine geometry / controls / branding;
+- slight 3/4 camera instead of only strict top-down;
+- dynamic action labels for cleaning stages;
+- explicit before/after groove macro;
+- improved hands, record, sleeve and hardware drawing quality.
+
+Exact next action:
+- create a new V4 branch and run the native workflow as a new iteration, using V3 as the accepted baseline and the human review as mandatory input.
