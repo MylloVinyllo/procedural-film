@@ -39,8 +39,8 @@ If the ChatGPT stream times out:
 | Timeline | COMPLETE | `src/timeline.js`, exact storyboard data / cues | Stub pass |
 | Stub pass | COMPLETE | six-check + preview + 10-shot sheet | Scenes |
 | Scenes | COMPLETE | 10 production scenes + batch sheets + full gate | Music |
-| Music | IN PROGRESS | replace demo score with V3 cue-matched composition | audio QA + gate |
-| Critic waves | PENDING | whole-film sheet + fresh corrections | after music |
+| Music | COMPLETE | cue-matched score + tuned headroom + audio QA | Critic waves |
+| Critic waves | IN PROGRESS | 24-sample whole-film sheet + preview + P1/P2 fixes | final gate |
 | Deliver | PENDING | preview/master/shots list | after critic |
 
 ## User-approved priorities
@@ -529,3 +529,38 @@ Required:
 - T 24–27 mirrors the first playback sound mechanics without crackle;
 - T 27–30 opens into a stable warm motif without overpowering comprehension;
 - run native audio QA and then the full gate before Critic waves.
+
+
+### TX-V3-012 result — Music
+
+Composition:
+- V3 score / sound design commit: `f0e0934af2aa736454491cf952e64ed606ef5622`
+- master trim tuning: `e316fb8c491bd6e9a10572f9804e8f3422995c66`
+
+Audio QA:
+- initial job `88a0b1c0-d255-4343-86a3-1d844578934b` — SUCCEEDED, peak -12.58 dBFS
+- tuned job `cc0b00c1-e2b7-42f6-8a09-a3795279d9d1` — SUCCEEDED
+- tuned pre-limiter peak: 0.391 / -8.15 dBFS
+- samples above 0.55: 0
+- score artifact SHA-256: `a21f755827b16f1ef1bdfcedff080d9075acfd549d09350d93251cf6a49fe01c`
+
+Post-music native gate:
+- job `c16d00c9-3cfa-4837-ba76-4e6a7c209fdb` — OK
+- media / determinism / sources / timeline / draw PASS
+- cost emitted a non-failing WARN at 161 ms on one inspect-dust sweep frame; previous scene-complete gate was 111 ms.
+- action for Critic stage: recheck cost at final head; optimise inspect-dust only if the >150 ms result persists.
+
+Music stage: COMPLETE.
+
+## Active transaction
+
+**TX-V3-013 — Critic waves**
+
+Required:
+1. render 24-sample whole-film sheet at 0.25 scale;
+2. judge whether the ten-verb spine reads without storyboard text;
+3. compare both sides of mirrored playback (03/09 and 04/10);
+4. inspect scene density, character/prop identity and transitions;
+5. produce P1/P2 fix list from fresh evidence only;
+6. apply and re-snap every P1/P2;
+7. run final native gate and resolve any persistent cost warning before Deliver.
