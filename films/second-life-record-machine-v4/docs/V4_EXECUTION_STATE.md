@@ -386,3 +386,33 @@ Exact next action:
 1. re-snap 07, 08, 09 from the corrected head;
 2. if opaque transitions read cleanly, run Batch A native six-check;
 3. only then proceed to 01–04 / 10–12.
+
+
+### TX-V4-007 Batch A acceptance
+
+Post-fix evidence:
+- 07 corrected six-frame sheet: job `8b3cab90-9481-4153-b549-36ecca43990b`
+  - brush macro enters as an opaque comic reveal; no transparent machine ghost
+- 08 corrected six-frame sheet: job `447d3881-fc20-4459-8a64-e0fb0b928d01`
+  - vacuum macro enters opaquely; right collection wand and VACUUM stage remain readable
+- 09 corrected six-frame sheet: job `819e14f2-d60f-474d-a660-7d1ef7ebf978`
+  - matched BEFORE/AFTER remains readable; resolve back to physical record is now an opaque spatial wipe
+
+Batch A native gate:
+- job `5448d8d2-ce4e-4e21-a3d8-d5fcce786891` — SUCCEEDED / 6 PASS
+- 12 shots / 36 s timeline remains intact
+- media PASS
+- determinism PASS
+- sources PASS
+- timeline PASS
+- draw PASS
+- cost PASS
+- max swept frame cost: 93 ms
+- result: `OK in 27.7s`
+
+Batch A semantic bottleneck: ACCEPTED for progression.
+
+Exact next action:
+- restore / adapt the accepted V3 story scenes 01–04 and 10–12 around the V4 product block;
+- add the V4 return label to shot 10;
+- then snap the whole 12-shot film and run a scene-complete native gate.
