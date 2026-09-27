@@ -84,14 +84,9 @@
   }
 
   function drawStopHand(c,p){
-    const x=lerp(1080,810,p),y=lerp(1600,1510,p);
-    c.save();c.translate(x,y);c.rotate(-.55);
-    const palm=[[-62,-45],[22,-52],[70,-15],[62,52],[-18,70],[-68,25]];
-    inkFill(c,palm,P.skin,sd('hand'),4.5,.98);
-    fill(c,[[10,-48],[64,-12],[55,45],[10,38]],P.skinShadow,.25);
-    inkFill(c,[[12,-45],[105,-52],[120,-33],[20,-18]],P.skin,sd('index'),2.4,.98);
-    inkFill(c,[[-18,-12],[38,-5],[48,17],[2,31],[-34,14]],P.skin,sd('thumb'),2.4,.98);
-    c.restore();
+    const target=[lerp(1040,810,p),lerp(1590,1510,p)];
+    L.v4ArmIK(c,{shoulder:[1125,1650],target,l1:250,l2:205,bend:-1,
+      upperWidth:78,foreWidth:54,handScale:.60,handRot:-.55,grip:'label'});
   }
 
   function drawReactionPanel(c,t){
