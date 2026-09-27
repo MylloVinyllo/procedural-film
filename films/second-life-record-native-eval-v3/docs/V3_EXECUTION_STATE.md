@@ -41,7 +41,7 @@ If the ChatGPT stream times out:
 | Scenes | COMPLETE | 10 production scenes + batch sheets + full gate | Music |
 | Music | COMPLETE | cue-matched score + tuned headroom + audio QA | Critic waves |
 | Critic waves | IN PROGRESS | 24-sample whole-film sheet + preview + P1/P2 fixes | final gate |
-| Deliver | IN PROGRESS | preview + master only; HTML player intentionally skipped | render preview |
+| Deliver | COMPLETE | preview + 1080×1920 master; HTML player intentionally skipped | human viewing |
 
 ## User-approved priorities
 
@@ -695,3 +695,39 @@ Exact resume:
 1. query `4ceb2189-1885-409a-899c-077e4f4dc610`;
 2. do not start another master unless this job explicitly fails;
 3. on success record artifact path / size / SHA-256 and mark Deliver COMPLETE.
+
+
+### TX-V3-014 final result — Deliver
+
+Half-scale preview:
+- job `4e7d1797-f823-4388-ba7b-bb902b07e490` — SUCCEEDED
+- `output/preview.mp4`
+- 540×960
+- 720 frames / 30.000 s
+- 48 kHz stereo
+- peak 0.391
+- size 4,850,269 bytes
+- SHA-256 `3c62dcb62e0b4634ed2fa96777de66831389e51b228b8d66202235271670ea54`
+
+Master:
+- job `4ceb2189-1885-409a-899c-077e4f4dc610` — SUCCEEDED
+- `output/master.mp4`
+- 1080×1920
+- 720 frames / 30.000 s
+- 48 kHz stereo
+- peak 0.391
+- size 103,285,599 bytes
+- SHA-256 `dc8c44f3e415ca0bdff46acdb203101a18ab77361cc421f5129d7fffa73daeff`
+- render time 141.9 s
+
+Player:
+- intentionally not built/repaired for V3, per user priority.
+
+V3 production procedure:
+Brief COMPLETE → Setup COMPLETE → Reference analysis COMPLETE → Research COMPLETE → Art Bible COMPLETE → Storyboard COMPLETE → Timeline COMPLETE → Stub pass COMPLETE → Scenes COMPLETE → Music COMPLETE → Critic waves COMPLETE → Deliver COMPLETE.
+
+The next non-production step is **human viewing / comprehension judgment**.
+Do not alter the film before that review unless a reproducible technical defect is found.
+
+Final source render commit:
+`df552f1ded781799f40218d8fec390ab4368d2db`
