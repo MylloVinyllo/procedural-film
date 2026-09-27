@@ -114,6 +114,22 @@ function sources({ fixtures = false, only = null, player = true, needMusic = fal
   const core = path.join(SRC, 'core.js');
   const lib = path.join(SRC, 'lib.js');
   for (const f of [core, lib]) if (!fs.existsSync(f)) die(`${rel(f)} is missing.`);
+
+  // Visual-system R&D extension: deterministic component modules load after lib and before timeline/scenes.
+  // Components may define FILM.visual but may not mutate FILM.lib.
+  const componentsDir = path.join(SRC, 'components');
+  const walkJs = (dir) => {
+    if (!fs.existsSync(dir)) return [];
+    const out = [];
+    for (const name of fs.readdirSync(dir).sort()) {
+      const p = path.join(dir, name);
+      const st = fs.statSync(p);
+      if (st.isDirectory()) out.push(...walkJs(p));
+      else if (st.isFile() && name.endsWith('.js')) out.push(p);
+    }
+    return out;
+  };
+  const componentFiles = walkJs(componentsDir);
   const tlFile = path.join(base, 'timeline.js');
   if (!fs.existsSync(tlFile)) {
     die(
@@ -149,10 +165,10 @@ function sources({ fixtures = false, only = null, player = true, needMusic = fal
     if (!shot) die(`--only: no shot with id '${only}' in ${label}/timeline.js. Ids: ${timeline.shots.map((s) => s.id).join(', ')}`);
     const f = shotFile(shot);
     if (!f || !fs.existsSync(f)) die(`shot '${only}': ${problems.find((p) => p.includes(`'${only}'`)) || 'file missing'}`);
-    files = [core, lib, tlFile, f];
+    files = [core, lib, ...componentFiles, tlFile, f];
   } else {
     if (problems.length && !lenient) die(`timeline problems:\n  - ${problems.join('\n  - ')}`);
-    files = [core, lib, tlFile, ...sceneFiles];
+    files = [core, lib, ...componentFiles, tlFile, ...sceneFiles];
     const musicFile = path.join(base, 'music.js');
     if (fs.existsSync(musicFile)) files.push(musicFile);
     else if (needMusic) die(`${label}/music.js is missing. The music agent writes it. Pass --silent to render without it.`);
