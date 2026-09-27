@@ -35,8 +35,8 @@ If the ChatGPT stream times out:
 | Reference analysis | COMPLETE | `docs/reference-analysis.md` + Butterfly benchmark sheet | Research |
 | Research | COMPLETE | `.tmp/research/00-phase-map.md` + four authoritative captures | Art Bible |
 | Art Bible | COMPLETE | `docs/art-bible.md` + mirrored `src/lib.js` + palette sheet | Storyboard |
-| Storyboard | IN PROGRESS | full 10-shot comic storyboard with shared geometry / sound grid | self-review then Timeline |
-| Timeline | PENDING | `src/timeline.js` | after storyboard |
+| Storyboard | COMPLETE | `docs/storyboard.md`, 30 s / 10 shots / self-review closed | Timeline |
+| Timeline | IN PROGRESS | materialise storyboard data + flat cue list | stubgen validation |
 | Stub pass | PENDING | runtime jobs | after timeline |
 | Scenes | PENDING | scene files + six-frame sheets | after stub |
 | Music | PENDING | `src/music.js` + audio QA | after scenes |
@@ -209,3 +209,50 @@ Required output:
 - self-review for safe area, story readability and arithmetic.
 
 Do not write Timeline until the storyboard self-review is closed.
+
+
+## TX-V3-005 result — Storyboard
+
+Output:
+- `docs/storyboard.md`
+- commit `859eb760d56024001c5012a144fd9d4bc17b6a3d`
+
+Frozen numbers:
+- 120 bpm;
+- 30.000 s;
+- 720 frames;
+- 15 bars;
+- 10 shots;
+- each shot 3.000 s / 72 frames;
+- midpoint T 15.000 starts active cleaning.
+
+Frozen narrative spine:
+FIND → INSPECT → PLAY → HEAR → DECIDE → CLEAN → VACUUM → RETURN → PLAY AGAIN → ENJOY.
+
+Shared geometry frozen:
+- G1 record circle;
+- G2 playback turntable;
+- G3 stylus macro;
+- G4 reaction panel;
+- G5 cleaning platter;
+- G6 safe hand grip;
+- G7 listening-room anchors.
+
+Self-review:
+- beat arithmetic closed;
+- safe-area arithmetic checked;
+- research phases mapped;
+- mirrored dirty/clean playback geometry explicit;
+- anti-ambiguity still-frame nouns/verbs defined.
+
+Status: COMPLETE.
+
+## Active transaction
+
+**TX-V3-006 — Timeline**
+
+Exact next action:
+1. write `src/timeline.js` exactly from the storyboard;
+2. run native stubgen;
+3. materialise the generated stubs;
+4. run full native gate and half-scale stub preview before scene investment.
