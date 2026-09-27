@@ -10,7 +10,8 @@
   function macro(c,p,reverse){
     if(p<=0)return;
     const box={x:115,y:720,w:850,h:575};
-    c.save();c.globalAlpha*=p;
+    c.save();
+    c.beginPath();c.rect(box.x,box.y,box.w,box.h*p);c.clip();
     L.v4GrooveMacro(c,box,{dirt:.58,wet:.7,reflection:.48,seed:sd('macro')});
     // same brush orientation as the machine supply node, now shown close.
     c.save();c.translate(540,835);c.rotate(reverse?-.12:.12);
