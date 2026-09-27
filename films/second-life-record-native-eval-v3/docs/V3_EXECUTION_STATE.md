@@ -31,8 +31,8 @@ If the ChatGPT stream times out:
 | Stage | Status | Durable evidence | Next |
 |---|---|---|---|
 | Brief | COMPLETE | `docs/V3_BRIEF.md` | Setup |
-| Setup | IN PROGRESS | clean foundation copied; smoke + fixture gate green; fixture render active | complete fixture render |
-| Reference analysis | PENDING | `docs/reference-analysis.md` template | after Setup |
+| Setup | COMPLETE | scaffold + smoke + fixture gate + fixture render | Reference analysis |
+| Reference analysis | IN PROGRESS | official comic-animation references + Butterfly benchmark | freeze numbered style rules |
 | Research | PENDING | `.tmp/research/` | after reference rules |
 | Art Bible | PENDING | `docs/art-bible.md` | after research |
 | Storyboard | PENDING | `docs/storyboard.md` | after art bible |
@@ -63,11 +63,26 @@ Scaffold commit: `e542ceaf7c46df44ef7094922ff528b825a5a6cd`
 Evidence:
 - smoke job `41f83a5c-206f-4ba1-b510-70ff70e9db03` — SUCCEEDED
 - fixture check job `b185350f-4719-4c68-8af0-d4d74e1f6cb0` — SUCCEEDED / 6 PASS
-- fixture render job `df7d7d17-701a-424b-95b0-8bf96b02d730` — ACTIVE
+- fixture render job `df7d7d17-701a-424b-95b0-8bf96b02d730` — SUCCEEDED
+- fixture artifact: `output/fixtures.mp4`, 8.000 s, 2,455,192 bytes
+- fixture SHA-256: `731b7cd2171fde133b9439cffd84626eab53597a8efb024ba3626eef01ac6220`
+
+Setup acceptance: COMPLETE.
+
+**TX-V3-002 — Reference analysis**
+
+Inputs:
+- user-required animated-comic direction;
+- native reference-analysis requirement because the look changes;
+- official `Spider-Man: Into the Spider-Verse` trailer / Sony production descriptions as a comic-animation vocabulary reference, not a style-copy target;
+- repository Butterfly example as the procedural density / authored-finish benchmark.
+
+Evidence already generated:
+- Butterfly 24-sample benchmark sheet job `d346d922-3c6e-4676-8313-a95553c9b05b` — SUCCEEDED.
 
 Exact next action:
-1. query `df7d7d17-701a-424b-95b0-8bf96b02d730`;
-2. if succeeded, record artifact and mark Setup COMPLETE;
-3. start TX-V3-002 Reference analysis.
+1. write `docs/reference-analysis.md` with numbered V3 carry-over rules;
+2. mark Reference analysis COMPLETE;
+3. start TX-V3-003 Research.
 
-Do not rerun the fixture render unless this recorded job explicitly fails.
+Do not start the art bible until the reference rules are frozen.
