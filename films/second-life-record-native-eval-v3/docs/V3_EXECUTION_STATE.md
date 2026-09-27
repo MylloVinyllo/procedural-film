@@ -448,3 +448,41 @@ Required:
 - scene 08 must carry the same dry record back with a safe G6 grip;
 - the return must resolve into exact G2 playback geometry for the mirrored second-play shot;
 - six-frame sheets for both scenes and a fresh gate before advancing.
+
+
+### TX-V3-010 result — Scene batch D (07–08)
+
+Implementation:
+- 07 `vacuum-dry`: `ad6d526e1eeb3b5408238336fa52cd32cc0da858`
+- 08 `return-record`: `2b067a92109638c87cc4031b8a3c8f884a08c1d8`
+
+Six-frame evidence:
+- 07 job `ddafd2fb-90ce-4d23-8df8-ae3e5f39dcbd` — SUCCEEDED
+- 08 job `9a819709-974e-4968-88ba-2e949023d37d` — SUCCEEDED
+
+Visual acceptance:
+- 07 reads as a physical vacuum wand connected to a pivot and contact slot over the same rotating record; wet film/suction marks stay tied to the slot, and the scene does not resemble a beam.
+- 07 dry-state proof is visible through stronger stable groove reflections behind the vacuum action; the diagonal comparison divider is secondary and does not replace the physical action.
+- 08 clearly reads as the cleaned record being safely carried back into the listening room and settling onto the turntable.
+- 08 ends on exact G2/G1 playback geometry with hands withdrawn, preparing the mirrored second-play scene.
+- P1 issue found: none.
+
+Fresh native gate:
+- job `d8085e5d-037a-4e76-a5bc-9a22a5b1b5f4` — SUCCEEDED / 6 PASS
+- max swept frame cost: 143 ms
+- determinism / media / sources / timeline / draw / cost all PASS
+
+Batch D: ACCEPTED.
+
+## Active transaction
+
+**TX-V3-011 — Scene batch E: 09 second-play + 10 enjoy-music**
+
+Required:
+- 09 must deliberately mirror scene 03 G2/G3 geometry and motion timing;
+- cleaned record must retain the same identity/label mark while visible contamination is reduced;
+- 09 must replace problem distortion with stable cleanGold/cleanTeal music language only after stylus contact;
+- 10 must open as a deliberate visual mirror of scene 04 using G3/G4;
+- reaction must visibly change from concern to relief without explanatory text;
+- final 1.5 s must open into the warm full listening room with the turning record still visible;
+- six-frame sheets and a fresh full gate before Scenes can close.
