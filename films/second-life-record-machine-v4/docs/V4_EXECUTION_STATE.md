@@ -21,8 +21,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Timeline | COMPLETE | 36 s / 12-shot timeline + cue grid | Stub/sequence validation |
 | Stub/sequence validation | COMPLETE | green gate + 12-shot sheet + 36 s half-scale stub preview | Scenes |
 | Scenes | COMPLETE | product-first batch 05–09 + accepted V3 story scenes 01–04/10–12 + whole-film sheet + green gate | Music/SFX |
-| Music/SFX | IN PROGRESS | rebuild 36 s cue structure around real Myllo stages | audio QA |
-| Critic waves | PENDING | whole-film sheet + fixes | after audio |
+| Music/SFX | COMPLETE | 36 s score + Myllo process SFX + audio QA + green gate | Critic waves |
+| Critic waves | IN PROGRESS | 24-sample whole-film sheet + transition review | final visual gate |
 | Deliver | PENDING | preview/master | after critic |
 | Human review | PENDING | viewer notes | after master |
 
@@ -487,3 +487,41 @@ Required:
 4. keep the final clean payoff at T 33–36;
 5. run native audio QA;
 6. run a post-audio native gate before Critic waves.
+
+
+### TX-V4-008 result — Music / SFX
+
+Score / sound-design commit:
+- `43dd43c558e7405ffa7b106e8f342a45baef43ad`
+
+V4 audio changes:
+- expanded score from 30 s to 36 s;
+- preserved discovery / dirty-playback / clean-payoff motif language;
+- added distinct product-process sounds for Myllo reveal, clamp, START, supply-node movement, PUMP, solution feed, brush contact, REVERSE, vacuum-node movement/contact, VACUUM/suction, BEFORE/AFTER comparison, return and mirrored clean playback;
+- final clean payoff moved to T 33–36.
+
+Audio QA:
+- job `e995b2c9-be0e-4529-ace8-895d16bcb0ff` — SUCCEEDED
+- artifact `output/audio/score.wav`
+- size 13,824,044 bytes
+- SHA-256 `b8b1c803abc61155ef41af61440ed9f9e37a69f76e73d3e1f71c04ad2dc5f164`
+- max pre-limiter peak 0.391 / -8.15 dBFS
+- samples above 0.55: 0
+
+Post-audio native gate:
+- job `49905fcf-f35a-400a-bea1-cf63e114a5fa` — SUCCEEDED / 6 PASS
+- max swept cost 120 ms
+- result `OK in 27.3s`
+
+Music / SFX: COMPLETE.
+
+## Active transaction
+
+**TX-V4-009 — Critic waves**
+
+Exact next actions:
+1. generate a fresh 24-sample whole-film sheet from `43dd43c558e7405ffa7b106e8f342a45baef43ad`;
+2. inspect semantic continuity and every cleaning-stage transition;
+3. if any transparent/ambiguous midpoint remains, correct and re-snap;
+4. run final native gate after any correction;
+5. then Deliver: preview → master, no HTML-player work.
