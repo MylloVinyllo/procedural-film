@@ -33,9 +33,7 @@
   }
 
   function drawOpeningPage(c,t){
-    const fade=1-sstep(1.35,1.72,t);
-    if(fade<=0)return;
-    c.save();c.globalAlpha*=fade;c.fillStyle=P.gutter;c.fillRect(0,0,1080,1920);
+    c.save();c.fillStyle=P.gutter;c.fillRect(0,0,1080,1920);
     c.fillStyle=P.table;c.fillRect(55,770,970,980);
     c.strokeStyle=P.comicBorder;c.lineWidth=5;c.strokeRect(55,770,970,980);
     for(let i=0;i<12;i++)line(c,[[70,810+i*72],[1010,818+i*72+7*Math.sin(i)]],sd('grain',i),1,P.inkSoft,.1);
@@ -43,9 +41,7 @@
   }
 
   function drawPlaybackSource(c,t){
-    const fade=1-sstep(1.35,1.72,t);
-    if(fade<=0)return;
-    c.save();c.globalAlpha*=fade;
+    c.save();
     const cx=420,cy=1265,r=335,rot=t*TAU*.55;
     c.translate(cx,cy);c.rotate(rot);
     c.fillStyle=P.vinyl;c.beginPath();c.arc(0,0,r,0,TAU);c.fill();
@@ -75,11 +71,9 @@
   }
 
   function drawReactionPanel(c,t){
-    const fade=1-sstep(1.35,1.72,t);
-    if(fade<=0)return;
     const relax=sstep(.35,1.05,t);
     const x=G4.x,y=G4.y,w=G4.w,h=G4.h;
-    c.save();c.globalAlpha*=fade;c.fillStyle=P.roomWall;c.fillRect(x,y,w,h);c.strokeStyle=P.comicBorder;c.lineWidth=5;c.strokeRect(x,y,w,h);
+    c.save();c.fillStyle=P.roomWall;c.fillRect(x,y,w,h);c.strokeStyle=P.comicBorder;c.lineWidth=5;c.strokeRect(x,y,w,h);
     c.beginPath();c.rect(x+5,y+5,w-10,h-10);c.clip();
 
     fill(c,[[x,y+h-115],[x+w,y+h-175],[x+w,y+h],[x,y+h]],P.sunset,.16);
@@ -110,10 +104,8 @@
   }
 
   function drawMacro(c,t){
-    const fade=1-sstep(1.35,1.72,t);
-    if(fade<=0)return;
     const {x,y,w,h}=G3;
-    c.save();c.globalAlpha*=fade;c.fillStyle=P.vinyl;c.fillRect(x,y,w,h);c.strokeStyle=P.comicBorder;c.lineWidth=4;c.strokeRect(x,y,w,h);
+    c.save();c.fillStyle=P.vinyl;c.fillRect(x,y,w,h);c.strokeStyle=P.comicBorder;c.lineWidth=4;c.strokeRect(x,y,w,h);
     c.beginPath();c.rect(x+4,y+4,w-8,h-8);c.clip();
     c.strokeStyle=P.groove;c.globalAlpha=.95;
     for(let i=0;i<22;i++){const yy=340+i*10.5;c.lineWidth=i%5===0?2:1;c.beginPath();c.moveTo(x-20,yy);c.bezierCurveTo(650,yy-16,810,yy+16,x+w+20,yy);c.stroke();}
@@ -124,8 +116,7 @@
   }
 
   function cleanGraphics(c,t){
-    const open=1-sstep(1.42,1.78,t);
-    if(open<=0)return;
+    const open=1;
     const q=sstep(.18,.5,t);
     for(let i=0;i<4;i++){
       const r=55+i*44+18*Math.sin((t+i*.12)*TAU*.5);
@@ -135,7 +126,7 @@
   }
 
   function drawFullRoom(c,t){
-    const open=sstep(1.38,1.82,t);
+    const open=sstep(1.42,1.50,t);
     if(open<=0)return;
     const pull=sstep(1.65,2.48,t);
     c.save();c.globalAlpha*=open;
@@ -230,12 +221,25 @@
     draw(c,tIn,info){
       const t=clamp(tIn,0,info.dur);
       L.paper(c,{seed:sd('paper')});
-      drawOpeningPage(c,t);
-      drawPlaybackSource(c,t);
-      drawReactionPanel(c,t);
-      drawMacro(c,t);
-      cleanGraphics(c,t);
+      // The warm final room is prepared underneath the comic page.
+      // The old layout retracts as an opaque panel wipe, never as a transparent dissolve.
       drawFullRoom(c,t);
+      const wipe=sstep(1.50,1.75,t);
+      if(wipe<1){
+        const edge=lerp(1080,0,wipe);
+        c.save();
+        c.beginPath();c.rect(0,0,edge,1920);c.clip();
+        drawOpeningPage(c,t);
+        drawPlaybackSource(c,t);
+        drawReactionPanel(c,t);
+        drawMacro(c,t);
+        cleanGraphics(c,t);
+        c.restore();
+        if(wipe>0){
+          c.save();c.strokeStyle=P.comicBorder;c.lineWidth=5;c.globalAlpha=.9;
+          c.beginPath();c.moveTo(edge,0);c.lineTo(edge,1920);c.stroke();c.restore();
+        }
+      }
 
       // final frame stays calm: no terminal flash or title card.
     }
