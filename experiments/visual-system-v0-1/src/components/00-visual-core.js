@@ -1,7 +1,7 @@
 // Visual System v0.1 core: registry, transforms, anchors, IK.
 (function(){
   'use strict';
-  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null)};
+  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null),contracts:[]};
   const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
   const lerp=(a,b,u)=>a+(b-a)*u;
   const sstep=(a,b,x)=>{const u=clamp((x-a)/(b-a));return u*u*(3-2*u);};
@@ -50,6 +50,18 @@
     registerProduct(name,impl){if(registry.products[name])throw new Error('product exists: '+name);registry.products[name]=Object.freeze(impl);},
     registerProp(name,impl){if(registry.props[name])throw new Error('prop exists: '+name);registry.props[name]=Object.freeze(impl);},
     registerAction(name,impl){if(registry.actions[name])throw new Error('action exists: '+name);registry.actions[name]=Object.freeze(impl);},
+    registerContract(name,fn){registry.contracts.push(Object.freeze({name,fn}));},
+    runContracts(){
+      const failures=[];
+      for(const c of registry.contracts){
+        try{
+          const r=c.fn();
+          if(Array.isArray(r))for(const x of r)if(x)failures.push(c.name+': '+x);
+          else if(r)failures.push(c.name+': '+r);
+        }catch(e){failures.push(c.name+': threw '+e.message);}
+      }
+      return failures;
+    },
     character(name){const v=registry.characters[name];if(!v)throw new Error('unknown character backend: '+name);return v;},
     product(name){const v=registry.products[name];if(!v)throw new Error('unknown product: '+name);return v;},
     prop(name){const v=registry.props[name];if(!v)throw new Error('unknown prop: '+name);return v;},
