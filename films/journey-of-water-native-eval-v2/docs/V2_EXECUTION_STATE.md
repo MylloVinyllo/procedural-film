@@ -28,7 +28,7 @@ The production procedure is unchanged, but execution is split into resumable tra
 - Scenes: complete
 - Music: complete
 - Critic waves: complete for still-frame / native-gate review
-- Deliver: in progress
+- Deliver: core artifacts complete; phone transcode not exposed by the current Runtime MCP surface
 
 ## Completed foundation and planning
 
@@ -110,6 +110,17 @@ Self-contained HTML player:
 - SHA-256: `6cd5cafbaac6cb1ce9f9a36a0fa8e6aa776cb36eccc8ff2d8472f5109869489a`
 
 Master render:
-- active job: `b4e2a1ba-c4cf-4f8e-97d3-df0a66735c79`
+- job: `b4e2a1ba-c4cf-4f8e-97d3-df0a66735c79` — SUCCEEDED
 - commit: `2c1398f5f9b18720ecfc50152e5c8efbf8f6084d`
-- next action: resume this exact job ID until completion; then record master artifact path, size and SHA-256 and close Deliver.
+- 1080×1920 / 864 frames / 36.000 s / H.264 + AAC
+- artifact: `output/master.mp4`
+- size: 215,381,056 bytes
+- SHA-256: `5f0b4c2ce4ae2020ba44d4e31c3c6c197d32b3eabaea04ec0a07820aa979d1fe`
+- render time: 175.1 s
+
+Native deliver note:
+- master exists
+- half-scale preview exists
+- self-contained HTML player exists
+- shot list exists
+- the current Procedural Film Runtime MCP exposes render_preview, render_master and build_player, but no ffmpeg-transcode operation; therefore the template's separate 720×1280 phone transcode was not generated inside this chat/runtime surface. This is a harness-delivery limitation, not a source-film failure.
