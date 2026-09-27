@@ -12,9 +12,13 @@
     ctx.fillStyle='#6b6257';ctx.font='500 20px system-ui';ctx.fillText(sub,x+270,306);ctx.restore();
   }
   function drawState(ctx,backend,state){
+    // Canonical occlusion stack: body -> limbs -> product -> manipulated object -> hands.
+    // This prevents the old sticker effect where an entire arm or torso randomly covered the prop.
+    backend.drawBody(ctx,state.character);
+    backend.drawArms(ctx,state.character);
     washer.draw(ctx,state.machine);
     record.draw(ctx,state.record);
-    backend.draw(ctx,state.character);
+    backend.drawHands(ctx,state.character);
   }
   function staticHold(panelX){
     const machine={x:panelX+270,y:1240,scale:.78},recState={x:panelX+270,y:850,r:108},a=record.anchors(recState);
