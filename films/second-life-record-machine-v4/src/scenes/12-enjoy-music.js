@@ -191,11 +191,12 @@
     halftone(c,[[25,-90],[130,-80],[155,100],[125,280],[50,250]],P.inkSoft,13,1.4,.12,sd('shirt-dot'));
     inkFill(c,[[-55,-104],[-14,-128],[38,-116],[61,-78],[28,-37],[-27,-37]],P.tee,sd('tee'),2.3,.96);
 
-    // relaxed arms: elbows fall, hands rest on chair arms
-    line(c,[[-120,35],[-165,155],[-145,255]],sd('armL'),42,P.shirt,.96);
-    line(c,[[115,28],[150,155],[118,255]],sd('armR'),42,P.shirt,.96);
-    L.inkCircle(c,-145,260,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handL')});
-    L.inkCircle(c,118,260,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handR')});
+    // relaxed arms are still anatomically connected: broad shoulder, bent elbow,
+    // tapered forearm and an actual resting hand instead of a circle marker.
+    L.v4ArmIK(c,{shoulder:[-120,35],target:[-145,260],l1:132,l2:118,bend:-1,
+      upperWidth:66,foreWidth:48,handScale:.50,handRot:1.32,grip:'edge'});
+    L.v4ArmIK(c,{shoulder:[115,28],target:[118,260],l1:132,l2:118,bend:1,
+      upperWidth:66,foreWidth:48,handScale:.50,handRot:1.82,grip:'edge'});
 
     // seated legs make the posture unambiguous
     inkFill(c,[[-92,300],[-18,298],[-8,505],[-78,515],[-115,385]],P.pants,sd('legL'),4,.98);
