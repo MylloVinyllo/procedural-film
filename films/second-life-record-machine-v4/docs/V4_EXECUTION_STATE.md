@@ -16,8 +16,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Brief | COMPLETE | `docs/V4_BRIEF.md` | Setup |
 | Setup | COMPLETE | V3 accepted source copied; smoke + baseline native gate green | Product reference / Research |
 | Product reference / Research | COMPLETE | Myllo manual + physical video + prior brand animation + V4 phase map | Art Bible delta |
-| Art Bible delta | IN PROGRESS | add Myllo product model, label system, groove before/after, cleaning camera grammar | palette + fixture verification |
-| Storyboard delta | PENDING | `docs/storyboard.md` | after art bible |
+| Art Bible delta | COMPLETE | Myllo product model + labels + G8 before/after + proof sheet + green fixture gate | Storyboard delta |
+| Storyboard delta | IN PROGRESS | expand V3 story to explicit 12-shot machine-cleaning sequence | self-review then Timeline |
 | Timeline | PENDING | `src/timeline.js` | after storyboard |
 | Stub/sequence validation | PENDING | runtime evidence | after timeline |
 | Scenes | PENDING | scene sheets | after sequence validation |
@@ -157,3 +157,46 @@ Required:
 7. define matched groove BEFORE/AFTER macro;
 8. mirror all new palette keys into `src/lib.js`;
 9. run palette/fixture verification before Storyboard.
+
+
+### TX-V4-003 result — Art Bible delta
+
+Durable outputs:
+- Myllo-specific product/process rules in `docs/art-bible.md`
+- initial V4 art-bible commit `c32e6a55cb13cc246bf9ce075148f70a67800c7c`
+- mirrored V4 palette in `src/lib.js`: `6c7fea9a6dee19e4a3f0f51e8241cc2e0d33ab2c`
+- proof-driven refinement commit `d16b7f7958cbc996a131799d87908a68f0696446`
+
+Native verification:
+- fixture check job `92e35704-0885-4e1b-8c96-26c0008dbc8b` — SUCCEEDED / 6 PASS
+- max fixture cost 80 ms
+
+Isolated product proof:
+- project `experiments/v4-myllo-machine-model`
+- proof commit `777e282903719406591c314e66871f8e1818414e`
+- six-frame snap job `811b28d8-d166-4b6a-bdfd-ed8f03685c43` — SUCCEEDED
+- artifact `output/snap/myllo-machine-model-sheet.png`
+
+Visual acceptance:
+- black 3/4 body + top record/clamp + asymmetric working nodes + white four-button front plate reads as a dedicated machine at quarter scale;
+- dynamic process band is readable;
+- START / PUMP / REVERSE / VACUUM stages are visually separable;
+- production refinements frozen: wider plate spacing, stronger brush-vs-vacuum silhouette contrast, thinner wet film, stronger wet-ahead/dry-behind vacuum proof.
+
+Art Bible delta: COMPLETE.
+
+## Active transaction
+
+**TX-V4-004 — Storyboard delta**
+
+Required:
+1. retain the successful V3 discovery/problem/playback spine;
+2. spend materially more screen time on the Myllo cleaning process;
+3. use the canonical elevated 3/4 M1 machine view for product recognition;
+4. stage START/PUMP, brush cleaning/REVERSE, and VACUUM as distinct physical beats;
+5. include G8 matched groove BEFORE/AFTER proof;
+6. integrate short dynamic labels in the top safe zone;
+7. keep second playback as a deliberate before/after mirror;
+8. run arithmetic, safe-area, semantic-readability, product-identity, and research-traceability self-review before Timeline.
+
+Do not edit `src/timeline.js` until the V4 storyboard self-review is closed.
