@@ -13,7 +13,7 @@
 
   const G1={cx:540,cy:930,r:285,label:92,hole:8};
   const G5={x:120,y:600,w:840,h:700,r:42,cx:540,cy:930,brush:[815,690],brushContact:[650,815],vacPivot:[205,695],vacA:[320,770],vacB:[680,975]};
-  const G6={leftA:145*Math.PI/180,rightA:35*Math.PI/180,rad:278};
+  const G6={leftA:145*Math.PI/180,rightA:35*Math.PI/180,rad:315};
 
   function trace(c,pts,closed=true){c.beginPath();L.tracePath(c,pts,closed);}
   function fill(c,pts,color,a=1){c.save();c.globalAlpha*=a;c.fillStyle=color;trace(c,pts,true);c.fill();c.restore();}
@@ -153,7 +153,8 @@
     // fingers hook around the rim rather than flattening onto grooves
     for(let i=0;i<3;i++){
       const yy=-28+i*23;
-      inkFill(c,[[35,yy],[112,yy+2],[122,yy+16],[46,yy+18]],P.skin,seed+10+i,2.1,.98);
+      // short hooked fingers cross only the rim, never lie flat across the playable field
+      inkFill(c,[[35,yy],[74,yy+2],[82,yy+15],[46,yy+18]],P.skin,seed+10+i,2.1,.98);
     }
     // thumb enters toward label-safe inner region
     inkFill(c,[[-5,-7],[50,-1],[62,20],[11,31],[-27,12]],P.skin,seed+20,2.4,.98);
