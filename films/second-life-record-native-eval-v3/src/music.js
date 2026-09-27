@@ -37,7 +37,20 @@
     // Section fader rides in dB at global times, pre-compressor: quiet egg, hushed pupa, full drop,
     // hushed winter, and an ending level that meets the opening level at the loop seam.
     // Per film: section fader rides in dB at global times, pre-compressor (see reference/music.md).
-    ride: [[0, 0]],
+    ride: [
+      [0, -7.0],
+      [3, -7.5],
+      [6, -6.0],
+      [9, -5.0],
+      [11.5, -8.0],
+      [12, -7.5],
+      [15, -5.2],
+      [18, -4.8],
+      [21, -5.3],
+      [24, -4.2],
+      [27, -1.8],
+      [30, -3.0],
+    ],
   };
 
   // ---------------------------------------------------------------- pitch
@@ -1309,34 +1322,167 @@
   }
 
   // ---------------------------------------------------------------- the score
-  // DEMO SCORE — replace wholesale when composing the film. It gives the stub pass a pulse and
-  // shows the engine idiom: instruments take absolute global times, score() is re-invoked per bar
-  // and the engine windows each call, so scheduling the whole piece here is correct. Everything
-  // below derives from FILM.TIMELINE, so it runs at any bpm and duration.
+  // V3: sparse domestic observation → physical problem → cleaning mechanics → warm payoff.
+  // Every time below is authored directly against docs/storyboard.md / FILM.TIMELINE.cues.
   const CH = {
-    home: ['D3', 'A3', 'D4', 'F#4'],
-    away: ['G3', 'B3', 'D4', 'G4'],
+    home: ['A2', 'E3', 'A3', 'C#4'],
+    question: ['E2', 'B2', 'D3', 'G#3'],
+    clean: ['F#2', 'C#3', 'A3', 'E4'],
+    open: ['A2', 'E3', 'C#4', 'E4'],
   };
 
   function score(E, I) {
-    const { kick, hat, kalimba, pad, sub } = I;
-    const bpm = (FILM.TIMELINE && FILM.TIMELINE.bpm) || 120;
-    const DUR = (FILM.TIMELINE && FILM.TIMELINE.duration) || 32;
-    const BAR = 240 / bpm;
-    const BEAT = 60 / bpm;
-    const motif = ['D5', 'F#5', 'A5', 'E5'];
-    for (let beat = 0; beat * BEAT < DUR - 1e-9; beat++) {
-      const t = Math.round(beat * BEAT * 1000) / 1000;
-      const down = beat % 4 === 0;
-      kick(t, down ? 0.8 : 0.5, down ? 'full' : 'felt');
-      hat(t + BEAT / 2, 0.1);
-      kalimba(t + BEAT / 2, hz(motif[beat % 4]), 0.2, { hall: 0.15, delay: 0.1, pan: beat % 2 ? 0.15 : -0.15 });
-      if (down) {
-        const home = beat % 8 === 0;
-        pad(t, Math.min(t + BAR, DUR), home ? CH.home : CH.away, 0.28, { att: 0.05, rel: 0.1, cut0: 900, cut1: 1400, hall: 0.15 });
-        sub(t, Math.min(t + BAR, DUR), home ? 'D2' : 'G1', 0.4, { att: 0.02, rel: 0.08 });
-      }
+    const {
+      kick, brush, hat, shaker, tock, kalimba, glass, ting,
+      pad, sub, plip, glide, nz, pluck, stab
+    } = I;
+    const DUR = (FILM.TIMELINE && FILM.TIMELINE.duration) || 30;
+
+    const click = (t, vel=.16, f=1700, pan=0) =>
+      tock(t, vel, f, { bus:'sfx', pan, room:.08, dec:.045 });
+
+    const paper = (t, vel=.09, pan=0) =>
+      nz(t, .18, {
+        type:'bandpass', q:.7,
+        f:[[0,900],[.18,2500,'exp']],
+        amp:[[0,0],[.008,vel],[.055,vel*.55,'exp'],[.18,FLOOR,'exp']],
+        pan, bus:'sfx', room:.08, key:'paper'
+      });
+
+    const softMove = (t, len=.28, vel=.08, pan=0) =>
+      nz(t, len, {
+        type:'bandpass', q:.65,
+        f:[[0,520],[len,1800,'exp']],
+        amp:[[0,0],[.035,vel],[len*.72,vel*.45,'lin'],[len,FLOOR,'exp']],
+        pan, bus:'sfx', room:.1, key:'move'
+      });
+
+    const motor = (t, len, vel=.07, bright=480) =>
+      nz(t, len, {
+        type:'lowpass', q:.65,
+        f:[[0,bright],[len,bright*.84,'lin']],
+        amp:[[0,0],[.06,vel],[Math.max(.07,len-.12),vel*.82,'lin'],[len,FLOOR,'exp']],
+        bus:'amb', stereo:true, key:'motor'
+      });
+
+    const suction = (t, len, vel=.10) =>
+      nz(t, len, {
+        type:'bandpass', q:.55,
+        f:[[0,320],[len*.35,760,'exp'],[len,420,'exp']],
+        amp:[[0,0],[.05,vel],[len*.55,vel],[len,FLOOR,'exp']],
+        bus:'sfx', stereo:true, room:.04, key:'vacuum'
+      });
+
+    const crack = (t, vel=.18, pan=0) => {
+      nz(t, .10, {
+        type:'highpass', q:.7,
+        f:[[0,2600],[.10,7600,'exp']],
+        amp:[[0,0],[.001,vel],[.018,vel*.82,'exp'],[.10,FLOOR,'exp']],
+        pan, bus:'sfx', key:'crack'
+      });
+      tock(t, vel*.45, 2400, { bus:'sfx', pan, dec:.025 });
+    };
+
+    // 0–3 · discovery: quiet room, sparse motif seed.
+    pad(0, 2.9, CH.home, .075, { att:.18, rel:.28, cut0:620, cut1:920, sine:true, room:.16, hall:.03 });
+    kalimba(0, hz('A4'), .095, { dec:1.2, room:.12, hall:.08, pan:-.12 });
+    paper(.5, .075, -.15);
+    paper(1.5, .085, .12);
+    glass(2.5, hz('A5'), .09, { dec:.75, hall:.12, pan:.18 });
+    click(3.0, .07, 1450, 0);
+
+    // 3–6 · inspection: hush, detail snaps into focus.
+    pad(3.0, 5.8, CH.question, .052, { att:.12, rel:.24, cut0:480, cut1:650, sine:true, room:.1 });
+    paper(3.5, .055, -.1);
+    click(4.5, .105, 2100, .18);
+    tock(5.0, .075, 4100, { bus:'sfx', pan:.2, dec:.032 });
+    glass(5.5, hz('E3'), .06, { dec:.65, hall:.06, pan:-.1 });
+    motor(6.0, 3.0, .065, 430);
+
+    // 6–9 · first playback mechanics.
+    click(6.5, .13, 1650, .16);
+    softMove(7.5, .30, .07, .1);
+    click(8.5, .18, 3200, .06);
+    plip(8.5, 1450, 2200, .055, { pan:.06, room:.06 });
+
+    // 9–12 · dirty playback: physical crackle, not “danger music”.
+    crack(9.0, .14, -.08);
+    crack(9.18, .10, .16);
+    crack(9.5, .24, .1);
+    crack(9.57, .18, -.15);
+    crack(9.66, .12, .22);
+    crack(10.5, .18, -.05);
+    crack(10.58, .11, .18);
+    kalimba(11.0, hz('A4'), .075, { dec:.5, room:.04, pan:-.1 });
+    crack(11.03, .13, .12);
+    click(11.5, .14, 1350, -.08);
+    glide(11.5, 160, 85, .34, .045, { bus:'amb' });
+    click(12.0, .045, 1200, 0);
+
+    // 12–15 · decision and transfer.
+    pad(12.0, 15.0, CH.question, .045, { att:.12, rel:.18, cut0:520, cut1:760, sine:true, room:.08 });
+    kick(12.5, .16, 'thud');
+    softMove(13.5, .34, .09, .05);
+    click(14.0, .10, 1250, 0);
+    click(14.5, .065, 2400, .16);
+    plip(15.0, 720, 1120, .12, { pan:.08, room:.16 });
+
+    // 15–18 · wet brush: new clean tonal identity enters without overpowering action.
+    pad(15.0, 18.0, CH.clean, .07, { att:.18, rel:.22, cut0:650, cut1:1100, sine:true, room:.14, hall:.04 });
+    motor(15.5, 2.5, .045, 520);
+    brush(16.0, .11, .08);
+    brush(16.5, .18, .12);
+    nz(16.5, .24, {
+      type:'bandpass', q:.7, f:[[0,1500],[.24,4200,'exp']],
+      amp:[[0,0],[.008,.08],[.09,.045,'exp'],[.24,FLOOR,'exp']],
+      pan:.12, bus:'sfx', key:'shff'
+    });
+    kalimba(17.0, hz('C#5'), .085, { dec:.9, room:.1, hall:.05, pan:.12 });
+    click(17.5, .06, 2800, .16);
+
+    // 18–21 · vacuum: sustained mechanical layer with a clean overtone near release.
+    suction(18.0, 2.55, .095);
+    click(18.5, .105, 1050, -.12);
+    nz(19.0, .52, {
+      type:'bandpass', q:.55, f:[[0,380],[.25,980,'exp'],[.52,620,'exp']],
+      amp:[[0,0],[.04,.085],[.28,.1,'lin'],[.52,FLOOR,'exp']],
+      bus:'sfx', stereo:true, key:'suction-peak'
+    });
+    glass(20.0, hz('E5'), .065, { dec:1.0, hall:.12, pan:.16 });
+    glide(20.5, 220, 90, .32, .04, { bus:'amb' });
+    click(21.0, .055, 1450, -.12);
+
+    // 21–24 · carry back / return to deck.
+    softMove(21.5, .28, .065, -.08);
+    pad(22.5, 24.0, CH.home, .06, { att:.2, rel:.16, cut0:650, cut1:900, sine:true, room:.14 });
+    click(23.5, .11, 1450, 0);
+    motor(24.0, 3.0, .06, 520);
+
+    // 24–27 · mirrored clean playback mechanics.
+    click(24.5, .13, 1650, .16);
+    softMove(25.5, .30, .065, .1);
+    click(26.5, .18, 3200, .06);
+    plip(26.5, 1450, 2200, .05, { pan:.06, room:.06 });
+
+    // 27–30 · stable payoff: same motif now allowed to complete.
+    pad(27.0, 30.0, CH.open, .13, { att:.16, rel:.45, cut0:900, cut1:1700, room:.18, hall:.08, width:.62 });
+    sub(27.0, 30.0, 'A2', .095, { att:.05, rel:.28, sus:.72 });
+    const motif=['A4','E5','C#5','B4'];
+    for(let i=0;i<12;i++){
+      const t=27+i*.25;
+      kalimba(t, hz(motif[i%4]), i<4?.10:.085, { dec:.9, room:.12, hall:.09, delay:.05, pan:i%2?.13:-.13 });
     }
+    glass(27.5, hz('E5'), .055, { dec:1.1, hall:.18, pan:.15 });
+    ting(28.0, hz('A5'), .065, { dec:.7, hall:.15, pan:-.12 });
+    pad(28.5, 30.0, CH.home, .06, { att:.18, rel:.35, cut0:900, cut1:1500, sine:true, room:.14, hall:.08 });
+    sub(29.0, 30.0, 'A2', .07, { att:.08, rel:.25, sus:.65 });
+    kalimba(29.5, hz('A4'), .09, { dec:1.0, room:.12, hall:.08, pan:-.08 });
+    kalimba(29.5, hz('E5'), .07, { dec:1.0, room:.12, hall:.08, pan:.08 });
+
+    // A very light physical pulse helps the final room feel alive, never a dance beat.
+    shaker(27.75, .025, .22);
+    shaker(28.75, .022, -.18);
+    shaker(29.75, .02, .16);
   }
 
   FILM.audio = {
