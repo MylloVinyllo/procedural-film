@@ -564,3 +564,33 @@ Required:
 5. produce P1/P2 fix list from fresh evidence only;
 6. apply and re-snap every P1/P2;
 7. run final native gate and resolve any persistent cost warning before Deliver.
+
+
+### TX-V3-013 critic wave 1 — transition evidence and fixes
+
+Initial whole-film sheet:
+- job `03888ccb-0df7-4095-947b-419e41291935` — SUCCEEDED
+- exposed two quarter-scale readability failures at transition midpoints:
+  - scene 05 used a long alpha dissolve between listening room and cleaning station;
+  - scene 10 used a long alpha dissolve between clean reaction layout and final listening room.
+- both created transparent double-exposure states and were classified P1 because native Step 9 requires quarter-scale composition to read cleanly.
+
+Targeted pre-fix evidence:
+- scene 05 12-sample job `e0b57771-1a96-4bc0-9620-908ed9c69cdc`
+- scene 10 12-sample job `20b60620-2856-492f-bbd9-596df0308332`
+
+Fixes:
+- scene 05 opaque spatial comic wipe: `cebe56ec396cfd78a3200097745c976f565eb1bc`
+- scene 10 opaque panel-retraction wipe: `04706b42df605794e62d9886f8920d15ce11f477`
+- scene 02 bounded halftone work to clipped geometry for the intermittent >150 ms cost warning: `45657de5dbb87e6e59fed2dd2bf3995c8e09fb2f`
+
+Fresh verification:
+- scene 05 12-sample post-fix job `c08e38b7-8967-4d16-b12b-6cf92c5d6189` — VERIFIED: spatial split remains opaque; no ghost state.
+- scene 10 12-sample post-fix job `5c0d1894-0932-485f-9183-c79d09a2fa87` — VERIFIED: old comic layout retracts spatially into final room; no transparent double exposure.
+
+Current critic head: `45657de5dbb87e6e59fed2dd2bf3995c8e09fb2f`
+
+Exact next actions:
+1. generate a fresh whole-film critic sheet from the current head;
+2. if the ten-shot spine remains readable, run the full native gate;
+3. if gate is fully green with no persistent cost warning, close Critic waves and queue the audio preview/master Deliver jobs.
