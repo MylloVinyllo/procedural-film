@@ -37,9 +37,7 @@
   }
 
   function drawRoom(c,t){
-    const fade=1-sstep(1.28,2.15,t);
-    if(fade<=0)return;
-    c.save();c.globalAlpha*=fade;
+    c.save();
     c.fillStyle=P.roomWall;c.fillRect(0,0,1080,1920);
     // warm wall shadow and table
     fill(c,[[0,0],[455,0],[335,1260],[0,1260]],P.paperShade,.33);
@@ -83,10 +81,8 @@
   }
 
   function drawTorso(c,t){
-    const fade=1-sstep(1.2,2.08,t);
-    if(fade<=0)return;
     const lean=sstep(.1,.65,t);
-    c.save();c.globalAlpha*=fade;c.translate(360+14*lean,740+10*lean);c.rotate(.035*lean);
+    c.save();c.translate(360+14*lean,740+10*lean);c.rotate(.035*lean);
     const torso=[[-185,-25],[-105,-105],[22,-116],[143,-75],[205,120],[178,460],[-165,460],[-210,120]];
     inkFill(c,torso,P.shirt,sd('torso'),6,.98);
     fill(c,[[15,-112],[143,-75],[205,120],[178,460],[22,460]],P.shirtDeep,.48);
@@ -166,8 +162,8 @@
     if(reveal<=0)return;
 
     const wipeX=lerp(1080,0,reveal);
-    c.save();c.globalAlpha*=reveal;
-    // page panel wipes in from right
+    c.save();
+    // Opaque page panel wipes in from right; no double-exposure dissolve.
     c.fillStyle=P.gutter;c.fillRect(wipeX,0,1080-wipeX,1920);
     c.beginPath();c.rect(wipeX,0,1080-wipeX,1920);c.clip();
     c.fillStyle=P.table;c.fillRect(0,0,1080,1920);
