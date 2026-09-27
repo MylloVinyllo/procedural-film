@@ -32,8 +32,8 @@ If the ChatGPT stream times out:
 |---|---|---|---|
 | Brief | COMPLETE | `docs/V3_BRIEF.md` | Setup |
 | Setup | COMPLETE | scaffold + smoke + fixture gate + fixture render | Reference analysis |
-| Reference analysis | IN PROGRESS | official comic-animation references + Butterfly benchmark | freeze numbered style rules |
-| Research | PENDING | `.tmp/research/` | after reference rules |
+| Reference analysis | COMPLETE | `docs/reference-analysis.md` + Butterfly benchmark sheet | Research |
+| Research | IN PROGRESS | authoritative vinyl handling / playback / cleaning sources | capture source notes and phase map |
 | Art Bible | PENDING | `docs/art-bible.md` | after research |
 | Storyboard | PENDING | `docs/storyboard.md` | after art bible |
 | Timeline | PENDING | `src/timeline.js` | after storyboard |
@@ -86,3 +86,41 @@ Exact next action:
 3. start TX-V3-003 Research.
 
 Do not start the art bible until the reference rules are frozen.
+
+
+## TX-V3-002 result — Reference analysis
+
+Output commit: `f39468546d4685b6845ef8add939aa6f1a2bba68`
+
+Accepted style rules:
+- stable character and prop models;
+- comic panel grammar;
+- print / halftone / sharp-shadow surface treatment;
+- literal actions before abstract effects;
+- mirrored dirty vs clean playback;
+- mixed motion cadence;
+- Butterfly-level authored density as finish benchmark;
+- quarter-scale narrative readability;
+- unaided human comprehension as final criterion.
+
+Status: COMPLETE.
+
+## Active transaction
+
+**TX-V3-003 — Research**
+
+Open questions:
+1. How should grooved records be handled so the protagonist's hand contact is truthful?
+2. What visible contamination / playback-maintenance relationship can the film safely imply?
+3. What concrete wet/vacuum cleaning sequence is legitimate to depict?
+4. What physical turntable / tonearm playback actions must be recognisable?
+
+Planned source classes:
+- Library of Congress preservation guidance;
+- Library of Congress recorded-sound cleaning workflow;
+- cartridge / stylus manufacturer care guidance;
+- turntable / record-cleaning-machine operating manuals.
+
+Exact next action:
+- capture 2–4 authoritative sources into `.tmp/research/`, one fact set per file;
+- then build the research phase map and close TX-V3-003.
