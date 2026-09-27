@@ -2170,6 +2170,23 @@
    * Two-bone arm solved from the actual hand target. The hand can therefore stay locked
    * to a record/tool while shoulder and elbow remain mechanically coherent.
    */
+  function v4TaperedLimb(ctx,a,b,w0,w1,fill,stroke=pal.inkSoft,alpha=1){
+    const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.max(1,Math.hypot(dx,dy));
+    const nx=-dy/len,ny=dx/len;
+    // Slightly bowed sides avoid the pipe/robot look while keeping deterministic geometry.
+    const p0=[a[0]+nx*w0*.50,a[1]+ny*w0*.50];
+    const p1=[b[0]+nx*w1*.50,b[1]+ny*w1*.50];
+    const p2=[b[0]-nx*w1*.50,b[1]-ny*w1*.50];
+    const p3=[a[0]-nx*w0*.50,a[1]-ny*w0*.50];
+    ctx.save();ctx.globalAlpha*=alpha;ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=2.6;ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(p0[0],p0[1]);
+    ctx.quadraticCurveTo((p0[0]+p1[0])*.5+nx*3,(p0[1]+p1[1])*.5+ny*3,p1[0],p1[1]);
+    ctx.quadraticCurveTo(b[0]+dx/len*5,b[1]+dy/len*5,p2[0],p2[1]);
+    ctx.quadraticCurveTo((p2[0]+p3[0])*.5-nx*3,(p2[1]+p3[1])*.5-ny*3,p3[0],p3[1]);
+    ctx.quadraticCurveTo(a[0]-dx/len*4,a[1]-dy/len*4,p0[0],p0[1]);
+    ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+  }
+
   lib.v4ArmIK = (ctx,o={}) => {
     const S=o.shoulder||[0,0], T=o.target||[100,100];
     const l1=o.l1||170,l2=o.l2||155,bend=o.bend!=null?o.bend:1;
@@ -2184,9 +2201,11 @@
     const upper=o.upperColor||pal.shirt, fore=o.foreColor||pal.skin;
     const alpha=o.alpha!=null?o.alpha:1;
 
-    v4SolidCapsule(ctx,S,E,upperW,upper,pal.inkSoft,3.2,alpha);
-    v4SolidCapsule(ctx,E,T,foreW,fore,pal.inkSoft,2.8,alpha);
-    v4Ellipse(ctx,E[0],E[1],foreW*.42,foreW*.42,pal.skin,pal.inkSoft,2.0,alpha);
+    // Human taper: shoulder is broad, sleeve narrows toward elbow; forearm is fuller at
+    // the elbow and narrows into the wrist. No visible mechanical joint disk.
+    v4TaperedLimb(ctx,S,E,upperW,upperW*.72,upper,pal.inkSoft,alpha);
+    v4TaperedLimb(ctx,E,T,foreW*1.03,foreW*.62,fore,pal.inkSoft,alpha);
+    v4Ellipse(ctx,E[0],E[1],foreW*.31,foreW*.28,fore,pal.inkSoft,1.6,alpha);
     const wr=Math.atan2(T[1]-E[1],T[0]-E[0]);
     if(o.drawHand!==false) lib.v4GripHand(ctx,{
       x:T[0],y:T[1],rot:o.handRot!=null?o.handRot:wr,scale:o.handScale!=null?o.handScale:.8,
