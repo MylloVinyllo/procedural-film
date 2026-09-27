@@ -31,7 +31,7 @@ If the ChatGPT stream times out:
 | Stage | Status | Durable evidence | Next |
 |---|---|---|---|
 | Brief | COMPLETE | `docs/V3_BRIEF.md` | Setup |
-| Setup | IN PROGRESS | clean foundation copied into this project | smoke + fixture gate + fixture render |
+| Setup | IN PROGRESS | clean foundation copied; smoke + fixture gate green; fixture render active | complete fixture render |
 | Reference analysis | PENDING | `docs/reference-analysis.md` template | after Setup |
 | Research | PENDING | `.tmp/research/` | after reference rules |
 | Art Bible | PENDING | `docs/art-bible.md` | after research |
@@ -58,13 +58,16 @@ If the ChatGPT stream times out:
 
 Input branch point: `e257df8a3c56a75a3a36ca1a0cdd60ccddcdab38`
 
-Expected outputs:
-- clean foundation tree;
-- native templates copied;
-- Goal fixed in CONTRACT;
-- smoke job;
-- fixture check job;
-- fixture render job.
+Scaffold commit: `e542ceaf7c46df44ef7094922ff528b825a5a6cd`
 
-Next action after the scaffold commit:
-- run native smoke on the exact scaffold commit.
+Evidence:
+- smoke job `41f83a5c-206f-4ba1-b510-70ff70e9db03` — SUCCEEDED
+- fixture check job `b185350f-4719-4c68-8af0-d4d74e1f6cb0` — SUCCEEDED / 6 PASS
+- fixture render job `df7d7d17-701a-424b-95b0-8bf96b02d730` — ACTIVE
+
+Exact next action:
+1. query `df7d7d17-701a-424b-95b0-8bf96b02d730`;
+2. if succeeded, record artifact and mark Setup COMPLETE;
+3. start TX-V3-002 Reference analysis.
+
+Do not rerun the fixture render unless this recorded job explicitly fails.
