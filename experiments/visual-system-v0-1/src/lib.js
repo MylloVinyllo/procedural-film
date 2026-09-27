@@ -1,0 +1,2475 @@
+/*
+ * lib.js : FILM.lib, the shared drawing library.
+ *
+ * Everything here is a pure function of its arguments plus FILM.lib.T (the global time
+ * core sets before each shot draws, used only for the 12 fps line boil).
+ * Randomness comes from rng(seed) and hash(...). Caches are keyed by every input.
+ *
+ * Shape inputs ("clip") accepted by hatch, crossHatch, stipple and hexLattice:
+ *   - an array of points [[x,y], ...] or [{x,y}, ...]      (fast: exact spans, natural ends)
+ *   - an array of polygons [[[x,y],...], [[x,y],...]]      (even-odd, so inner polygons are holes)
+ *   - a function (ctx) => { ctx.moveTo...; ctx.arc... }     (hard clip; pass opts.bounds for speed)
+ *   - a Path2D                                             (hard clip; pass opts.bounds for speed)
+ *   - null                                                 (no clip; opts.bounds or the whole frame)
+ * Bounds are { x, y, w, h } or [x, y, w, h] in the current (logical) coordinates.
+ *
+ * Angles are radians. Sizes are logical pixels on the 1080x1920 frame.
+ */
+(function () {
+  'use strict';
+
+  const FILM = (window.FILM = window.FILM || {});
+  const lib = (FILM.lib = {});
+  const W = () => FILM.W || 1080;
+  const H = () => FILM.H || 1920;
+  const TAU = Math.PI * 2;
+
+  lib.TAU = TAU;
+  // global time of the frame being drawn; core sets it before each shot draws, scenes can only read it
+  Object.defineProperty(lib, 'T', { get: () => FILM.frameT || 0, enumerable: true });
+
+  // ===========================================================================
+  // Numbers
+  // ===========================================================================
+
+  const clamp = (v, lo = 0, hi = 1) => (v < lo ? lo : v > hi ? hi : v);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const invLerp = (a, b, v) => (b === a ? 0 : (v - a) / (b - a));
+  const smoothstep = (e0, e1, x) => {
+    const t = clamp(invLerp(e0, e1, x));
+    return t * t * (3 - 2 * t);
+  };
+  lib.clamp = clamp;
+  lib.lerp = lerp;
+  lib.invLerp = invLerp;
+  lib.smoothstep = smoothstep;
+
+  // ===========================================================================
+  // Easing (inputs are clamped to 0..1)
+  // ===========================================================================
+
+  const c01 = (p) => (p < 0 ? 0 : p > 1 ? 1 : p);
+  const B1 = 1.70158;
+  const B2 = B1 * 1.525;
+  const ease = {
+    linear: (p) => c01(p),
+    inQuad: (p) => ((p = c01(p)), p * p),
+    outQuad: (p) => ((p = c01(p)), 1 - (1 - p) * (1 - p)),
+    inOutQuad: (p) => ((p = c01(p)), p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2),
+    inCubic: (p) => ((p = c01(p)), p * p * p),
+    outCubic: (p) => ((p = c01(p)), 1 - Math.pow(1 - p, 3)),
+    inOutCubic: (p) => ((p = c01(p)), p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    inQuart: (p) => ((p = c01(p)), p * p * p * p),
+    outQuart: (p) => ((p = c01(p)), 1 - Math.pow(1 - p, 4)),
+    inOutQuart: (p) => ((p = c01(p)), p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2),
+    inQuint: (p) => ((p = c01(p)), p * p * p * p * p),
+    outQuint: (p) => ((p = c01(p)), 1 - Math.pow(1 - p, 5)),
+    inOutQuint: (p) => ((p = c01(p)), p < 0.5 ? 16 * p * p * p * p * p : 1 - Math.pow(-2 * p + 2, 5) / 2),
+    inSine: (p) => ((p = c01(p)), 1 - Math.cos((p * Math.PI) / 2)),
+    outSine: (p) => ((p = c01(p)), Math.sin((p * Math.PI) / 2)),
+    inOutSine: (p) => ((p = c01(p)), -(Math.cos(Math.PI * p) - 1) / 2),
+    inExpo: (p) => ((p = c01(p)), p === 0 ? 0 : Math.pow(2, 10 * p - 10)),
+    outExpo: (p) => ((p = c01(p)), p === 1 ? 1 : 1 - Math.pow(2, -10 * p)),
+    inOutExpo: (p) => ((p = c01(p)), p === 0 ? 0 : p === 1 ? 1 : p < 0.5 ? Math.pow(2, 20 * p - 10) / 2 : (2 - Math.pow(2, -20 * p + 10)) / 2),
+    inCirc: (p) => ((p = c01(p)), 1 - Math.sqrt(1 - p * p)),
+    outCirc: (p) => ((p = c01(p)), Math.sqrt(1 - Math.pow(p - 1, 2))),
+    inOutCirc: (p) => ((p = c01(p)), p < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * p, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * p + 2, 2)) + 1) / 2),
+    inBack: (p) => ((p = c01(p)), (B1 + 1) * p * p * p - B1 * p * p),
+    outBack: (p) => ((p = c01(p)), 1 + (B1 + 1) * Math.pow(p - 1, 3) + B1 * Math.pow(p - 1, 2)),
+    inOutBack: (p) => ((p = c01(p)), p < 0.5 ? (Math.pow(2 * p, 2) * ((B2 + 1) * 2 * p - B2)) / 2 : (Math.pow(2 * p - 2, 2) * ((B2 + 1) * (p * 2 - 2) + B2) + 2) / 2),
+    outElastic: (p) => ((p = c01(p)), p === 0 ? 0 : p === 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * (TAU / 3)) + 1),
+    outBounce: (p) => {
+      p = c01(p);
+      const n = 7.5625, d = 2.75;
+      if (p < 1 / d) return n * p * p;
+      if (p < 2 / d) return n * (p -= 1.5 / d) * p + 0.75;
+      if (p < 2.5 / d) return n * (p -= 2.25 / d) * p + 0.9375;
+      return n * (p -= 2.625 / d) * p + 0.984375;
+    },
+    /** Snappy settle used for drawn-animation poses: fast out, tiny overshoot. */
+    snap: (p) => ((p = c01(p)), 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2)),
+    /** Factory: hold-and-jump in n steps. */
+    steps: (n) => (p) => Math.min(1, Math.floor(c01(p) * n) / n),
+  };
+  lib.ease = ease;
+
+  const easeFn = (e) => (typeof e === 'function' ? e : typeof e === 'string' && ease[e] ? ease[e] : ease.linear);
+
+  /** mapRange(x, a0, a1, b0, b1, easing?) clamps x into [a0,a1] and maps to [b0,b1]. */
+  lib.mapRange = (x, a0, a1, b0, b1, e) => b0 + (b1 - b0) * easeFn(e)(clamp(invLerp(a0, a1, x)));
+  /** seg(t, t0, t1, easing?) : 0..1 progress of t through [t0,t1]. */
+  lib.seg = (t, t0, t1, e) => easeFn(e)(clamp(invLerp(t0, t1, t)));
+
+  // ===========================================================================
+  // Hash, rng, noise
+  // ===========================================================================
+
+  const F64 = new Float64Array(1);
+  const U32 = new Uint32Array(F64.buffer);
+  function mix32(h) {
+    h ^= h >>> 16;
+    h = Math.imul(h, 0x7feb352d);
+    h ^= h >>> 15;
+    h = Math.imul(h, 0x846ca68b);
+    h ^= h >>> 16;
+    return h >>> 0;
+  }
+  /** hash(...values) : stable unsigned 32-bit int from numbers and strings. */
+  function hash() {
+    let h = 0x811c9dc5 ^ arguments.length;
+    for (let a = 0; a < arguments.length; a++) {
+      const v = arguments[a];
+      if (typeof v === 'number') {
+        if ((v | 0) === v) {
+          h = mix32(h ^ Math.imul(v, 0x9e3779b1));
+        } else {
+          F64[0] = v;
+          h = mix32(h ^ U32[0]);
+          h = mix32(h ^ U32[1]);
+        }
+      } else {
+        const s = String(v);
+        for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+        h = mix32(h ^ s.length);
+      }
+    }
+    return h >>> 0;
+  }
+  lib.hash = hash;
+
+  const seedInt = (s) => (typeof s === 'number' && (s | 0) === s ? s : hash(s) | 0);
+
+  /** Fast stateless 3-int hash to [0,1). */
+  function h3(a, b, c) {
+    let h = Math.imul(a | 0, 0x27d4eb2d) ^ Math.imul(b | 0, 0x165667b1) ^ Math.imul(c | 0, 0x9e3779b1);
+    h ^= h >>> 15;
+    h = Math.imul(h, 0x85ebca6b);
+    h ^= h >>> 13;
+    h = Math.imul(h, 0xc2b2ae35);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  }
+  lib.h3 = h3;
+
+  /** rng(seed) : function returning [0,1). Has .range(a,b) .int(a,b) .pick(arr) .sign() .chance(p) .gauss(). */
+  function rng(seed) {
+    let a = hash(seed === undefined ? 1 : seed) || 0x9e3779b9;
+    const r = function () {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    r.range = (lo, hi) => lo + (hi - lo) * r();
+    r.int = (lo, hi) => lo + Math.floor((hi - lo + 1) * r());
+    r.pick = (arr) => arr[Math.floor(r() * arr.length)];
+    r.sign = () => (r() < 0.5 ? -1 : 1);
+    r.chance = (p) => r() < p;
+    r.gauss = () => {
+      const u = 1 - r();
+      const v = r();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v);
+    };
+    return r;
+  }
+  lib.rng = rng;
+
+  const fade5 = (f) => f * f * f * (f * (f * 6 - 15) + 10);
+
+  /** noise1(x, seed) : smooth 1D gradient noise in [-1,1]. */
+  function noise1(x, seed) {
+    const s = seed === undefined ? 0 : seedInt(seed);
+    const i = Math.floor(x);
+    const f = x - i;
+    const g0 = h3(i, 71, s) * 2 - 1;
+    const g1 = h3(i + 1, 71, s) * 2 - 1;
+    const v = lerp(g0 * f, g1 * (f - 1), fade5(f)) * 2;
+    return v < -1 ? -1 : v > 1 ? 1 : v;
+  }
+  lib.noise1 = noise1;
+
+  const GX = [1, -1, 1, -1, 1.4142, -1.4142, 0, 0];
+  const GY = [1, 1, -1, -1, 0, 0, 1.4142, -1.4142];
+  function grad(ix, iy, s, x, y) {
+    const k = (h3(ix, iy, s) * 8) | 0;
+    return GX[k] * x + GY[k] * y;
+  }
+  /** noise2(x, y, seed) : smooth 2D gradient noise in [-1,1]. */
+  function noise2(x, y, seed) {
+    const s = seed === undefined ? 0 : seedInt(seed);
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const fx = x - ix;
+    const fy = y - iy;
+    const u = fade5(fx);
+    const v = fade5(fy);
+    const n00 = grad(ix, iy, s, fx, fy);
+    const n10 = grad(ix + 1, iy, s, fx - 1, fy);
+    const n01 = grad(ix, iy + 1, s, fx, fy - 1);
+    const n11 = grad(ix + 1, iy + 1, s, fx - 1, fy - 1);
+    const r = lerp(lerp(n00, n10, u), lerp(n01, n11, u), v) * 1.1;
+    return r < -1 ? -1 : r > 1 ? 1 : r;
+  }
+  lib.noise2 = noise2;
+
+  lib.fbm1 = (x, seed, oct = 3) => {
+    const s = seed === undefined ? 0 : seedInt(seed);
+    let a = 0.5, f = 1, sum = 0, norm = 0;
+    for (let o = 0; o < oct; o++) {
+      sum += a * noise1(x * f, s + o * 101);
+      norm += a;
+      a *= 0.5;
+      f *= 2.03;
+    }
+    return sum / norm;
+  };
+  lib.fbm2 = (x, y, seed, oct = 3) => {
+    const s = seed === undefined ? 0 : seedInt(seed);
+    let a = 0.5, f = 1, sum = 0, norm = 0;
+    for (let o = 0; o < oct; o++) {
+      sum += a * noise2(x * f, y * f, s + o * 101);
+      norm += a;
+      a *= 0.5;
+      f *= 2.03;
+    }
+    return sum / norm;
+  };
+
+  // ===========================================================================
+  // Animation clocks
+  // ===========================================================================
+
+  /** boil(T, fps=12) : index of the held drawing at global time T. Lines re-wobble when it changes. */
+  lib.boil = (T, fps = 12) => Math.floor(T * fps + 1e-6);
+  /** onTwos(t) : quantise time to 1/12 s so motion steps like drawn animation. */
+  lib.onTwos = (t) => Math.floor(t * 12 + 1e-6) / 12;
+
+  function boilIndex(o) {
+    if (o.boil === false) return 0;
+    if (typeof o.boil === 'number') return o.boil;
+    return lib.boil(lib.T);
+  }
+
+  // ===========================================================================
+  // Colour
+  // ===========================================================================
+
+  // Keys and values follow docs/art-bible.md section 2 (the published palette).
+  const pal = {
+    // 2.1 warm illustrated palette (paper plate)
+    paper: '#F3E7D3',
+    paperShade: '#D7C7AD',
+    paperDeep: '#B79F80',
+    stripeCream: '#F5ECD9',
+    stripeYellow: '#E8D3A2',
+    stripeApricot: '#E7C3A4',
+    stripeSage: '#C9D3BE',
+    stripeSpring: '#D7E2C8',
+    stripeSky: '#BFCED1',
+    ink: '#201B1A',
+    inkSoft: '#493C37',
+    inkFaint: '#7F6D63',
+    tan: '#C9A779',
+    ochre: '#C68A35',
+    rose: '#C97B74',
+    duskRose: '#D79A8C',
+    sage: '#85977A',
+    teal: '#2F8A87',
+    tealDeep: '#1E5D5D',
+    sun: '#E8B64A',
+    nightSky: '#37405B',
+    night: '#202333',
+    white: '#FFF8E8',
+    orange: '#D66A36',
+    leaf: '#5E7B4B',
+    wood: '#936B4B',
+    sunset: '#D88A73',
+    dusk: '#544767',
+    red: '#B33B32',
+    // 2.2 V3 subject palette — mirrored from docs/art-bible.md.
+    comicBorder: '#211C1A',
+    gutter: '#F6EEDC',
+    skin: '#D9A37F',
+    skinShadow: '#AF765C',
+    hair: '#2B2423',
+    shirt: '#D56A3B',
+    shirtDeep: '#9F4630',
+    tee: '#EADFC8',
+    pants: '#38404B',
+    shoe: '#2B2D31',
+    vinyl: '#191A1D',
+    vinylEdge: '#090A0B',
+    groove: '#4B4D52',
+    label: '#D58C45',
+    labelDeep: '#A95D2A',
+    sleeve: '#D8B86A',
+    sleeveShadow: '#A9864E',
+    turntableBody: '#C9C1B2',
+    platter: '#4D535A',
+    mat: '#25282C',
+    metal: '#AAB0B3',
+    tonearm: '#B8B7AE',
+    cartridge: '#3B3A39',
+    stylus: '#B9D4DC',
+    dust: '#C7B59D',
+    grit: '#8D7766',
+    brush: '#8C5B3D',
+    brushFiber: '#292A2B',
+    fluid: '#67B8B2',
+    fluidPale: '#B9E1DA',
+    machine: '#DBD5C7',
+    machineDeep: '#707B7E',
+    vacuum: '#343B3E',
+    speaker: '#4A382F',
+    speakerCone: '#262328',
+    lamp: '#D6A95A',
+    roomWall: '#E1D4BF',
+    table: '#9A694A',
+    badMagenta: '#DE3F86',
+    badCyan: '#36A7B7',
+    cleanGold: '#E3B74E',
+    cleanTeal: '#3A9990',
+    soundWord: '#E95538',
+    mylloBody: '#111416',
+    mylloTop: '#1B2023',
+    mylloEdge: '#07090A',
+    mylloPanel: '#F0EEE7',
+    mylloPanelInk: '#1C1D1E',
+    mylloButton: '#303236',
+    mylloRing: '#A86235',
+    mylloRingActive: '#F08B3E',
+    mylloBlueLed: '#2F78E8',
+    mylloBristle: '#B7A171',
+    mylloBristleWet: '#6F705C',
+    mylloWet: '#73BDB8',
+    mylloWetPale: '#B4E0D9',
+    processBand: '#22272A',
+    processText: '#FFF8E8',
+    // 2.3 cool schematic palette (blueprint plate)
+    navy: '#172033',
+    navyDeep: '#0D121D',
+    navyLight: '#263550',
+    grid: '#4B5D79',
+    lavender: '#C8C1EF',
+    lineWhite: '#F4F0E8',
+    paleBlue: '#9FC7D0',
+    glow: '#FFF0C8',
+    magenta: '#DE3F86',
+    // V3 technical inset identity tints.
+    schemVinyl: '#8CA7C2',
+    schemClean: '#67B8B2',
+    schemNoise: '#DE3F86',
+    // 2.4 overlay colours on illustrations
+    annMagenta: '#DE3F86',
+    annBlue: '#36A7B7',
+    annYellow: '#E3B74E',
+  };
+  // earlier names kept as aliases
+  pal.stripeA = pal.stripeCream;
+  pal.stripeB = pal.stripeYellow;
+  lib.pal = pal;
+
+  const rgbCache = {};
+  function parseColor(c) {
+    if (rgbCache[c]) return rgbCache[c];
+    let r = 0, g = 0, b = 0;
+    if (c[0] === '#') {
+      let h = c.slice(1);
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      const n = parseInt(h.slice(0, 6), 16);
+      r = (n >> 16) & 255;
+      g = (n >> 8) & 255;
+      b = n & 255;
+    } else {
+      const m = c.match(/[\d.]+/g) || [0, 0, 0];
+      r = +m[0];
+      g = +m[1];
+      b = +m[2];
+    }
+    return (rgbCache[c] = [r, g, b]);
+  }
+  lib.rgb = parseColor;
+  /** rgba('#hex' or pal colour, alpha) : css string. */
+  lib.rgba = (c, a = 1) => {
+    const [r, g, b] = parseColor(c);
+    return `rgba(${r},${g},${b},${a})`;
+  };
+  /** mix(colorA, colorB, t) : css string between two colours. */
+  lib.mix = (a, b, t) => {
+    const A = parseColor(a);
+    const B = parseColor(b);
+    return `rgb(${Math.round(lerp(A[0], B[0], t))},${Math.round(lerp(A[1], B[1], t))},${Math.round(lerp(A[2], B[2], t))})`;
+  };
+
+  // ===========================================================================
+  // Geometry helpers
+  // ===========================================================================
+
+  const XY = (p) => (Array.isArray(p) ? p : [p.x, p.y]);
+
+  lib.ellipsePts = (cx, cy, rx, ry = rx, n = 64, rot = 0) => {
+    const out = [];
+    const cr = Math.cos(rot), sr = Math.sin(rot);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU;
+      const x = Math.cos(a) * rx, y = Math.sin(a) * ry;
+      out.push([cx + x * cr - y * sr, cy + x * sr + y * cr]);
+    }
+    return out;
+  };
+  lib.rectPts = (x, y, w, h, stepPx = 24) => {
+    const out = [];
+    const edge = (x0, y0, x1, y1) => {
+      const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / stepPx));
+      for (let i = 0; i < n; i++) out.push([lerp(x0, x1, i / n), lerp(y0, y1, i / n)]);
+    };
+    edge(x, y, x + w, y);
+    edge(x + w, y, x + w, y + h);
+    edge(x + w, y + h, x, y + h);
+    edge(x, y + h, x, y);
+    return out;
+  };
+  lib.rrectPts = (x, y, w, h, r, stepPx = 24) => {
+    r = Math.min(r, w / 2, h / 2);
+    const out = [];
+    const line = (x0, y0, x1, y1) => {
+      const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / stepPx));
+      for (let i = 0; i < n; i++) out.push([lerp(x0, x1, i / n), lerp(y0, y1, i / n)]);
+    };
+    const corner = (cx, cy, a0) => {
+      const n = Math.max(2, Math.ceil((r * Math.PI) / 2 / (stepPx * 0.5)));
+      for (let i = 0; i < n; i++) {
+        const a = a0 + (i / n) * (Math.PI / 2);
+        out.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+      }
+    };
+    line(x + r, y, x + w - r, y);
+    corner(x + w - r, y + r, -Math.PI / 2);
+    line(x + w, y + r, x + w, y + h - r);
+    corner(x + w - r, y + h - r, 0);
+    line(x + w - r, y + h, x + r, y + h);
+    corner(x + r, y + h - r, Math.PI / 2);
+    line(x, y + h - r, x, y + r);
+    corner(x + r, y + r, Math.PI);
+    return out;
+  };
+  /** capsulePts(cx, cy, length, radius, rot, n) : a stadium shape along its rotated long axis. */
+  lib.capsulePts = (cx, cy, len, r, rot = 0, n = 72) => {
+    const out = [];
+    const half = Math.max(0, len / 2 - r);
+    const cr = Math.cos(rot), sr = Math.sin(rot);
+    const k = Math.floor(n / 2);
+    for (let i = 0; i <= k; i++) {
+      const a = -Math.PI / 2 + (i / k) * Math.PI;
+      const x = half + Math.cos(a) * r, y = Math.sin(a) * r;
+      out.push([cx + x * cr - y * sr, cy + x * sr + y * cr]);
+    }
+    for (let i = 0; i <= k; i++) {
+      const a = Math.PI / 2 + (i / k) * Math.PI;
+      const x = -half + Math.cos(a) * r, y = Math.sin(a) * r;
+      out.push([cx + x * cr - y * sr, cy + x * sr + y * cr]);
+    }
+    return out;
+  };
+
+  /** tracePath(ctx, pts, closed=true) : adds the polyline to the current path (no beginPath). */
+  lib.tracePath = (ctx, pts, closed = true) => {
+    for (let i = 0; i < pts.length; i++) {
+      const p = XY(pts[i]);
+      if (i === 0) ctx.moveTo(p[0], p[1]);
+      else ctx.lineTo(p[0], p[1]);
+    }
+    if (closed) ctx.closePath();
+  };
+
+  /**
+   * Centripetal Catmull-Rom resample (no overshoot or cusps where long and short segments meet).
+   * Returns a flat [x0,y0,x1,y1,...] array (closed: no duplicate end).
+   */
+  function sampleFlat(P, closed, step, smooth) {
+    const n = P.length;
+    const out = [];
+    const segs = closed ? n : n - 1;
+    for (let i = 0; i < segs; i++) {
+      const p1 = P[i];
+      const p2 = P[(i + 1) % n];
+      const d = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+      const k = Math.max(1, Math.ceil(d / step));
+      if (!smooth || n < 3) {
+        for (let j = 0; j < k; j++) out.push(lerp(p1[0], p2[0], j / k), lerp(p1[1], p2[1], j / k));
+        continue;
+      }
+      let p0, p3;
+      if (closed) {
+        p0 = P[(i - 1 + n) % n];
+        p3 = P[(i + 2) % n];
+      } else {
+        p0 = i > 0 ? P[i - 1] : [2 * p1[0] - p2[0], 2 * p1[1] - p2[1]];
+        p3 = i + 2 < n ? P[i + 2] : [2 * p2[0] - p1[0], 2 * p2[1] - p1[1]];
+      }
+      const t1 = Math.sqrt(Math.hypot(p1[0] - p0[0], p1[1] - p0[1])) || 1e-4;
+      const t2 = t1 + (Math.sqrt(d) || 1e-4);
+      const t3 = t2 + (Math.sqrt(Math.hypot(p3[0] - p2[0], p3[1] - p2[1])) || 1e-4);
+      for (let j = 0; j < k; j++) {
+        const t = t1 + (t2 - t1) * (j / k);
+        const a1x = ((t1 - t) / t1) * p0[0] + (t / t1) * p1[0];
+        const a1y = ((t1 - t) / t1) * p0[1] + (t / t1) * p1[1];
+        const a2x = ((t2 - t) / (t2 - t1)) * p1[0] + ((t - t1) / (t2 - t1)) * p2[0];
+        const a2y = ((t2 - t) / (t2 - t1)) * p1[1] + ((t - t1) / (t2 - t1)) * p2[1];
+        const a3x = ((t3 - t) / (t3 - t2)) * p2[0] + ((t - t2) / (t3 - t2)) * p3[0];
+        const a3y = ((t3 - t) / (t3 - t2)) * p2[1] + ((t - t2) / (t3 - t2)) * p3[1];
+        const b1x = ((t2 - t) / t2) * a1x + (t / t2) * a2x;
+        const b1y = ((t2 - t) / t2) * a1y + (t / t2) * a2y;
+        const b2x = ((t3 - t) / (t3 - t1)) * a2x + ((t - t1) / (t3 - t1)) * a3x;
+        const b2y = ((t3 - t) / (t3 - t1)) * a2y + ((t - t1) / (t3 - t1)) * a3y;
+        out.push(((t2 - t) / (t2 - t1)) * b1x + ((t - t1) / (t2 - t1)) * b2x, ((t2 - t) / (t2 - t1)) * b1y + ((t - t1) / (t2 - t1)) * b2y);
+      }
+    }
+    if (!closed) out.push(P[n - 1][0], P[n - 1][1]);
+    return out;
+  }
+
+  /** smoothPts(pts, closed, step=6) : Catmull-Rom resampled points as [[x,y],...]. */
+  lib.smoothPts = (pts, closed = true, step = 6) => {
+    const f = sampleFlat(pts.map(XY), closed, step, true);
+    const out = [];
+    for (let i = 0; i < f.length; i += 2) out.push([f[i], f[i + 1]]);
+    return out;
+  };
+
+  function toPolys(clip) {
+    if (!Array.isArray(clip) || !clip.length) return null;
+    const first = clip[0];
+    if (Array.isArray(first) && typeof first[0] === 'number') return [clip];
+    if (first && typeof first.x === 'number') return [clip.map(XY)];
+    return clip.map((poly) => poly.map(XY));
+  }
+
+  /** polyContains(pointsOrPolys, x, y) : even-odd point-in-polygon. */
+  function polysContain(polys, x, y) {
+    let inside = false;
+    for (let p = 0; p < polys.length; p++) {
+      const poly = polys[p];
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+      }
+    }
+    return inside;
+  }
+  lib.polyContains = (clip, x, y) => polysContain(toPolys(clip), x, y);
+
+  function polysBounds(polys) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const poly of polys) {
+      for (const p of poly) {
+        if (p[0] < x0) x0 = p[0];
+        if (p[1] < y0) y0 = p[1];
+        if (p[0] > x1) x1 = p[0];
+        if (p[1] > y1) y1 = p[1];
+      }
+    }
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  lib.bounds = (pts) => polysBounds(toPolys(pts));
+
+  function normBounds(b) {
+    if (!b) return { x: 0, y: 0, w: W(), h: H() };
+    if (Array.isArray(b)) return { x: b[0], y: b[1], w: b[2], h: b[3] };
+    return b;
+  }
+
+  /** Resolves a clip argument into { polys, bounds, hard(ctx) }. */
+  function shapeOf(clip, o) {
+    const polys = toPolys(clip);
+    if (polys) {
+      const b = polysBounds(polys);
+      const pad = o.pad != null ? o.pad : 0;
+      return {
+        polys,
+        bounds: { x: b.x - pad, y: b.y - pad, w: b.w + 2 * pad, h: b.h + 2 * pad },
+        apply(ctx) {
+          ctx.beginPath();
+          for (const poly of polys) lib.tracePath(ctx, poly, true);
+          ctx.clip('evenodd');
+        },
+      };
+    }
+    const bounds = normBounds(o.bounds);
+    if (typeof clip === 'function') {
+      return { polys: null, bounds, apply(ctx) { ctx.beginPath(); clip(ctx); ctx.clip(o.fillRule || 'nonzero'); } };
+    }
+    if (typeof Path2D !== 'undefined' && clip instanceof Path2D) {
+      return { polys: null, bounds, apply(ctx) { ctx.clip(clip, o.fillRule || 'nonzero'); } };
+    }
+    return { polys: null, bounds, apply: null };
+  }
+
+  // ===========================================================================
+  // Canvas cache (pure: keyed by every input, LRU)
+  // ===========================================================================
+
+  // Sized from the timeline (read lazily: lib loads before timeline.js) so a looping player keeps
+  // every shot's paper or blueprint plate warm and does not rebuild one at each shot change.
+  const cache = new Map();
+  function cacheMax() {
+    const tl = FILM.TIMELINE;
+    const shots = tl && Array.isArray(tl.shots) ? tl.shots.length : 0;
+    return Math.max(24, shots * 2 + 8);
+  }
+  function cached(key, make) {
+    if (cache.has(key)) {
+      const v = cache.get(key);
+      cache.delete(key);
+      cache.set(key, v);
+      return v;
+    }
+    const v = make();
+    cache.set(key, v);
+    const max = cacheMax();
+    while (cache.size > max) cache.delete(cache.keys().next().value);
+    return v;
+  }
+  function newCanvas(w, h) {
+    if (FILM.makeCanvas) return FILM.makeCanvas(w, h);
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    return c;
+  }
+  lib.cached = cached;
+
+  // ===========================================================================
+  // Ink lines
+  // ===========================================================================
+
+  /*
+   * One stroke pass over a resampled centreline (flat arrays X, Y with normals NX, NY and
+   * arc length S). Builds a pressure-width ribbon out of quads so every overlap unions cleanly,
+   * and fills it in one call.
+   */
+  function ribbon(ctx, X, Y, NX, NY, S, i0, i1, q) {
+    const n = i1 - i0 + 1;
+    if (n < 2) return null;
+    const s0 = S[i0];
+    const L = Math.max(1e-6, S[i1] - s0);
+    const DX = new Float64Array(n);
+    const DY = new Float64Array(n);
+    const bs = q.boilSeed;
+    const wf = q.wobbleFreq;
+    for (let k = 0; k < n; k++) {
+      const i = i0 + k;
+      const s = S[i] - s0 + q.phase;
+      let d =
+        q.wobble * (0.72 * noise1(s * wf, q.seed) + 0.28 * noise1(s * wf * 3.3, q.seed + 1)) +
+        q.tremble * noise1(s / 7.5, q.seed + 2) +
+        q.boilAmp * noise1(s * wf * 2.2 + 0.37, bs) +
+        q.tremble * 0.7 * noise1(s / 6.3, bs + 5) +
+        q.offset;
+      if (q.closeBlend > 0 && S[i1] - S[i] < q.closeBlend) {
+        // pen returning to the start: pull toward the start's displacement, not all the way
+        const u = 1 - (S[i1] - S[i]) / q.closeBlend;
+        const s2 = s - q.loopLen;
+        const d0 =
+          q.wobble * (0.72 * noise1(s2 * wf, q.seed) + 0.28 * noise1(s2 * wf * 3.3, q.seed + 1)) +
+          q.boilAmp * noise1(s2 * wf * 2.2 + 0.37, bs) +
+          q.offset;
+        d = lerp(d, d0, u * u * (3 - 2 * u) * 0.8);
+      }
+      DX[k] = X[i] + NX[i] * d;
+      DY[k] = Y[i] + NY[i] * d;
+    }
+    // width profile
+    const Wd = new Float64Array(n);
+    const tIn = Math.min(q.taperIn, L * 0.45);
+    const tOut = Math.min(q.taperOut, L * 0.45);
+    for (let k = 0; k < n; k++) {
+      const s = S[i0 + k] - s0;
+      let w = q.width;
+      if (tIn > 0 && s < tIn) w *= q.minW + (1 - q.minW) * Math.pow(s / tIn, 0.55);
+      if (tOut > 0 && L - s < tOut) w *= q.minW + (1 - q.minW) * Math.pow((L - s) / tOut, 0.7);
+      w *= 1 + q.widthJitter * (0.6 * noise1(s * 0.012 + 3.1, q.seed + 3) + 0.4 * noise1(s * 0.045, q.seed + 4));
+      if (q.swell) w *= 1 + q.swell * Math.sin(Math.PI * clamp(s / L));
+      if (q.pressure) w *= q.pressure(s / L);
+      Wd[k] = Math.max(0.05, w) * 0.5;
+    }
+    // offset normals from the displaced line
+    const LX = new Float64Array(n), LY = new Float64Array(n), RX = new Float64Array(n), RY = new Float64Array(n);
+    for (let k = 0; k < n; k++) {
+      const a = k > 0 ? k - 1 : k;
+      const b = k < n - 1 ? k + 1 : k;
+      let tx = DX[b] - DX[a], ty = DY[b] - DY[a];
+      const tl = Math.hypot(tx, ty) || 1;
+      tx /= tl;
+      ty /= tl;
+      const s = S[i0 + k];
+      const wl = Math.max(0.03, Wd[k] + q.rough * noise1(s / 3.1, q.seed + 20));
+      const wr = Math.max(0.03, Wd[k] + q.rough * noise1(s / 3.1, q.seed + 21));
+      LX[k] = DX[k] - ty * wl;
+      LY[k] = DY[k] + tx * wl;
+      RX[k] = DX[k] + ty * wr;
+      RY[k] = DY[k] - tx * wr;
+    }
+    ctx.beginPath();
+    for (let k = 0; k < n - 1; k++) {
+      ctx.moveTo(LX[k], LY[k]);
+      ctx.lineTo(LX[k + 1], LY[k + 1]);
+      ctx.lineTo(RX[k + 1], RY[k + 1]);
+      ctx.lineTo(RX[k], RY[k]);
+      ctx.closePath();
+    }
+    // soft round ends
+    ctx.moveTo(DX[0] + Wd[0], DY[0]);
+    ctx.arc(DX[0], DY[0], Wd[0], 0, TAU);
+    ctx.moveTo(DX[n - 1] + Wd[n - 1], DY[n - 1]);
+    ctx.arc(DX[n - 1], DY[n - 1], Wd[n - 1], 0, TAU);
+    ctx.fill('nonzero');
+    return { DX, DY };
+  }
+
+  function centreline(pts, closed, step, smooth, startFrac, overlapPx) {
+    const P = pts.map(XY);
+    let F = sampleFlat(P, closed, step, smooth);
+    let m = F.length / 2;
+    let loopLen = 0;
+    if (closed && m > 2) {
+      // rotate so the pen starts at a seeded place, then run past the start
+      const st = Math.floor(startFrac * m) % m;
+      const R = new Array(F.length);
+      for (let k = 0; k < m; k++) {
+        R[2 * k] = F[2 * ((k + st) % m)];
+        R[2 * k + 1] = F[2 * ((k + st) % m) + 1];
+      }
+      for (let k = 0; k < m; k++) loopLen += Math.hypot(R[(2 * (k + 1)) % R.length] - R[2 * k], R[((2 * (k + 1)) % R.length) + 1] - R[2 * k + 1]);
+      R.push(R[0], R[1]);
+      let acc = 0;
+      for (let k = 1; k <= m && acc < overlapPx; k++) {
+        const x = R[2 * (k % m)], y = R[2 * (k % m) + 1];
+        acc += Math.hypot(x - R[R.length - 2], y - R[R.length - 1]);
+        R.push(x, y);
+      }
+      F = R;
+      m = F.length / 2;
+    }
+    const X = new Float64Array(m), Y = new Float64Array(m), S = new Float64Array(m);
+    for (let k = 0; k < m; k++) {
+      X[k] = F[2 * k];
+      Y[k] = F[2 * k + 1];
+      if (k > 0) S[k] = S[k - 1] + Math.hypot(X[k] - X[k - 1], Y[k] - Y[k - 1]);
+    }
+    const NX = new Float64Array(m), NY = new Float64Array(m);
+    for (let k = 0; k < m; k++) {
+      const a = Math.max(0, k - 2), b = Math.min(m - 1, k + 2);
+      let tx = X[b] - X[a], ty = Y[b] - Y[a];
+      const tl = Math.hypot(tx, ty) || 1;
+      NX[k] = -ty / tl;
+      NY[k] = tx / tl;
+    }
+    return { X, Y, S, NX, NY, m, loopLen };
+  }
+
+  /**
+   * inkPath(ctx, points, opts) : a hand-inked line or closed shape.
+   *   closed      false
+   *   width       3        nominal pen width (art bible: hero 5, secondary 3, detail 1.8)
+   *   color       pal.ink
+   *   alpha       1
+   *   seed        1        give each drawn object its own seed so their wobbles differ
+   *   smooth      true     Catmull-Rom through the points (false = straight segments)
+   *   step        2.5      resample spacing in px
+   *   wobble      2        low-frequency drift amplitude (px)
+   *   wobbleFreq  1/150    drift frequency (cycles per px)
+   *   tremble     0.4      high-frequency hand tremble (px)
+   *   rough       0.22+0.07*width  ragged ink edge (px), each side independent
+   *   boil        auto     drawing index (default lib.boil(lib.T)); false freezes the line
+   *   boilAmp     0.7      how far the line moves between boil drawings (px)
+   *   taper       [18,34]  px of taper at start and end (number = both)
+   *   minWidth    0.14     width fraction at the very tips
+   *   swell       0.2      extra width through the middle of an open stroke
+   *   widthJitter 0.34     pressure variation (slow plus a faster drag)
+   *   pressure    null     fn(u 0..1) => width multiplier
+   *   overlap     14       closed shapes: how far the pen runs past its start (px)
+   *   fill        null     closed shapes: fill colour under the line (uses the wobbled outline)
+   *   fillAlpha   1
+   *   double      false    true or { offset, width, alpha, from, to, seed }: a second quick retrace
+   *                        (defaults: 30 percent of the width, min 1.5 px at 5 px, 3 px clear of the line, alpha 0.4)
+   */
+  function inkPath(ctx, pts, o = {}) {
+    if (!pts || pts.length < 2) return;
+    const closed = !!o.closed;
+    const seed = seedInt(o.seed === undefined ? 1 : o.seed);
+    const width = o.width != null ? o.width : 3;
+    const step = o.step || 2.5;
+    const smooth = o.smooth !== false;
+    const taper = o.taper != null ? o.taper : closed ? [10, 22] : [18, 34];
+    const tIn = Array.isArray(taper) ? taper[0] : taper;
+    const tOut = Array.isArray(taper) ? taper[1] : taper;
+    const overlap = closed ? (o.overlap != null ? o.overlap : 14) : 0;
+    const C = centreline(pts, closed, step, smooth, closed ? h3(seed, 11, 3) : 0, overlap);
+    if (C.m < 2) return;
+    const b = boilIndex(o);
+    const q = {
+      seed,
+      width,
+      wobble: o.wobble != null ? o.wobble : 2,
+      wobbleFreq: o.wobbleFreq || 1 / 150,
+      tremble: o.tremble != null ? o.tremble : 0.4,
+      rough: o.rough != null ? o.rough : 0.22 + width * 0.07,
+      boilAmp: o.boil === false ? 0 : o.boilAmp != null ? o.boilAmp : 0.7,
+      boilSeed: (hash(seed, b) | 0) & 0x7fffffff,
+      taperIn: tIn,
+      taperOut: tOut,
+      minW: o.minWidth != null ? o.minWidth : 0.14,
+      swell: closed ? 0 : o.swell != null ? o.swell : 0.2,
+      widthJitter: o.widthJitter != null ? o.widthJitter : 0.34,
+      pressure: o.pressure || null,
+      offset: 0,
+      phase: 0,
+      closeBlend: closed ? Math.min(60, C.loopLen * 0.25) + overlap : 0,
+      loopLen: C.loopLen,
+    };
+    ctx.save();
+    const color = o.color || pal.ink;
+    const alpha = o.alpha != null ? o.alpha : 1;
+    if (closed && o.fill) {
+      // fill follows the wobbled outline (without the overlap run)
+      const F = ribbonLine(C, q, 0, Math.max(1, C.m - 1));
+      ctx.beginPath();
+      for (let k = 0; k < F.n; k++) {
+        if (C.S[k] > C.loopLen) break;
+        if (k === 0) ctx.moveTo(F.DX[k], F.DY[k]);
+        else ctx.lineTo(F.DX[k], F.DY[k]);
+      }
+      ctx.closePath();
+      ctx.globalAlpha *= o.fillAlpha != null ? o.fillAlpha : 1;
+      ctx.fillStyle = o.fill;
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+    }
+    ctx.globalAlpha *= alpha;
+    ctx.fillStyle = color;
+    ribbon(ctx, C.X, C.Y, C.NX, C.NY, C.S, 0, C.m - 1, q);
+    if (o.double) {
+      const d = o.double === true ? {} : o.double;
+      const ds = seedInt(d.seed != null ? d.seed : seed + 977);
+      const r = rng(ds);
+      const L = C.S[C.m - 1];
+      let f0 = d.from != null ? d.from : closed ? r.range(0, 0.35) : r.range(0.03, 0.18);
+      let f1 = d.to != null ? d.to : closed ? f0 + r.range(0.45, 0.75) : r.range(0.72, 0.95);
+      f1 = Math.min(1, f1);
+      let i0 = 0, i1 = C.m - 1;
+      while (i0 < C.m - 1 && C.S[i0] < f0 * L) i0++;
+      while (i1 > i0 && C.S[i1] > f1 * L) i1--;
+      const q2 = Object.assign({}, q, {
+        seed: ds,
+        width: d.width != null ? width * d.width : Math.max(1.2, width * 0.3),
+        rough: 0.15 + (d.width != null ? width * d.width : Math.max(1.2, width * 0.3)) * 0.07,
+        offset: d.offset != null ? d.offset : (width / 2 + 3) * (r() < 0.5 ? -1 : 1),
+        wobble: q.wobble * 1.3,
+        boilSeed: (hash(ds, b) | 0) & 0x7fffffff,
+        taperIn: Math.max(tIn, 26),
+        taperOut: Math.max(tOut, 40),
+        closeBlend: 0,
+        swell: 0.35,
+      });
+      ctx.globalAlpha *= d.alpha != null ? d.alpha : 0.4;
+      ribbon(ctx, C.X, C.Y, C.NX, C.NY, C.S, i0, i1, q2);
+    }
+    ctx.restore();
+  }
+
+  // displaced centreline only (for fills)
+  function ribbonLine(C, q, i0, i1) {
+    const n = i1 - i0 + 1;
+    const DX = new Float64Array(n), DY = new Float64Array(n);
+    const wf = q.wobbleFreq;
+    for (let k = 0; k < n; k++) {
+      const i = i0 + k;
+      const s = C.S[i];
+      const d =
+        q.wobble * (0.72 * noise1(s * wf, q.seed) + 0.28 * noise1(s * wf * 3.3, q.seed + 1)) +
+        q.boilAmp * noise1(s * wf * 2.2 + 0.37, q.boilSeed);
+      DX[k] = C.X[i] + C.NX[i] * d;
+      DY[k] = C.Y[i] + C.NY[i] * d;
+    }
+    return { DX, DY, n };
+  }
+
+  lib.inkPath = inkPath;
+  lib.inkLine = (ctx, x1, y1, x2, y2, o = {}) => inkPath(ctx, [[x1, y1], [x2, y2]], Object.assign({ smooth: false }, o));
+  lib.inkCircle = (ctx, cx, cy, r, o = {}) =>
+    inkPath(ctx, lib.ellipsePts(cx, cy, r, o.ry != null ? o.ry : r, Math.max(24, Math.ceil(r * 0.6)), o.rot || 0), Object.assign({ closed: true }, o));
+
+  // ===========================================================================
+  // Hatching
+  // ===========================================================================
+
+  /**
+   * hatch(ctx, clip, opts) : parallel pen strokes that build tone inside a shape.
+   *   angle        -PI/4    stroke direction (radians): 45 degrees rising left to right
+   *   spacing      8        px between rows at full density (art bible: 12 light, 8 mid, 5 dark)
+   *   width        1.4      pen width (art bible: 1.2 to 1.8)
+   *   color        pal.ink
+   *   alpha        0.9
+   *   density      1        0..1, or fn(x, y) => 0..1. Rows drop out evenly as density falls and
+   *                         stroke ends stagger along the tone edge, like a hand building shade.
+   *   length       [16,64]  stroke length range (px)
+   *   gap          [2,7]    px between strokes along a row
+   *   inset        6        polygons: how far a stroke may stop short of the edge
+   *   overshoot    3        polygons: how far a stroke may cross the edge
+   *   angleJitter  0.052    per stroke (+-3 degrees)
+   *   spacingJitter 0.3     fraction of spacing (+-15 percent)
+   *   flow         0.05     slow angle drift across the rows (radians)
+   *   bow          0.7      random sideways bow per stroke (px)
+   *   bend         0        consistent bow (px), follows a rounded form
+   *   taper        0.3      width at the flick end (fraction)
+   *   edge         0.12     how ragged the tone edge is (threshold noise)
+   *   boilAmp      0.45     endpoint shimmer per boil drawing (px)
+   *   clip         false    polygons: also hard-clip to the polygon
+   *   bounds       frame    area to fill when clip is a function, Path2D or null
+   *   seed         7
+   */
+  const PHI = 0.6180339887498949;
+  function hatch(ctx, clip, o = {}) {
+    const shape = shapeOf(clip, o);
+    const seed = seedInt(o.seed === undefined ? 7 : o.seed);
+    const r = rng(seed);
+    const angle = o.angle != null ? o.angle : -Math.PI / 4;
+    const spacing = Math.max(0.8, o.spacing || 8);
+    const width = o.width != null ? o.width : 1.4;
+    const density = o.density != null ? o.density : 1;
+    const densFn = typeof density === 'function' ? density : null;
+    const len = o.length || [16, 64];
+    const gap = o.gap || [2, 7];
+    const inset = o.inset != null ? o.inset : 6;
+    const over = o.overshoot != null ? o.overshoot : 3;
+    const aJ = o.angleJitter != null ? o.angleJitter : 0.052;
+    const sJ = o.spacingJitter != null ? o.spacingJitter : 0.3;
+    const flow = o.flow != null ? o.flow : 0.05;
+    const bow = o.bow != null ? o.bow : 0.7;
+    const bend = o.bend || 0;
+    const taper = o.taper != null ? o.taper : 0.3;
+    const edgeN = o.edge != null ? o.edge : 0.12;
+    const boilAmp = o.boil === false ? 0 : o.boilAmp != null ? o.boilAmp : 0.45;
+    const bi = boilIndex(o);
+    const minLen = Math.max(2, Math.min(len[0] * 0.35, 6));
+    const probe = Math.max(3, Math.min(8, len[0] * 0.4));
+    const phase = h3(seed, 3, 9);
+
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    const nx = -dy, ny = dx;
+    const B = shape.bounds;
+    const corners = [[B.x, B.y], [B.x + B.w, B.y], [B.x, B.y + B.h], [B.x + B.w, B.y + B.h]];
+    let umin = Infinity, umax = -Infinity, vmin = Infinity, vmax = -Infinity;
+    for (const c of corners) {
+      const u = c[0] * dx + c[1] * dy, v = c[0] * nx + c[1] * ny;
+      if (u < umin) umin = u;
+      if (u > umax) umax = u;
+      if (v < vmin) vmin = v;
+      if (v > vmax) vmax = v;
+    }
+
+    let edges = null;
+    if (shape.polys) {
+      edges = [];
+      for (const poly of shape.polys) {
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const a = poly[j], b = poly[i];
+          edges.push(a[0] * dx + a[1] * dy, a[0] * nx + a[1] * ny, b[0] * dx + b[1] * dy, b[0] * nx + b[1] * ny);
+        }
+      }
+    }
+
+    const paths = [new Path2D(), new Path2D(), new Path2D()];
+    const spans = [];
+    const on = [];
+    const xs = [];
+    let strokeId = 0;
+
+    const emit = (u, ue, v, row, dAt) => {
+      const sl = ue - u;
+      const um = (u + ue) / 2;
+      const mx = um * dx + v * nx, my = um * dy + v * ny;
+      const ja = aJ * (r() * 2 - 1) + (flow ? flow * noise1(row * 0.09, seed + 5) : 0);
+      const bw = bend + bow * (r() * 2 - 1);
+      const wv = width * lerp(0.78, 1.18, r()) * lerp(0.72, 1, dAt);
+      const p = paths[(r() * 3) | 0];
+      const sid = strokeId++;
+      const ca = Math.cos(angle + ja), sa = Math.sin(angle + ja);
+      const half = sl / 2;
+      const jb0 = boilAmp ? (h3(sid, row, bi + seed) - 0.5) * 2 * boilAmp : 0;
+      const jb1 = boilAmp ? (h3(row, sid, bi + seed + 9) - 0.5) * 2 * boilAmp : 0;
+      const pnx = -sa, pny = ca;
+      const x0 = mx - ca * half + pnx * jb0, y0 = my - sa * half + pny * jb0;
+      const x1 = mx + ca * (half + jb1 * 0.6) + pnx * jb1, y1 = my + sa * (half + jb1 * 0.6) + pny * jb1;
+      const w0 = wv * 0.42, w1 = wv * taper * 0.5, wm = wv * 0.5;
+      const k = (w0 + w1) * 0.5;
+      const cx = mx + pnx * bw * 2, cy = my + pny * bw * 2;
+      p.moveTo(x0 + pnx * w0, y0 + pny * w0);
+      p.quadraticCurveTo(cx + pnx * (wm * 2 - k), cy + pny * (wm * 2 - k), x1 + pnx * w1, y1 + pny * w1);
+      p.lineTo(x1 - pnx * w1, y1 - pny * w1);
+      p.quadraticCurveTo(cx - pnx * (wm * 2 - k), cy - pny * (wm * 2 - k), x0 - pnx * w0, y0 - pny * w0);
+      p.closePath();
+    };
+
+    const breakUp = (a, b, v, row, dAt) => {
+      let u = a;
+      while (u < b - minLen) {
+        let ue = Math.min(u + lerp(len[0], len[1], r()), b);
+        if (b - ue < minLen) ue = b;
+        if (ue - u >= minLen) emit(u, ue, v, row, dAt);
+        u = ue + lerp(gap[0], gap[1], r());
+      }
+    };
+
+    let row = 0;
+    for (let v0 = vmin + spacing * r(); v0 <= vmax; v0 += spacing, row++) {
+      const v = v0 + (r() - 0.5) * spacing * sJ;
+      // evenly distributed per-row threshold: rows vanish uniformly as density falls
+      const rowTh = ((row * PHI + phase) % 1) * 0.94 + 0.03;
+      spans.length = 0;
+      if (edges) {
+        xs.length = 0;
+        for (let e = 0; e < edges.length; e += 4) {
+          const va = edges[e + 1], vb = edges[e + 3];
+          if ((va > v) !== (vb > v)) xs.push(edges[e] + ((v - va) / (vb - va)) * (edges[e + 2] - edges[e]));
+        }
+        if (xs.length < 2) continue;
+        xs.sort((p, q) => p - q);
+        for (let k = 0; k + 1 < xs.length; k += 2) spans.push(xs[k], xs[k + 1]);
+      } else {
+        spans.push(umin, umax);
+      }
+      if (!densFn && density < rowTh) continue;
+      const dConst = densFn ? 1 : clamp(density);
+      for (let sp = 0; sp < spans.length; sp += 2) {
+        let u0 = spans[sp], u1 = spans[sp + 1];
+        if (edges) {
+          u0 += lerp(-over, inset, r() * r());
+          u1 -= lerp(-over, inset, r() * r());
+        } else {
+          u0 -= r() * len[1];
+        }
+        if (u1 - u0 < minLen) continue;
+        if (!densFn) {
+          breakUp(u0, u1, v, row, dConst);
+          continue;
+        }
+        // walk the row; strokes live where density beats the (slightly noisy) row threshold
+        on.length = 0;
+        let start = null;
+        let dSum = 0, dN = 0;
+        for (let u = u0; ; u += probe) {
+          const uu = Math.min(u, u1);
+          const d = clamp(densFn(uu * dx + v * nx, uu * dy + v * ny));
+          const th = rowTh + edgeN * noise1(uu * 0.02 + row * 7.31, seed + 11);
+          if (d > th) {
+            if (start === null) start = uu;
+            dSum += d;
+            dN++;
+          } else if (start !== null) {
+            on.push(start, uu, dSum / dN);
+            start = null;
+            dSum = dN = 0;
+          }
+          if (uu >= u1) break;
+        }
+        if (start !== null) on.push(start, u1, dSum / Math.max(1, dN));
+        for (let k = 0; k < on.length; k += 3) {
+          // soften where the tone edge cuts a stroke
+          const a = on[k] === u0 ? on[k] : on[k] + (r() - 0.5) * probe;
+          const b = on[k + 1] === u1 ? on[k + 1] : on[k + 1] + (r() - 0.5) * probe;
+          breakUp(a, b, v, row, on[k + 2]);
+        }
+      }
+    }
+
+    ctx.save();
+    if (shape.apply && (!shape.polys || o.clip)) shape.apply(ctx);
+    ctx.fillStyle = o.color || pal.ink;
+    const alpha = o.alpha != null ? o.alpha : 0.9;
+    const A = [0.74, 0.88, 1];
+    const base = ctx.globalAlpha;
+    for (let k = 0; k < 3; k++) {
+      ctx.globalAlpha = base * alpha * A[k];
+      ctx.fill(paths[k]);
+    }
+    ctx.restore();
+  }
+  lib.hatch = hatch;
+
+  /**
+   * crossHatch(ctx, clip, opts) : layered hatching where each extra layer only covers darker tone.
+   *   tone     1       0..1 overall darkness (with no density, 0.25 = one layer, 1 = four)
+   *   layers   2 (4 when tone is given)  maximum layer count
+   *   density  1 or fn(x,y) => 0..1: local darkness; layer i appears where density*tone*layers > i
+   *   angle    -PI/4   first layer angle (45 degrees); later layers turn by opts.turn
+   *   turn     [-PI/3, 0.3, -1.35]  offsets for layers 2..4: layer 2 at 105 degrees, 3 and 4 thicken 1 and 2
+   *   crossSpacing  spacing*1.4  spacing of layers 2..4 (art bible: 5 px base, 7 px cross)
+   *   ...all hatch options
+   */
+  function crossHatch(ctx, clip, o = {}) {
+    const layers = o.layers || (o.tone != null ? 4 : 2);
+    const tone = o.tone != null ? clamp(o.tone) : 1;
+    const d = o.density != null ? o.density : 1;
+    const base = o.angle != null ? o.angle : -Math.PI / 4;
+    const turn = o.turn || [-Math.PI / 3, 0.3, -1.35];
+    const seed = seedInt(o.seed === undefined ? 11 : o.seed);
+    for (let i = 0; i < layers; i++) {
+      let dens;
+      if (typeof d === 'function') {
+        dens = (x, y) => clamp(d(x, y) * tone * layers - i);
+      } else {
+        dens = clamp(d * tone * layers - i);
+        if (dens <= 0) break;
+      }
+      hatch(
+        ctx,
+        clip,
+        Object.assign({}, o, {
+          angle: base + (i === 0 ? 0 : turn[(i - 1) % turn.length]),
+          seed: seed + i * 7919,
+          density: dens,
+          spacing: i === 0 ? o.spacing || 8 : o.crossSpacing || (o.spacing || 8) * 1.4,
+        })
+      );
+    }
+  }
+  lib.crossHatch = crossHatch;
+
+  // ===========================================================================
+  // Stipple
+  // ===========================================================================
+
+  /**
+   * stipple(ctx, clip, opts) : seeded dots on a jittered hex grid.
+   *   spacing  7.5      mean px between dots at density 1 (about 0.02 dots per px2)
+   *   r        [1.0, 2.2] dot radius range (bigger where density is higher)
+   *   density  1 or fn(x,y) => 0..1
+   *   jitter   0.45     fraction of spacing
+   *   color    pal.ink
+   *   alpha    0.9
+   *   boilAmp  0.35     px shimmer per boil drawing
+   *   clip     true     polygons: skip dots outside; functions/Path2D always hard-clip
+   *   seed     13
+   */
+  function stipple(ctx, clip, o = {}) {
+    const shape = shapeOf(clip, o);
+    const seed = seedInt(o.seed === undefined ? 13 : o.seed);
+    const sp = Math.max(1, o.spacing || 7.5);
+    const rr = o.r || [1.0, 2.2];
+    const density = o.density != null ? o.density : 1;
+    const densFn = typeof density === 'function' ? density : null;
+    const jit = (o.jitter != null ? o.jitter : 0.45) * sp;
+    const boilAmp = o.boil === false ? 0 : o.boilAmp != null ? o.boilAmp : 0.35;
+    const bi = boilIndex(o);
+    const B = shape.bounds;
+    const rowH = sp * 0.866;
+    const p = new Path2D();
+    const i0 = Math.floor(B.y / rowH) - 1, i1 = Math.ceil((B.y + B.h) / rowH) + 1;
+    const j0 = Math.floor(B.x / sp) - 1, j1 = Math.ceil((B.x + B.w) / sp) + 1;
+    for (let i = i0; i <= i1; i++) {
+      const off = i & 1 ? sp * 0.5 : 0;
+      for (let j = j0; j <= j1; j++) {
+        const a = h3(i, j, seed);
+        const b = h3(j, i, seed + 1);
+        const c = h3(i + 7, j - 3, seed + 2);
+        let x = j * sp + off + (a - 0.5) * 2 * jit;
+        let y = i * rowH + (b - 0.5) * 2 * jit;
+        if (x < B.x || x > B.x + B.w || y < B.y || y > B.y + B.h) continue;
+        const dAt = densFn ? clamp(densFn(x, y)) : density;
+        if (c >= dAt) continue;
+        if (shape.polys && !polysContain(shape.polys, x, y)) continue;
+        if (boilAmp) {
+          x += (h3(i, j, seed + bi * 31 + 5) - 0.5) * 2 * boilAmp;
+          y += (h3(j, i, seed + bi * 37 + 6) - 0.5) * 2 * boilAmp;
+        }
+        const rad = lerp(rr[0], rr[1], clamp(h3(j, i, seed + 3) * 0.55 + dAt * 0.45));
+        p.moveTo(x + rad, y);
+        p.arc(x, y, rad, 0, TAU);
+      }
+    }
+    ctx.save();
+    if (shape.apply && !shape.polys) shape.apply(ctx);
+    ctx.globalAlpha *= o.alpha != null ? o.alpha : 0.9;
+    ctx.fillStyle = o.color || pal.ink;
+    ctx.fill(p);
+    ctx.restore();
+  }
+  lib.stipple = stipple;
+
+  // ===========================================================================
+  // Backgrounds: paper, blueprint, stripes
+  // ===========================================================================
+
+  function renderScale() {
+    return FILM.S || 1;
+  }
+
+  /**
+   * paper(ctx, opts) : cream paper with mottling, grain and fibres. Cached by size, seed and options.
+   *   x, y, w, h   0, 0, 1080, 1920
+   *   color        pal.paper
+   *   seed         3
+   *   grain        1      fine grain strength
+   *   fibres       1      fibre count multiplier
+   *   mottle       1      large soft blotches
+   *   vignette     0.35   darkened edges
+   */
+  function paper(ctx, o = {}) {
+    const x = o.x || 0, y = o.y || 0;
+    const w = o.w || W(), h = o.h || H();
+    const S = renderScale();
+    const color = o.color || pal.paper;
+    const seed = seedInt(o.seed === undefined ? 3 : o.seed);
+    const grain = o.grain != null ? o.grain : 1;
+    const fibres = o.fibres != null ? o.fibres : 1;
+    const mottle = o.mottle != null ? o.mottle : 1;
+    const vignette = o.vignette != null ? o.vignette : 0.35;
+    const key = ['paper', w, h, S, color, seed, grain, fibres, mottle, vignette].join('|');
+    const c = cached(key, () => makePaper(Math.max(1, Math.round(w * S)), Math.max(1, Math.round(h * S)), S, color, seed, grain, fibres, mottle, vignette));
+    ctx.drawImage(c, x, y, w, h);
+  }
+
+  function makePaper(cw, ch, S, color, seed, grain, fibres, mottle, vignette) {
+    const c = newCanvas(cw, ch);
+    const g = c.getContext('2d');
+    const [br, bg, bb] = parseColor(color);
+    // mottling from a low-resolution noise field, upscaled smooth
+    const mw = Math.max(4, Math.ceil(cw / 18)), mh = Math.max(4, Math.ceil(ch / 18));
+    const mf = new Float32Array(mw * mh);
+    for (let j = 0; j < mh; j++) {
+      for (let i = 0; i < mw; i++) {
+        mf[j * mw + i] = lib.fbm2(i * 0.11, j * 0.11, seed, 4) * 0.8 + noise2(i * 0.5, j * 0.5, seed + 9) * 0.2;
+      }
+    }
+    const img = g.createImageData(cw, ch);
+    const d = img.data;
+    const fx = (mw - 1) / cw, fy = (mh - 1) / ch;
+    const cxv = cw / 2, cyv = ch / 2;
+    const vr = Math.hypot(cxv, cyv);
+    for (let py = 0; py < ch; py++) {
+      const my = py * fy;
+      const jy = Math.floor(my), ty = my - jy;
+      const jy1 = Math.min(mh - 1, jy + 1);
+      for (let px = 0; px < cw; px++) {
+        const mx = px * fx;
+        const ix = Math.floor(mx), tx = mx - ix;
+        const ix1 = Math.min(mw - 1, ix + 1);
+        const m =
+          lerp(lerp(mf[jy * mw + ix], mf[jy * mw + ix1], tx), lerp(mf[jy1 * mw + ix], mf[jy1 * mw + ix1], tx), ty);
+        const n = h3(px, py, seed + 77);
+        const n2 = h3(px >> 1, py >> 1, seed + 78);
+        const gr = ((n - 0.5) * 0.6 + (n2 - 0.5) * 0.4) * 0.07 * grain;
+        const dxv = (px - cxv) / vr, dyv = (py - cyv) / vr;
+        const vig = vignette * Math.max(0, dxv * dxv + dyv * dyv - 0.35) * 0.18;
+        const k = 1 + m * 0.055 * mottle + gr - vig;
+        const i = (py * cw + px) * 4;
+        // darker areas go slightly warmer, like aged paper
+        d[i] = br * k;
+        d[i + 1] = bg * (k - (1 - k) * 0.12);
+        d[i + 2] = bb * (k - (1 - k) * 0.35);
+        d[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    // fibres
+    const r = rng(seed + 5);
+    const count = Math.round(((cw * ch) / (S * S)) / 1500 * fibres);
+    const dark = new Path2D(), light = new Path2D();
+    for (let i = 0; i < count; i++) {
+      const x = r() * cw, y = r() * ch;
+      const L = r.range(5, 26) * S * (r() < 0.08 ? 2.5 : 1);
+      const a = r() * TAU;
+      const bend = r.range(-0.5, 0.5) * L;
+      const p = r() < 0.55 ? dark : light;
+      const ex = x + Math.cos(a) * L, ey = y + Math.sin(a) * L;
+      p.moveTo(x, y);
+      p.quadraticCurveTo((x + ex) / 2 - Math.sin(a) * bend, (y + ey) / 2 + Math.cos(a) * bend, ex, ey);
+    }
+    g.lineCap = 'round';
+    g.lineWidth = 0.7 * S;
+    g.strokeStyle = lib.rgba(pal.inkSoft, 0.07);
+    g.stroke(dark);
+    g.lineWidth = 1.1 * S;
+    g.strokeStyle = 'rgba(255,252,242,0.22)';
+    g.stroke(light);
+    // specks and faint foxing spots
+    const specks = new Path2D();
+    for (let i = 0; i < count * 0.08; i++) {
+      const x = r() * cw, y = r() * ch, rad = r.range(0.3, 1.1) * S;
+      specks.moveTo(x + rad, y);
+      specks.arc(x, y, rad, 0, TAU);
+    }
+    g.fillStyle = lib.rgba(pal.inkSoft, 0.22);
+    g.fill(specks);
+    for (let i = 0; i < 6 * mottle; i++) {
+      const x = r() * cw, y = r() * ch, rad = r.range(30, 120) * S;
+      const gr = g.createRadialGradient(x, y, 0, x, y, rad);
+      gr.addColorStop(0, lib.rgba(pal.paperDeep, 0.07));
+      gr.addColorStop(1, lib.rgba(pal.paperDeep, 0));
+      g.fillStyle = gr;
+      g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    }
+    return c;
+  }
+  lib.paper = paper;
+
+  /**
+   * blueprint(ctx, opts) : navy plate with faint grid, big guide circles, long diagonals and noise.
+   * Cached by size, seed and options.
+   *   x, y, w, h   0, 0, 1080, 1920
+   *   color        pal.navy
+   *   seed         5
+   *   grid         60      grid pitch (px); 0 turns the grid off
+   *   major        5       every Nth grid line is stronger
+   *   center       [0.5w, 0.44h]  centre of the guide circles
+   *   circles      4
+   *   diagonals    5
+   *   noise        1
+   *   marks        true    corner registration marks
+   */
+  function blueprint(ctx, o = {}) {
+    const x = o.x || 0, y = o.y || 0;
+    const w = o.w || W(), h = o.h || H();
+    const S = renderScale();
+    const opt = {
+      color: o.color || pal.navy,
+      seed: seedInt(o.seed === undefined ? 5 : o.seed),
+      grid: o.grid != null ? o.grid : 60,
+      major: o.major || 5,
+      center: o.center || [w * 0.5, h * 0.44],
+      circles: o.circles != null ? o.circles : 4,
+      diagonals: o.diagonals != null ? o.diagonals : 5,
+      noise: o.noise != null ? o.noise : 1,
+      marks: o.marks !== false,
+      line: o.line || pal.lavender,
+    };
+    const key = ['blueprint', w, h, S, JSON.stringify(opt)].join('|');
+    const c = cached(key, () => makeBlueprint(w, h, S, opt));
+    ctx.drawImage(c, x, y, w, h);
+  }
+
+  function makeBlueprint(w, h, S, o) {
+    const cw = Math.max(1, Math.round(w * S)), ch = Math.max(1, Math.round(h * S));
+    const c = newCanvas(cw, ch);
+    const g = c.getContext('2d');
+    const [br, bgc, bb] = parseColor(o.color);
+    const [dr, dg, db] = parseColor(pal.navyDeep);
+    const [lr, lg, lb] = parseColor(pal.navyLight);
+    const img = g.createImageData(cw, ch);
+    const d = img.data;
+    const ccx = o.center[0] * S, ccy = o.center[1] * S;
+    const R = Math.hypot(cw, ch) * 0.62;
+    for (let py = 0; py < ch; py++) {
+      for (let px = 0; px < cw; px++) {
+        const rd = Math.min(1, Math.hypot(px - ccx, py - ccy) / R);
+        // light centre falling to deep edges
+        const t = rd * rd;
+        let r = rd < 0.35 ? lerp(lr, br, rd / 0.35) : lerp(br, dr, (t - 0.1225) / 0.8775);
+        let gg = rd < 0.35 ? lerp(lg, bgc, rd / 0.35) : lerp(bgc, dg, (t - 0.1225) / 0.8775);
+        let b = rd < 0.35 ? lerp(lb, bb, rd / 0.35) : lerp(bb, db, (t - 0.1225) / 0.8775);
+        const n = (h3(px, py, o.seed + 3) - 0.5) * 9 * o.noise + (h3(px >> 2, py >> 2, o.seed + 4) - 0.5) * 5 * o.noise;
+        const i = (py * cw + px) * 4;
+        d[i] = r + n * 0.8;
+        d[i + 1] = gg + n * 0.85;
+        d[i + 2] = b + n;
+        d[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    g.scale(S, S);
+    const r = rng(o.seed);
+    const line = o.line;
+    // grid
+    if (o.grid > 0) {
+      const minor = new Path2D(), major = new Path2D();
+      let k = 0;
+      for (let gx = (w / 2) % o.grid; gx <= w; gx += o.grid, k++) {
+        const p = Math.round((gx - w / 2) / o.grid) % o.major === 0 ? major : minor;
+        p.moveTo(gx, 0);
+        p.lineTo(gx, h);
+      }
+      for (let gy = (h / 2) % o.grid; gy <= h; gy += o.grid) {
+        const p = Math.round((gy - h / 2) / o.grid) % o.major === 0 ? major : minor;
+        p.moveTo(0, gy);
+        p.lineTo(w, gy);
+      }
+      g.lineWidth = 1;
+      g.strokeStyle = lib.rgba(pal.grid, 0.3);
+      g.stroke(minor);
+      g.strokeStyle = lib.rgba(pal.grid, 0.5);
+      g.stroke(major);
+    }
+    // long diagonals
+    const [cx, cy] = o.center;
+    for (let i = 0; i < o.diagonals; i++) {
+      const a = r.range(0, Math.PI);
+      const ox = cx + r.range(-0.35, 0.35) * w, oy = cy + r.range(-0.3, 0.3) * h;
+      const L = Math.hypot(w, h);
+      g.beginPath();
+      g.moveTo(ox - Math.cos(a) * L, oy - Math.sin(a) * L);
+      g.lineTo(ox + Math.cos(a) * L, oy + Math.sin(a) * L);
+      g.lineWidth = r.range(0.8, 1.3);
+      g.strokeStyle = lib.rgba(line, r.range(0.07, 0.14));
+      if (r() < 0.35) g.setLineDash([r.range(6, 14), r.range(6, 12)]);
+      else g.setLineDash([]);
+      g.stroke();
+    }
+    g.setLineDash([]);
+    // guide circles
+    const minDim = Math.min(w, h);
+    for (let i = 0; i < o.circles; i++) {
+      const rad = minDim * (0.2 + i * 0.17) * r.range(0.95, 1.05);
+      g.beginPath();
+      g.arc(cx, cy, rad, 0, TAU);
+      g.lineWidth = i === o.circles - 1 ? 1.4 : 1;
+      g.strokeStyle = lib.rgba(line, i % 2 ? 0.1 : 0.16);
+      if (i === 1) g.setLineDash([2, 7]);
+      else g.setLineDash([]);
+      g.stroke();
+    }
+    g.setLineDash([]);
+    if (o.circles > 0) {
+      const rad = minDim * (0.2 + (o.circles - 1) * 0.17);
+      ticksImpl(g, cx, cy, { r: rad, n: 120, len: 7, major: 10, majorLen: 16, color: line, alpha: 0.2, width: 1 });
+      // off-centre satellite circle
+      const a = r.range(0, TAU);
+      const sr = minDim * r.range(0.07, 0.12);
+      g.beginPath();
+      g.arc(cx + Math.cos(a) * rad, cy + Math.sin(a) * rad, sr, 0, TAU);
+      g.lineWidth = 1;
+      g.strokeStyle = lib.rgba(line, 0.14);
+      g.stroke();
+      // centre crosshair
+      g.beginPath();
+      g.moveTo(cx - 18, cy);
+      g.lineTo(cx + 18, cy);
+      g.moveTo(cx, cy - 18);
+      g.lineTo(cx, cy + 18);
+      g.strokeStyle = lib.rgba(line, 0.22);
+      g.stroke();
+    }
+    // corner registration marks
+    if (o.marks) {
+      g.strokeStyle = lib.rgba(line, 0.32);
+      g.lineWidth = 1.2;
+      const m = 34, s = 22;
+      for (const [mx, my, sx, sy] of [[m, m, 1, 1], [w - m, m, -1, 1], [m, h - m, 1, -1], [w - m, h - m, -1, -1]]) {
+        g.beginPath();
+        g.moveTo(mx, my + sy * s);
+        g.lineTo(mx, my);
+        g.lineTo(mx + sx * s, my);
+        g.stroke();
+      }
+    }
+    // faint scattered star specks
+    const sp = new Path2D();
+    for (let i = 0; i < (w * h) / 5000 * o.noise; i++) {
+      const x = r() * w, y = r() * h, rad = r.range(0.4, 1.1);
+      sp.moveTo(x + rad, y);
+      sp.arc(x, y, rad, 0, TAU);
+    }
+    g.fillStyle = lib.rgba(pal.lineWhite, 0.22);
+    g.fill(sp);
+    return c;
+  }
+  lib.blueprint = blueprint;
+
+  /**
+   * stripes(ctx, opts) : the wide diagonal stripe background with softly irregular edges.
+   *   colors   [pal.stripeCream, pal.stripeYellow]
+   *   width    140     band width (px); both colours use it
+   *   angle    -0.52   stripe direction (radians): 30 degrees rising left to right
+   *   offset   0       scroll along the normal (animate this)
+   *   wobble   1.4     edge irregularity (px)
+   *   bounds   frame
+   *   seed     21
+   */
+  function stripes(ctx, o = {}) {
+    const B = normBounds(o.bounds);
+    const cols = o.colors || [pal.stripeCream, pal.stripeYellow];
+    const sw = o.width || 140;
+    const angle = o.angle != null ? o.angle : -0.52;
+    const offset = o.offset || 0;
+    const wobble = o.wobble != null ? o.wobble : 1.4;
+    const seed = seedInt(o.seed === undefined ? 21 : o.seed);
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    const nx = -dy, ny = dx;
+    const cx = B.x + B.w / 2, cy = B.y + B.h / 2;
+    const half = Math.hypot(B.w, B.h) / 2 + sw * 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(B.x, B.y, B.w, B.h);
+    ctx.clip();
+    ctx.fillStyle = cols[0];
+    ctx.fillRect(B.x, B.y, B.w, B.h);
+    const period = sw * cols.length;
+    const shift = ((offset % period) + period) % period;
+    const edge = (v, k, forward) => {
+      const pts = [];
+      const n = Math.ceil((half * 2) / 40);
+      for (let i = 0; i <= n; i++) {
+        const u = -half + (i / n) * half * 2;
+        const vv = v + wobble * noise1(u * 0.012 + k * 3.7, seed) + wobble * 0.3 * noise1(u * 0.05, seed + k);
+        pts.push([cx + dx * u + nx * vv, cy + dy * u + ny * vv]);
+      }
+      if (!forward) pts.reverse();
+      return pts;
+    };
+    for (let ci = 1; ci < cols.length; ci++) {
+      const p = new Path2D();
+      const first = Math.floor((-half - shift) / period) - 1;
+      const last = Math.ceil((half - shift) / period) + 1;
+      for (let k = first; k <= last; k++) {
+        const v0 = k * period + shift + sw * ci - half * 0;
+        const a = edge(v0, k * 2 + ci, true);
+        const b = edge(v0 + sw, k * 2 + ci + 1, false);
+        a.forEach((pt, i) => (i === 0 ? p.moveTo(pt[0], pt[1]) : p.lineTo(pt[0], pt[1])));
+        b.forEach((pt) => p.lineTo(pt[0], pt[1]));
+        p.closePath();
+      }
+      ctx.fillStyle = cols[ci];
+      ctx.fill(p);
+    }
+    ctx.restore();
+  }
+  lib.stripes = stripes;
+
+  // ===========================================================================
+  // Schematic helpers
+  // ===========================================================================
+
+  /**
+   * hexLattice(ctx, clip, opts) : hexagonal cell lattice with shared, slightly irregular vertices.
+   *   r         16       cell circumradius (px)
+   *   pointy    true     pointy-top cells (false = flat-top)
+   *   width     1
+   *   color     pal.lavender
+   *   alpha     0.35
+   *   jitter    1.0      vertex irregularity (px), shared by neighbouring cells
+   *   inset     0        >0 draws each cell as its own hexagon shrunk by this many px
+   *   cellFn    null     fn(cx, cy, i, j) => false (skip) | true | { fill, alpha, stroke }
+   *   dots      0        radius of a dot at each cell centre (0 = none)
+   *   boilAmp   0.35
+   *   clip      true     hard-clip to the shape
+   *   bounds    frame    when clip is a function, Path2D or null
+   *   seed      17
+   */
+  function hexLattice(ctx, clip, o = {}) {
+    const shape = shapeOf(clip, Object.assign({ pad: (o.r || 16) * 2 }, o));
+    const R = o.r || 16;
+    const pointy = o.pointy !== false;
+    const seed = seedInt(o.seed === undefined ? 17 : o.seed);
+    const jitter = o.jitter != null ? o.jitter : 1.0;
+    const boilAmp = o.boil === false ? 0 : o.boilAmp != null ? o.boilAmp : 0.35;
+    const bi = boilIndex(o);
+    const inset = o.inset || 0;
+    const B = shape.bounds;
+    const sq3 = Math.sqrt(3);
+    const colW = pointy ? sq3 * R : 1.5 * R;
+    const rowH = pointy ? 1.5 * R : sq3 * R;
+    const vtx = (x, y) => {
+      const kx = Math.round(x * 4), ky = Math.round(y * 4);
+      const jx = (h3(kx, ky, seed) - 0.5) * 2 * jitter + (boilAmp ? (h3(kx, ky, seed + bi * 13 + 1) - 0.5) * 2 * boilAmp : 0);
+      const jy = (h3(ky, kx, seed + 2) - 0.5) * 2 * jitter + (boilAmp ? (h3(ky, kx, seed + bi * 17 + 3) - 0.5) * 2 * boilAmp : 0);
+      return [x + jx, y + jy];
+    };
+    const edges = new Path2D();
+    const dots = new Path2D();
+    const fills = [];
+    const i0 = Math.floor(B.y / rowH) - 1, i1 = Math.ceil((B.y + B.h) / rowH) + 1;
+    const j0 = Math.floor(B.x / colW) - 1, j1 = Math.ceil((B.x + B.w) / colW) + 1;
+    for (let i = i0; i <= i1; i++) {
+      for (let j = j0; j <= j1; j++) {
+        let cx, cy;
+        if (pointy) {
+          cx = j * colW + (i & 1 ? colW / 2 : 0);
+          cy = i * rowH;
+        } else {
+          cx = j * colW;
+          cy = i * rowH + (j & 1 ? rowH / 2 : 0);
+        }
+        if (shape.polys && !polysContain(shape.polys, cx, cy)) {
+          // keep cells that straddle the edge so the hard clip cuts them cleanly
+          let near = false;
+          for (let k = 0; k < 6 && !near; k++) {
+            const a = (k / 6) * TAU + (pointy ? Math.PI / 6 : 0);
+            near = polysContain(shape.polys, cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+          }
+          if (!near) continue;
+        }
+        let cell = true;
+        if (o.cellFn) {
+          cell = o.cellFn(cx, cy, i, j);
+          if (!cell) continue;
+        }
+        const V = [];
+        for (let k = 0; k < 6; k++) {
+          const a = (k / 6) * TAU + (pointy ? Math.PI / 6 : 0);
+          V.push(vtx(cx + Math.cos(a) * R, cy + Math.sin(a) * R));
+        }
+        if (typeof cell === 'object' && cell.fill) fills.push([V, cell]);
+        if (inset > 0) {
+          for (let k = 0; k < 6; k++) {
+            const v = V[k];
+            const f = Math.max(0, 1 - inset / R);
+            const x = cx + (v[0] - cx) * f, y = cy + (v[1] - cy) * f;
+            if (k === 0) edges.moveTo(x, y);
+            else edges.lineTo(x, y);
+          }
+          edges.closePath();
+        } else {
+          // three edges per cell so shared edges are drawn once
+          const ks = pointy ? [5, 0, 1] : [0, 1, 2];
+          for (const k of ks) {
+            edges.moveTo(V[k][0], V[k][1]);
+            edges.lineTo(V[(k + 1) % 6][0], V[(k + 1) % 6][1]);
+          }
+          // cells on the left/top border of the drawn set need their other edges
+          if (o.cellFn || shape.polys) {
+            for (const k of pointy ? [2, 3, 4] : [3, 4, 5]) {
+              edges.moveTo(V[k][0], V[k][1]);
+              edges.lineTo(V[(k + 1) % 6][0], V[(k + 1) % 6][1]);
+            }
+          }
+        }
+        if (o.dots) {
+          dots.moveTo(cx + o.dots, cy);
+          dots.arc(cx, cy, o.dots, 0, TAU);
+        }
+      }
+    }
+    ctx.save();
+    if (shape.apply && o.clip !== false) shape.apply(ctx);
+    const color = o.color || pal.lavender;
+    const alpha = o.alpha != null ? o.alpha : 0.35;
+    for (const [V, cell] of fills) {
+      ctx.beginPath();
+      lib.tracePath(ctx, V, true);
+      ctx.globalAlpha = cell.alpha != null ? cell.alpha : 0.35;
+      ctx.fillStyle = cell.fill;
+      ctx.fill();
+    }
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = o.width != null ? o.width : 1;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = color;
+    ctx.stroke(edges);
+    if (o.dots) {
+      ctx.fillStyle = color;
+      ctx.fill(dots);
+    }
+    ctx.restore();
+  }
+  lib.hexLattice = hexLattice;
+
+  function needle(p, x0, y0, x1, y1, w0, w1) {
+    const dx = x1 - x0, dy = y1 - y0;
+    const L = Math.hypot(dx, dy) || 1;
+    const nx = -dy / L, ny = dx / L;
+    p.moveTo(x0 + nx * w0, y0 + ny * w0);
+    p.lineTo(x1 + nx * w1, y1 + ny * w1);
+    p.lineTo(x1 - nx * w1, y1 - ny * w1);
+    p.lineTo(x0 - nx * w0, y0 - ny * w0);
+    p.closePath();
+  }
+
+  /**
+   * glowDot(ctx, x, y, r, opts) : soft glow, hot core and star rays (a nucleus, a spark, a star).
+   *   color     pal.glow    glow colour
+   *   core      '#ffffff'
+   *   rays      8           ray count (0 = none); long and short alternate
+   *   rayLen    3.4         ray length as a multiple of r
+   *   rayWidth  0.22        ray base width as a multiple of r
+   *   rot       0
+   *   glow      4.5         glow radius as a multiple of r
+   *   intensity 1
+   *   twinkle   0.18        per boil drawing flicker
+   *   additive  true        'lighter' blending (use false on paper)
+   *   seed      19
+   */
+  function glowDot(ctx, x, y, r, o = {}) {
+    const seed = seedInt(o.seed === undefined ? 19 : o.seed);
+    const bi = boilIndex(o);
+    const tw = o.twinkle != null ? o.twinkle : 0.18;
+    const k = (o.intensity != null ? o.intensity : 1) * (1 - tw + tw * 2 * h3(bi, seed, 23));
+    const color = o.color || pal.glow;
+    const glowR = r * (o.glow != null ? o.glow : 4.5);
+    ctx.save();
+    if (o.additive !== false) ctx.globalCompositeOperation = 'lighter';
+    const base = ctx.globalAlpha;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+    g.addColorStop(0, lib.rgba(color, 0.55 * k));
+    g.addColorStop(0.18, lib.rgba(color, 0.22 * k));
+    g.addColorStop(0.5, lib.rgba(color, 0.06 * k));
+    g.addColorStop(1, lib.rgba(color, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(x - glowR, y - glowR, glowR * 2, glowR * 2);
+    const rays = o.rays != null ? o.rays : 8;
+    if (rays > 0) {
+      const p = new Path2D();
+      const rot = o.rot || 0;
+      const rl = r * (o.rayLen != null ? o.rayLen : 3.4);
+      const rw = r * (o.rayWidth != null ? o.rayWidth : 0.22);
+      for (let i = 0; i < rays; i++) {
+        const a = rot + (i / rays) * TAU;
+        const L = (i % 2 ? 0.52 : 1) * rl * (0.9 + 0.2 * h3(i, bi, seed));
+        needle(p, x, y, x + Math.cos(a) * L, y + Math.sin(a) * L, rw, 0.05);
+      }
+      ctx.globalAlpha = base * Math.min(1, 0.85 * k);
+      ctx.fillStyle = o.core || '#ffffff';
+      ctx.fill(p);
+    }
+    ctx.globalAlpha = base * Math.min(1, k);
+    const cg = ctx.createRadialGradient(x, y, 0, x, y, r);
+    cg.addColorStop(0, o.core || '#ffffff');
+    cg.addColorStop(0.55, lib.rgba(o.core || '#ffffff', 0.9));
+    cg.addColorStop(1, lib.rgba(color, 0));
+    ctx.fillStyle = cg;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+  }
+  lib.glowDot = glowDot;
+
+  function ticksImpl(ctx, x, y, o) {
+    const p = new Path2D();
+    const pm = new Path2D();
+    const n = o.n || 24;
+    const len = o.len != null ? o.len : 12;
+    const major = o.major || 0;
+    const majorLen = o.majorLen != null ? o.majorLen : len * 1.8;
+    const prog = o.p != null ? clamp(o.p) : 1;
+    const count = Math.round(n * prog);
+    if (o.kind === 'linear' || (o.r == null && o.length != null)) {
+      const L = o.length || 300;
+      const a = o.angle || 0;
+      const dx = Math.cos(a), dy = Math.sin(a);
+      const side = o.side || 1;
+      const nx = -dy * side, ny = dx * side;
+      for (let i = 0; i <= Math.round(n * prog); i++) {
+        const u = (i / n) * L;
+        const isMajor = major && i % major === 0;
+        const l = isMajor ? majorLen : len;
+        const tgt = isMajor ? pm : p;
+        tgt.moveTo(x + dx * u, y + dy * u);
+        tgt.lineTo(x + dx * u + nx * l, y + dy * u + ny * l);
+      }
+      if (o.baseline !== false) {
+        pm.moveTo(x, y);
+        pm.lineTo(x + dx * L * prog, y + dy * L * prog);
+      }
+    } else {
+      const r = o.r != null ? o.r : 40;
+      const a0 = (o.start || 0) + (o.rot || 0);
+      const span = o.span != null ? o.span : TAU;
+      const full = Math.abs(span - TAU) < 1e-6;
+      const dir = o.inward ? -1 : 1;
+      for (let i = 0; i < count; i++) {
+        const a = a0 + (i / (full ? n : Math.max(1, n - 1))) * span;
+        const isMajor = major && i % major === 0;
+        const l = (isMajor ? majorLen : len) * dir;
+        const tgt = isMajor ? pm : p;
+        const c = Math.cos(a), s = Math.sin(a);
+        tgt.moveTo(x + c * r, y + s * r);
+        tgt.lineTo(x + c * (r + l), y + s * (r + l));
+      }
+    }
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = o.color || pal.lineWhite;
+    ctx.globalAlpha *= o.alpha != null ? o.alpha : 0.6;
+    ctx.lineWidth = o.width != null ? o.width : 1.5;
+    ctx.stroke(p);
+    ctx.lineWidth = (o.width != null ? o.width : 1.5) * 1.35;
+    ctx.stroke(pm);
+    ctx.restore();
+  }
+
+  /**
+   * ticks(ctx, x, y, opts) : radial ticks around a circle, or a linear ruler.
+   * Radial (default):  r 40, n 24, len 12, start 0, span TAU, major 0, majorLen len*1.8, inward false, rot 0
+   * Linear (kind 'linear' or length given): length 300, angle 0, n 24, len 12, major 0, side 1, baseline true
+   * Both: color pal.lineWhite, alpha 0.6, width 1.5, p 1 (draw-on progress)
+   */
+  lib.ticks = (ctx, x, y, o = {}) => ticksImpl(ctx, x, y, o);
+
+  function labelAt(ctx, str, x, y, o) {
+    lib.text(ctx, str, x, y, {
+      size: o.labelSize || 22,
+      color: o.labelColor || o.color,
+      alpha: o.alpha != null ? o.alpha : 0.9,
+      align: o.labelAlign || 'center',
+      baseline: 'middle',
+      weight: 400,
+      tracking: 1,
+    });
+  }
+
+  /**
+   * bracket(ctx, x1, y1, x2, y2, opts) : a measurement bracket between two points.
+   *   style    'dim'    'dim' = dimension line with end bars and arrow ticks, 'square' = [ shape
+   *   offset   0        perpendicular offset of the bracket from the measured points (px)
+   *   cap      16       end bar length
+   *   color    pal.lavender
+   *   alpha    0.6
+   *   width    1.5
+   *   label    null     text at the middle
+   *   p        1        draw-on progress
+   */
+  lib.bracket = (ctx, x1, y1, x2, y2, o = {}) => {
+    const dx = x2 - x1, dy = y2 - y1;
+    const L = Math.hypot(dx, dy) || 1;
+    const ux = dx / L, uy = dy / L;
+    const nx = -uy, ny = ux;
+    const off = o.offset || 0;
+    const cap = o.cap != null ? o.cap : 16;
+    const prog = o.p != null ? clamp(o.p) : 1;
+    const ax = x1 + nx * off, ay = y1 + ny * off;
+    const bx = x2 + nx * off, by = y2 + ny * off;
+    const mx = (ax + bx) / 2, my = (ay + by) / 2;
+    const h = (L / 2) * prog;
+    const p = new Path2D();
+    const style = o.style || 'dim';
+    const labelGap = o.label ? Math.min(h * 0.9, (String(o.label).length * (o.labelSize || 22)) * 0.34 + 10) : 0;
+    const sx = mx - ux * h, sy = my - uy * h, ex = mx + ux * h, ey = my + uy * h;
+    if (style === 'square') {
+      const sgn = off >= 0 ? -1 : 1;
+      p.moveTo(sx + nx * cap * sgn, sy + ny * cap * sgn);
+      p.lineTo(sx, sy);
+      p.lineTo(mx - ux * labelGap, my - uy * labelGap);
+      p.moveTo(mx + ux * labelGap, my + uy * labelGap);
+      p.lineTo(ex, ey);
+      p.lineTo(ex + nx * cap * sgn, ey + ny * cap * sgn);
+    } else {
+      p.moveTo(sx, sy);
+      p.lineTo(mx - ux * labelGap, my - uy * labelGap);
+      p.moveTo(mx + ux * labelGap, my + uy * labelGap);
+      p.lineTo(ex, ey);
+      p.moveTo(sx - nx * cap * 0.5, sy - ny * cap * 0.5);
+      p.lineTo(sx + nx * cap * 0.5, sy + ny * cap * 0.5);
+      p.moveTo(ex - nx * cap * 0.5, ey - ny * cap * 0.5);
+      p.lineTo(ex + nx * cap * 0.5, ey + ny * cap * 0.5);
+      const ah = Math.min(9, h * 0.3);
+      p.moveTo(sx + ux * ah + nx * ah * 0.5, sy + uy * ah + ny * ah * 0.5);
+      p.lineTo(sx, sy);
+      p.lineTo(sx + ux * ah - nx * ah * 0.5, sy + uy * ah - ny * ah * 0.5);
+      p.moveTo(ex - ux * ah + nx * ah * 0.5, ey - uy * ah + ny * ah * 0.5);
+      p.lineTo(ex, ey);
+      p.lineTo(ex - ux * ah - nx * ah * 0.5, ey - uy * ah - ny * ah * 0.5);
+      if (off) {
+        // extension lines back to the measured points
+        p.moveTo(x1 + nx * Math.sign(off) * 4, y1 + ny * Math.sign(off) * 4);
+        p.lineTo(ax + nx * Math.sign(off) * cap * 0.6, ay + ny * Math.sign(off) * cap * 0.6);
+        p.moveTo(x2 + nx * Math.sign(off) * 4, y2 + ny * Math.sign(off) * 4);
+        p.lineTo(bx + nx * Math.sign(off) * cap * 0.6, by + ny * Math.sign(off) * cap * 0.6);
+      }
+    }
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = o.color || pal.lavender;
+    ctx.globalAlpha *= o.alpha != null ? o.alpha : 0.6;
+    ctx.lineWidth = o.width != null ? o.width : 1.5;
+    ctx.stroke(p);
+    ctx.restore();
+    if (o.label && prog > 0.6) {
+      ctx.save();
+      ctx.translate(mx, my);
+      let a = Math.atan2(uy, ux);
+      if (a > Math.PI / 2 || a < -Math.PI / 2) a += Math.PI;
+      ctx.rotate(a);
+      ctx.globalAlpha *= clamp((prog - 0.6) / 0.4);
+      labelAt(ctx, o.label, 0, 0, Object.assign({ color: o.color || pal.lavender }, o));
+      ctx.restore();
+    }
+  };
+
+  /**
+   * guideCircle(ctx, cx, cy, r, opts) : a faint construction circle.
+   *   color pal.lavender, alpha 0.15, width 1.5, dash null ([on, off]),
+   *   p 1 (draw-on progress), start -PI/2, cross 0 (centre crosshair half-size),
+   *   quadrants 0 (tick length at the four quadrant points), ink false (hand-drawn via inkPath), seed
+   */
+  lib.guideCircle = (ctx, cx, cy, r, o = {}) => {
+    const prog = o.p != null ? clamp(o.p) : 1;
+    if (prog <= 0) return;
+    const start = o.start != null ? o.start : -Math.PI / 2;
+    const color = o.color || pal.lavender;
+    const alpha = o.alpha != null ? o.alpha : 0.15;
+    const width = o.width != null ? o.width : 1.5;
+    ctx.save();
+    if (o.ink) {
+      const n = Math.max(12, Math.ceil(r * TAU * prog / 10));
+      const pts = [];
+      for (let i = 0; i <= n; i++) {
+        const a = start + (i / n) * TAU * prog;
+        pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+      }
+      inkPath(ctx, pts, { closed: prog >= 1, width: width * 1.4, color, alpha, seed: o.seed, taper: [6, 12], wobble: 1.2 });
+    } else {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, start, start + TAU * prog);
+      ctx.strokeStyle = color;
+      ctx.globalAlpha *= alpha;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      if (o.dash) ctx.setLineDash(o.dash);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    if (o.cross || o.quadrants) {
+      const p = new Path2D();
+      if (o.cross) {
+        p.moveTo(cx - o.cross, cy);
+        p.lineTo(cx + o.cross, cy);
+        p.moveTo(cx, cy - o.cross);
+        p.lineTo(cx, cy + o.cross);
+      }
+      if (o.quadrants) {
+        for (let k = 0; k < 4; k++) {
+          const a = (k * Math.PI) / 2;
+          const c = Math.cos(a), s = Math.sin(a);
+          p.moveTo(cx + c * (r - o.quadrants), cy + s * (r - o.quadrants));
+          p.lineTo(cx + c * (r + o.quadrants), cy + s * (r + o.quadrants));
+        }
+      }
+      if (o.ink) {
+        ctx.strokeStyle = color;
+        ctx.globalAlpha *= alpha;
+      }
+      ctx.lineWidth = width;
+      ctx.stroke(p);
+    }
+    ctx.restore();
+  };
+
+  /**
+   * arcAnnotation(ctx, cx, cy, r, a0, a1, opts) : a thin coloured arc over an illustration
+   * (flight paths, sound, attention), with an arrowhead and an origin dot.
+   *   color pal.annMagenta, width 2, alpha 1, p 1 (draw-on progress), endTicks 8 (0 = none),
+   *   arrow 0 (arrowhead size), dot 0 (origin dot radius), dash null, label null, labelOffset 26
+   */
+  lib.arcAnnotation = (ctx, cx, cy, r, a0, a1, o = {}) => {
+    const prog = o.p != null ? clamp(o.p) : 1;
+    if (prog <= 0) return;
+    const color = o.color || pal.annMagenta;
+    const width = o.width != null ? o.width : 2;
+    const ae = a0 + (a1 - a0) * prog;
+    const ccw = a1 < a0;
+    ctx.save();
+    ctx.globalAlpha *= o.alpha != null ? o.alpha : 1;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    if (o.dash) ctx.setLineDash(o.dash);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, a0, ae, ccw);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const et = o.endTicks != null ? o.endTicks : 8;
+    if (et) {
+      ctx.beginPath();
+      for (const a of prog >= 1 ? [a0, ae] : [a0]) {
+        ctx.moveTo(cx + Math.cos(a) * (r - et / 2), cy + Math.sin(a) * (r - et / 2));
+        ctx.lineTo(cx + Math.cos(a) * (r + et / 2), cy + Math.sin(a) * (r + et / 2));
+      }
+      ctx.stroke();
+    }
+    const dot = o.dot != null ? o.dot : 0;
+    if (dot) {
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(a0) * r, cy + Math.sin(a0) * r, dot, 0, TAU);
+      ctx.fill();
+    }
+    const ah = o.arrow != null ? o.arrow : 0;
+    if (ah) {
+      const ex = cx + Math.cos(ae) * r, ey = cy + Math.sin(ae) * r;
+      const tdir = ae + (ccw ? -Math.PI / 2 : Math.PI / 2);
+      const tx = Math.cos(tdir), ty = Math.sin(tdir);
+      const nx = -ty, ny = tx;
+      ctx.beginPath();
+      ctx.moveTo(ex + tx * ah * 0.35, ey + ty * ah * 0.35);
+      ctx.lineTo(ex - tx * ah * 0.75 + nx * ah * 0.45, ey - ty * ah * 0.75 + ny * ah * 0.45);
+      ctx.lineTo(ex - tx * ah * 0.45, ey - ty * ah * 0.45);
+      ctx.lineTo(ex - tx * ah * 0.75 - nx * ah * 0.45, ey - ty * ah * 0.75 - ny * ah * 0.45);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (o.label) {
+      const am = (a0 + ae) / 2;
+      const lo = o.labelOffset != null ? o.labelOffset : 26;
+      lib.text(ctx, o.label, cx + Math.cos(am) * (r + lo), cy + Math.sin(am) * (r + lo), {
+        size: o.labelSize || 24,
+        color,
+        align: 'center',
+        baseline: 'middle',
+        weight: 500,
+      });
+    }
+    ctx.restore();
+  };
+
+  // ===========================================================================
+  // Camera and text
+  // ===========================================================================
+
+  /**
+   * camera(ctx, { x, y, zoom, rot }, fn) : draws fn(ctx) with world point (x, y) at the frame centre,
+   * scaled by zoom and rotated by rot. Defaults: the frame centre, zoom 1, rot 0.
+   */
+  lib.camera = (ctx, cam, fn) => {
+    const c = cam || {};
+    const x = c.x != null ? c.x : W() / 2;
+    const y = c.y != null ? c.y : H() / 2;
+    ctx.save();
+    ctx.translate(W() / 2, H() / 2);
+    if (c.rot) ctx.rotate(c.rot);
+    if (c.zoom != null && c.zoom !== 1) ctx.scale(c.zoom, c.zoom);
+    ctx.translate(-x, -y);
+    let out;
+    try {
+      out = fn(ctx);
+    } finally {
+      ctx.restore();
+    }
+    return out;
+  };
+
+  const FONT_STACK = '"SF Pro Rounded", ui-rounded, "Helvetica Neue", system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+
+  /**
+   * text(ctx, str, x, y, opts) : a thin single-line wordmark in the system sans-serif (no font files).
+   *   size 42, weight 300, color pal.ink, alpha 1, align 'left', baseline 'alphabetic',
+   *   tracking 0 (px number, or a css length such as '0.12em'; letterSpacing is an alias),
+   *   family (system stack), p 1 (typewriter reveal fraction), italic false
+   */
+  lib.text = (ctx, str, x, y, o = {}) => {
+    let s = String(str);
+    if (o.p != null) s = s.slice(0, Math.round(s.length * clamp(o.p)));
+    if (!s) return;
+    ctx.save();
+    ctx.font = `${o.italic ? 'italic ' : ''}${o.weight || 300} ${o.size || 42}px ${o.family || FONT_STACK}`;
+    ctx.fillStyle = o.color || pal.ink;
+    ctx.globalAlpha *= o.alpha != null ? o.alpha : 1;
+    ctx.textAlign = o.align || 'left';
+    ctx.textBaseline = o.baseline || 'alphabetic';
+    if ('letterSpacing' in ctx) {
+      const tr = o.letterSpacing != null ? o.letterSpacing : o.tracking;
+      ctx.letterSpacing = typeof tr === 'string' ? tr : `${tr || 0}px`;
+    }
+    ctx.fillText(s, x, y);
+    ctx.restore();
+  };
+
+  // ===========================================================================
+  // V4 Myllo Vinyllo product helpers
+  // ===========================================================================
+
+  /**
+   * v4ProcessBand(ctx, {index, main, sub, p})
+   * Compact industrial/comic stage identifier in the V4 top safe zone.
+   */
+  lib.v4ProcessBand = (ctx, o = {}) => {
+    const p = o.p != null ? clamp(o.p) : 1;
+    if (p <= 0) return;
+    const x = 90, y = 235, w = 900 * p, h = 116;
+    ctx.save();
+    ctx.globalAlpha *= p;
+    ctx.fillStyle = pal.processBand;
+    const bg = lib.rrectPts(x, y, w, h, 16, 16);
+    ctx.beginPath(); lib.tracePath(ctx, bg, true); ctx.fill();
+    ctx.strokeStyle = pal.comicBorder; ctx.lineWidth = 4; ctx.stroke();
+
+    ctx.fillStyle = pal.mylloRingActive;
+    const idx = lib.rrectPts(x + 16, y + 16, 78, 84, 12, 12);
+    ctx.beginPath(); lib.tracePath(ctx, idx, true); ctx.fill();
+
+    lib.text(ctx, String(o.index != null ? o.index : 0).padStart(2, '0'), x + 55, y + 61, {
+      size: 32, weight: 800, color: pal.processText, align: 'center', baseline: 'middle'
+    });
+    lib.text(ctx, o.main || '', x + 118, y + (o.sub ? 45 : 60), {
+      size: o.mainSize || 42, weight: 800, color: pal.processText, align: 'left', baseline: 'middle'
+    });
+    if (o.sub) lib.text(ctx, o.sub, x + 118, y + 83, {
+      size: o.subSize || 24, weight: 650, color: pal.paperShade, align: 'left', baseline: 'middle'
+    });
+    ctx.restore();
+  };
+
+  function v4FillPoly(ctx, pts, fill, stroke = pal.ink, width = 3, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    lib.tracePath(ctx, pts, true);
+    ctx.fill();
+    if (stroke) {
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = width;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function v4Ellipse(ctx, cx, cy, rx, ry, fill, stroke = pal.ink, width = 2, alpha = 1) {
+    v4FillPoly(ctx, lib.ellipsePts(cx, cy, rx, ry, 56), fill, stroke, width, alpha);
+  }
+
+  function v4SolidCapsule(ctx, a, b, width, fill, stroke = pal.inkSoft, strokeWidth = 2.5, alpha = 1) {
+    const dx=b[0]-a[0], dy=b[1]-a[1], len=Math.max(1,Math.hypot(dx,dy)), ang=Math.atan2(dy,dx);
+    const pts=lib.capsulePts((a[0]+b[0])/2,(a[1]+b[1])/2,len+width,width/2,ang,40);
+    v4FillPoly(ctx,pts,fill,stroke,strokeWidth,alpha);
+    return pts;
+  }
+
+  /**
+   * v4GripHand(ctx,{x,y,rot,scale,grip,alpha})
+   * A compact anatomical comic hand. The wrist, palm, finger group and opposing thumb
+   * are separate shapes so a grip reads as a grip rather than a mitten blob.
+   */
+  lib.v4GripHand = (ctx,o={}) => {
+    const x=o.x||0,y=o.y||0,rot=o.rot||0,scale=o.scale!=null?o.scale:1;
+    const alpha=o.alpha!=null?o.alpha:1, grip=o.grip||'edge';
+    ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(scale,scale);ctx.globalAlpha*=alpha;
+
+    // wrist and tapered palm
+    v4SolidCapsule(ctx,[-44,0],[5,0],38,pal.skin,pal.inkSoft,2.2,.98);
+    const palm=[[-9,-30],[30,-27],[49,-10],[46,25],[12,37],[-16,24]];
+    v4FillPoly(ctx,palm,pal.skin,pal.inkSoft,2.5,.99);
+    v4FillPoly(ctx,[[12,-26],[39,-10],[36,23],[15,29]],pal.skinShadow,null,0,.26);
+
+    // three visible fingers share the object edge but retain individual joints
+    const fan=grip==='label' ? [-.17,0,.16] : [-.25,-.05,.14];
+    for(let i=0;i<3;i++){
+      const yy=-20+i*18;
+      const a=fan[i];
+      const p0=[31,yy], p1=[70+Math.cos(a)*8,yy+Math.sin(a)*20];
+      v4SolidCapsule(ctx,p0,p1,13,pal.skin,pal.inkSoft,1.6,.99);
+      ctx.save();ctx.strokeStyle=pal.skinShadow;ctx.lineWidth=1.2;ctx.globalAlpha*=.38;
+      ctx.beginPath();ctx.moveTo(52,yy-4);ctx.lineTo(55,yy+5);ctx.stroke();ctx.restore();
+    }
+
+    // thumb opposes the finger group. This opposition is the critical grip cue.
+    const th0=grip==='label'?[2,12]:[-1,10];
+    const th1=grip==='label'?[52,24]:[45,31];
+    v4SolidCapsule(ctx,th0,th1,17,pal.skin,pal.inkSoft,1.9,.99);
+    ctx.save();ctx.strokeStyle=pal.skinShadow;ctx.lineWidth=1.4;ctx.globalAlpha*=.5;
+    ctx.beginPath();ctx.moveTo(-5,12);ctx.quadraticCurveTo(10,23,29,26);ctx.stroke();ctx.restore();
+    ctx.restore();
+  };
+
+  /**
+   * v4ArmIK(ctx,{shoulder,target,l1,l2,bend,...})
+   * Two-bone arm solved from the actual hand target. The hand can therefore stay locked
+   * to a record/tool while shoulder and elbow remain mechanically coherent.
+   */
+  function v4TaperedLimb(ctx,a,b,w0,w1,fill,stroke=pal.inkSoft,alpha=1){
+    const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.max(1,Math.hypot(dx,dy));
+    const nx=-dy/len,ny=dx/len;
+    // Slightly bowed sides avoid the pipe/robot look while keeping deterministic geometry.
+    const p0=[a[0]+nx*w0*.50,a[1]+ny*w0*.50];
+    const p1=[b[0]+nx*w1*.50,b[1]+ny*w1*.50];
+    const p2=[b[0]-nx*w1*.50,b[1]-ny*w1*.50];
+    const p3=[a[0]-nx*w0*.50,a[1]-ny*w0*.50];
+    ctx.save();ctx.globalAlpha*=alpha;ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=2.6;ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(p0[0],p0[1]);
+    ctx.quadraticCurveTo((p0[0]+p1[0])*.5+nx*3,(p0[1]+p1[1])*.5+ny*3,p1[0],p1[1]);
+    ctx.quadraticCurveTo(b[0]+dx/len*5,b[1]+dy/len*5,p2[0],p2[1]);
+    ctx.quadraticCurveTo((p2[0]+p3[0])*.5-nx*3,(p2[1]+p3[1])*.5-ny*3,p3[0],p3[1]);
+    ctx.quadraticCurveTo(a[0]-dx/len*4,a[1]-dy/len*4,p0[0],p0[1]);
+    ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+  }
+
+  lib.v4ArmIK = (ctx,o={}) => {
+    const S=o.shoulder||[0,0], T=o.target||[100,100];
+    const l1=o.l1||170,l2=o.l2||155,bend=o.bend!=null?o.bend:1;
+    const dx=T[0]-S[0],dy=T[1]-S[1];
+    const raw=Math.hypot(dx,dy), d=clamp(raw,Math.abs(l1-l2)+2,l1+l2-2);
+    const base=Math.atan2(dy,dx);
+    const ca=clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1);
+    const off=Math.acos(ca)*bend;
+    const ea=base+off;
+    const E=[S[0]+Math.cos(ea)*l1,S[1]+Math.sin(ea)*l1];
+    const upperW=o.upperWidth||72, foreW=o.foreWidth||56;
+    const upper=o.upperColor||pal.shirt, fore=o.foreColor||pal.skin;
+    const alpha=o.alpha!=null?o.alpha:1;
+
+    // Human taper: shoulder is broad, sleeve narrows toward elbow; forearm is fuller at
+    // the elbow and narrows into the wrist. No visible mechanical joint disk.
+    v4TaperedLimb(ctx,S,E,upperW,upperW*.72,upper,pal.inkSoft,alpha);
+    v4TaperedLimb(ctx,E,T,foreW*1.03,foreW*.62,fore,pal.inkSoft,alpha);
+    v4Ellipse(ctx,E[0],E[1],foreW*.31,foreW*.28,fore,pal.inkSoft,1.6,alpha);
+    const wr=Math.atan2(T[1]-E[1],T[0]-E[0]);
+    if(o.drawHand!==false) lib.v4GripHand(ctx,{
+      x:T[0],y:T[1],rot:o.handRot!=null?o.handRot:wr,scale:o.handScale!=null?o.handScale:.8,
+      grip:o.grip||'edge',alpha
+    });
+    return {shoulder:S,elbow:E,wrist:T,wristAngle:wr};
+  };
+
+  function v4Button(ctx, x, y, label, active) {
+    ctx.save();
+    ctx.strokeStyle = active ? pal.mylloRingActive : pal.mylloRing;
+    ctx.lineWidth = active ? 8 : 5;
+    ctx.beginPath(); ctx.arc(x, y, 31, 0, TAU); ctx.stroke();
+    ctx.fillStyle = pal.mylloButton;
+    ctx.beginPath(); ctx.arc(x, y, 21, 0, TAU); ctx.fill();
+    if (active) {
+      ctx.strokeStyle = pal.processText; ctx.lineWidth = 1.5; ctx.globalAlpha *= 0.5;
+      ctx.beginPath(); ctx.arc(x, y, 39, 0, TAU); ctx.stroke();
+    }
+    ctx.restore();
+    lib.text(ctx, label, x, y - 47, {
+      size: 17, weight: 750, color: pal.mylloPanelInk, align: 'center', baseline: 'middle'
+    });
+  }
+
+  function v4Node(ctx, pivotX, pivotY, engage, brush) {
+    engage = clamp(engage);
+    const parkA = brush ? -1.12 : -2.02;
+    const workA = brush ? 0.58 : 2.53;
+    const a = lerp(parkA, workA, ease.inOutCubic(engage));
+    const len = brush ? 260 : 300;
+    const axis=[Math.cos(a),Math.sin(a)], normal=[-axis[1],axis[0]];
+    const cx = pivotX + axis[0] * len * 0.49;
+    const cy = pivotY + axis[1] * len * 0.49;
+
+    // grounded pivot: base foot, vertical post, hinge. The three parts share one centre line.
+    v4Ellipse(ctx,pivotX,pivotY+5,45,17,pal.mylloEdge,pal.inkSoft,2.4,.72);
+    v4FillPoly(ctx,[[pivotX-22,pivotY+2],[pivotX+22,pivotY+2],[pivotX+22,pivotY-112],[pivotX-22,pivotY-112]],pal.metal,pal.inkSoft,2.5);
+    v4Ellipse(ctx,pivotX,pivotY-112,25,10,pal.white,pal.inkSoft,1.7,.9);
+
+    // housing with highlight and dark underside gives the cylinder actual volume.
+    v4FillPoly(ctx,lib.capsulePts(cx,cy,len,brush?34:29,a,56),pal.metal,pal.inkSoft,2.4);
+    ctx.save();ctx.strokeStyle=pal.white;ctx.lineWidth=3;ctx.globalAlpha*=.42;
+    ctx.beginPath();
+    ctx.moveTo(cx-axis[0]*len*.37-normal[0]*7,cy-axis[1]*len*.37-normal[1]*7);
+    ctx.lineTo(cx+axis[0]*len*.34-normal[0]*7,cy+axis[1]*len*.34-normal[1]*7);
+    ctx.stroke();
+    ctx.strokeStyle=pal.mylloEdge;ctx.lineWidth=5;ctx.globalAlpha=.35;
+    ctx.beginPath();
+    ctx.moveTo(cx-axis[0]*len*.36+normal[0]*10,cy-axis[1]*len*.36+normal[1]*10);
+    ctx.lineTo(cx+axis[0]*len*.34+normal[0]*10,cy+axis[1]*len*.34+normal[1]*10);
+    ctx.stroke();ctx.restore();
+
+    const tipX=pivotX+axis[0]*len*.95, tipY=pivotY+axis[1]*len*.95;
+    v4Ellipse(ctx,tipX,tipY,brush?20:16,brush?11:9,pal.white,pal.inkSoft,1.3,.82);
+
+    if(brush){
+      // paired floating goat-hair brush beds. Compression increases only near contact.
+      const compression=engage>.72 ? (engage-.72)/.28 : 0;
+      const bedX=cx+normal[0]*31, bedY=cy+normal[1]*31;
+      ctx.save();ctx.strokeStyle=engage>.72?pal.mylloBristleWet:pal.mylloBristle;
+      ctx.lineWidth=2.25;ctx.lineCap='round';
+      for(let row=0;row<2;row++){
+        for(let i=-10;i<=10;i++){
+          const u=i*8.4 + (row?4.2:0);
+          const x0=bedX+axis[0]*u+normal[0]*row*6;
+          const y0=bedY+axis[1]*u+normal[1]*row*6;
+          const br=22+(i&1)*5-compression*7;
+          const lean=(i%3-1)*2;
+          ctx.beginPath();ctx.moveTo(x0,y0);
+          ctx.lineTo(x0+normal[0]*br+axis[0]*lean,y0+normal[1]*br+axis[1]*lean);ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }else{
+      // collection wand: continuous velvet slot, visibly different from the brush node.
+      const sx=cx+normal[0]*24,sy=cy+normal[1]*24;
+      ctx.save();ctx.strokeStyle=pal.vacuum;ctx.lineWidth=11;ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(sx-axis[0]*104,sy-axis[1]*104);
+      ctx.lineTo(sx+axis[0]*104,sy+axis[1]*104);ctx.stroke();
+      ctx.strokeStyle=pal.white;ctx.lineWidth=2;ctx.globalAlpha*=.25;
+      ctx.beginPath();
+      ctx.moveTo(sx-axis[0]*98-normal[0]*4,sy-axis[1]*98-normal[1]*4);
+      ctx.lineTo(sx+axis[0]*98-normal[0]*4,sy+axis[1]*98-normal[1]*4);ctx.stroke();ctx.restore();
+    }
+    return {angle:a,cx,cy,tipX,tipY};
+  }
+
+  /**
+   * v4MylloMachine(ctx, opts)
+   * Canonical 3/4 Myllo machine. The record and control plate retain M1/M2 anchors.
+   * opts:
+   *  rotation (radians), supply 0..1, vacuum 0..1, active 'START'|'PUMP'|'REVERSE'|'VACUUM'|null,
+   *  wet 0..1, dry 0..1, reverse bool, alpha
+   */
+  lib.v4MylloMachine = (ctx, o = {}) => {
+    const alpha=o.alpha!=null?o.alpha:1;
+    const recordAlpha=o.recordAlpha!=null?clamp(o.recordAlpha):1;
+    const clampAlpha=o.clampAlpha!=null?clamp(o.clampAlpha):recordAlpha;
+    ctx.save();ctx.globalAlpha*=alpha;
+
+    // One coherent perspective cage. All visible planes share the same four corner rays.
+    const BL=[185,610], BR=[842,610], FR=[958,912], FL=[105,912];
+    const FBL=[155,1390], FBR=[902,1390], RBL=[820,1088];
+    const top=[BL,BR,FR,FL], front=[FL,FR,FBR,FBL], right=[BR,FR,FBR,RBL];
+    v4FillPoly(ctx,front,pal.mylloBody,pal.ink,6);
+    v4FillPoly(ctx,right,pal.mylloEdge,pal.inkSoft,3,.98);
+    v4FillPoly(ctx,top,pal.mylloTop,pal.ink,5);
+
+    // crisp construction seams prevent the black body from collapsing into a crooked blob.
+    ctx.save();ctx.strokeStyle=pal.white;ctx.lineWidth=2;ctx.globalAlpha*=.12;
+    ctx.beginPath();ctx.moveTo(BL[0]+18,BL[1]+13);ctx.lineTo(BR[0]-18,BR[1]+13);ctx.stroke();
+    ctx.strokeStyle=pal.inkSoft;ctx.globalAlpha=.45;ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(FL[0]+8,FL[1]+14);ctx.lineTo(FR[0]-8,FR[1]+14);ctx.stroke();ctx.restore();
+
+    // record lies on the same projected top plane.
+    if(recordAlpha>0){
+      ctx.save();ctx.globalAlpha*=recordAlpha;
+      v4Ellipse(ctx,535,785,310,118,pal.vinyl,pal.vinylEdge,5);
+      for(let i=0;i<13;i++){
+        const rr=290-i*15;
+        ctx.strokeStyle=pal.groove;ctx.lineWidth=i%4===0?1.6:.8;
+        ctx.globalAlpha=i%4===0?.42:.28;
+        ctx.beginPath();ctx.ellipse(535,785,rr,116*(rr/310),0,0,TAU);ctx.stroke();
+      }
+      const wet=clamp(o.wet||0);
+      if(wet>0){
+        ctx.strokeStyle=pal.mylloWetPale;ctx.globalAlpha=.2+.35*wet;ctx.lineWidth=8+4*wet;
+        for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(535,785,205+k*27,78+k*10,0,.15,5.7);ctx.stroke();}
+      }
+      const dry=clamp(o.dry||0);
+      if(dry>0){
+        ctx.strokeStyle=pal.groove;ctx.globalAlpha=.55*dry;ctx.lineWidth=2.2;
+        for(let k=0;k<5;k++){const rr=215+k*20;ctx.beginPath();ctx.ellipse(535,785,rr,82+k*7,0,3.35,5.85);ctx.stroke();}
+      }
+      v4Ellipse(ctx,535,785,92,35,pal.label,pal.labelDeep,2.5);
+      const a=o.rotation||0;
+      ctx.strokeStyle=pal.white;ctx.globalAlpha=.8;ctx.lineWidth=4.5;
+      ctx.beginPath();ctx.moveTo(535,785);ctx.lineTo(535+Math.cos(a)*68,785+Math.sin(a)*25);ctx.stroke();
+      ctx.restore();
+    }
+
+    // aluminium clamp is a separate physical object and can arrive after the record.
+    if(clampAlpha>0){
+      ctx.save();ctx.globalAlpha*=clampAlpha;
+      v4Ellipse(ctx,535,800,68,29,pal.metal,pal.inkSoft,2.5);
+      v4FillPoly(ctx,[[500,798],[570,798],[558,740],[512,740]],pal.metal,pal.inkSoft,2.5);
+      v4Ellipse(ctx,535,741,24,9,pal.white,pal.inkSoft,1.5,.8);
+      ctx.restore();
+    }
+
+    const supply=v4Node(ctx,285,645,o.supply||0,true);
+    const vacuum=v4Node(ctx,790,645,o.vacuum||0,false);
+
+    // signature white control plate, aligned to the front face.
+    v4FillPoly(ctx,lib.rrectPts(350,985,360,280,126,16),pal.mylloPanel,pal.mylloPanelInk,3);
+    ctx.save();ctx.strokeStyle=pal.mylloPanelInk;ctx.lineWidth=1.5;ctx.globalAlpha*=.55;
+    ctx.beginPath();ctx.roundRect(405,1070,250,112,12);ctx.stroke();ctx.restore();
+    v4Button(ctx,450,1045,'START',o.active==='START');
+    v4Button(ctx,610,1045,'REVERSE',o.active==='REVERSE');
+    v4Button(ctx,450,1200,'PUMP',o.active==='PUMP');
+    v4Button(ctx,610,1200,'VACUUM',o.active==='VACUUM');
+    lib.text(ctx,'MYLLO',530,1110,{size:31,weight:900,color:pal.mylloPanelInk,align:'center',baseline:'middle'});
+    lib.text(ctx,'VINYLLO',530,1146,{size:31,weight:900,color:pal.mylloPanelInk,align:'center',baseline:'middle'});
+    v4Ellipse(ctx,530,1325,12,7,pal.mylloBlueLed,null,0);
+    ctx.save();ctx.fillStyle=pal.mylloBlueLed;ctx.globalAlpha*=.18;ctx.beginPath();ctx.arc(530,1325,21,0,TAU);ctx.fill();ctx.restore();
+
+    // small feet make the mass sit on the table rather than float.
+    v4Ellipse(ctx,235,1390,30,9,pal.mylloEdge,null,0,.7);
+    v4Ellipse(ctx,820,1390,30,9,pal.mylloEdge,null,0,.7);
+
+    ctx.restore();
+    return {supply,vacuum};
+  };
+
+  /**
+   * v4GrooveMacro(ctx, box, opts)
+   * Draws a concrete groove field suitable for matched BEFORE/AFTER comparisons.
+   * opts: dirt 0..1, wet 0..1, reflection 0..1, seed, label
+   */
+  lib.v4GrooveMacro = (ctx, box, o = {}) => {
+    const x=box.x,y=box.y,w=box.w,h=box.h;
+    const dirt=clamp(o.dirt != null ? o.dirt : 0.5);
+    const wet=clamp(o.wet || 0);
+    const seed=o.seed != null ? o.seed : 1;
+    const R=lib.rng(seed);
+
+    ctx.save();
+    ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+    ctx.fillStyle=pal.vinyl;ctx.fillRect(x,y,w,h);
+
+    const cx=x+w*.28, cy=y+h*1.18;
+    ctx.save();
+    for(let i=0;i<22;i++){
+      const rr=180+i*18;
+      ctx.strokeStyle=i%5===0?pal.groove:pal.vinylEdge;
+      ctx.lineWidth=i%5===0?2:1;
+      ctx.globalAlpha=i%5===0?.55:.7;
+      ctx.beginPath();ctx.arc(cx,cy,rr,4.1,6.05);ctx.stroke();
+    }
+    ctx.restore();
+
+    // moving/reflected groove highlight
+    const refl=clamp(o.reflection != null ? o.reflection : 0.75);
+    ctx.save();ctx.strokeStyle=wet>0?pal.mylloWetPale:pal.white;ctx.globalAlpha=.12+.32*refl;ctx.lineWidth=wet>0?5:2.3;
+    for(let i=0;i<5;i++){const rr=260+i*28;ctx.beginPath();ctx.arc(cx,cy,rr,4.55,5.35);ctx.stroke();}
+    ctx.restore();
+
+    const dustN=Math.round(4+dirt*32);
+    ctx.save();
+    for(let i=0;i<dustN;i++){
+      const px=x+28+R()*(w-56), py=y+60+R()*(h-110);
+      ctx.fillStyle=i%5===0?pal.grit:pal.dust;
+      ctx.globalAlpha=.45+.45*dirt;
+      ctx.beginPath();ctx.arc(px,py,1.8+R()*3.8,0,TAU);ctx.fill();
+    }
+    const fibres=Math.round(dirt*5);
+    ctx.strokeStyle=pal.dust;ctx.lineWidth=2.1;ctx.globalAlpha=.7*dirt;
+    for(let i=0;i<fibres;i++){
+      const px=x+70+R()*(w-140), py=y+100+R()*(h-180), len=32+R()*46, a=-.5+R()*1.2;
+      ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo(px+Math.cos(a)*len*.5,py+Math.sin(a)*len*.65,px+Math.cos(a)*len,py+Math.sin(a)*len);ctx.stroke();
+    }
+    ctx.restore();
+
+    if(o.label) lib.text(ctx,o.label,x+22,y+44,{size:28,weight:800,color:pal.processText,align:'left',baseline:'middle'});
+
+    ctx.restore();
+    ctx.save();ctx.strokeStyle=pal.comicBorder;ctx.lineWidth=4;ctx.strokeRect(x,y,w,h);ctx.restore();
+  };
+
+  // ===========================================================================
+  // Read-only
+  // ===========================================================================
+
+  // A scene that changed lib, lib.pal or lib.ease would leak into every shot drawn after it, in
+  // whatever order frames happen to be drawn (and differently in each render worker). So all of
+  // it is frozen:
+  //   - lib itself is a plain frozen object: a write throws in strict code and is ignored in
+  //     non-strict code, so nothing leaks, and reading lib.fn in a hot loop stays at full speed.
+  //   - pal and ease are also wrapped so a write throws even from non-strict scene code (core
+  //     records it as a draw error, tools/check.cjs reports it). The wrapper makes each read about
+  //     20 ns slower, so hoist colours out of per-point loops (const ink = P.ink). Code inside lib
+  //     uses the raw objects and pays nothing.
+  function readOnly(target, name) {
+    const fail = (verb, prop) => {
+      throw new TypeError(
+        `${name} is read-only: a scene cannot ${verb} '${String(prop)}' (it would leak into other shots). ` +
+          `Make a local copy instead, for example const P = Object.assign({}, FILM.lib.pal, { ink: '#000' }).`
+      );
+    };
+    return new Proxy(Object.freeze(target), {
+      set: (t, prop) => fail('set', prop),
+      defineProperty: (t, prop) => fail('define', prop),
+      deleteProperty: (t, prop) => fail('delete', prop),
+      setPrototypeOf: () => fail('change the prototype of', name),
+    });
+  }
+  for (const key of Object.keys(ease)) Object.freeze(ease[key]);
+  lib.pal = readOnly(pal, 'FILM.lib.pal');
+  lib.ease = readOnly(ease, 'FILM.lib.ease');
+  for (const key of Object.keys(lib)) {
+    const v = Object.getOwnPropertyDescriptor(lib, key).value;
+    if (typeof v === 'function') Object.freeze(v);
+  }
+  Object.defineProperty(FILM, 'lib', { value: Object.freeze(lib), writable: false, enumerable: true, configurable: false });
+})();
