@@ -416,3 +416,29 @@ Exact next action:
 - restore / adapt the accepted V3 story scenes 01–04 and 10–12 around the V4 product block;
 - add the V4 return label to shot 10;
 - then snap the whole 12-shot film and run a scene-complete native gate.
+
+
+### TX-V4-007 retained-story batch checkpoint
+
+Accepted V3 story scenes restored around the V4 cleaning block without reimplementing already-working narrative material:
+- 01 FIND
+- 02 INSPECT
+- 03 PLAY
+- 04 HEAR
+- 10 RETURN
+- 11 PLAY AGAIN
+- 12 ENJOY
+
+Restore commit:
+- `94115088b429912903267a676e32072879522b3c`
+
+Rationale:
+- V3 human review already accepted these beats as understandable;
+- V4 investment remains concentrated on the cleaning-machine semantic bottleneck;
+- scene IDs remain identical and each retained scene is still 3.0 s, so local scene timing remains valid after the 36 s timeline expansion.
+
+Exact next action:
+1. generate a fresh whole-film 12-shot critic sheet from `94115088b429912903267a676e32072879522b3c`;
+2. run the full native six-check;
+3. if story order and gate are clean, mark Scenes COMPLETE;
+4. then rebuild V4 music/SFX for the 36 s timeline rather than reusing the 30 s V3 score unchanged.
