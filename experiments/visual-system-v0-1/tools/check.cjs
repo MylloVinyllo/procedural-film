@@ -132,7 +132,7 @@ async function main() {
 
   // ---------------------------------------------------------------- 3 sources (static)
   {
-    const files = [path.join(C.SRC, 'core.js'), path.join(C.SRC, 'lib.js'), path.join(src.base, 'timeline.js'), ...src.sceneFiles];
+    const files = [path.join(C.SRC, 'core.js'), path.join(C.SRC, 'lib.js'), ...(src.componentFiles || []), path.join(src.base, 'timeline.js'), ...src.sceneFiles];
     if (src.musicFile) files.push(src.musicFile);
     files.push(path.join(C.SRC, 'player.js'));
     const hits = [];
@@ -158,7 +158,7 @@ async function main() {
     // colours come from lib.pal (art bible 2.2): a literal hex in a scene or timeline file drifts from the palette
     const hexWarns = [];
     const literalColour = /#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\b|['"`]\s*(?:rgba?|hsla?)\(/gi;
-    for (const f of [...src.sceneFiles, path.join(src.base, 'timeline.js')]) {
+    for (const f of [...(src.componentFiles || []), ...src.sceneFiles, path.join(src.base, 'timeline.js')]) {
       if (!fs.existsSync(f)) continue;
       stripComments(fs.readFileSync(f, 'utf8')).split('\n').forEach((line, i) => {
         for (const m of line.matchAll(literalColour)) {
