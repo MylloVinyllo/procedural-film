@@ -295,3 +295,16 @@ Exact next actions:
 5. only then start dense Scenes.
 
 If the stream breaks during either job, resume the exact job ID written here rather than requeueing.
+
+
+### TX-V3-007 runtime checkpoint
+
+- stub-film native check: `b037a994-4258-4710-8d8c-1a89b7768cf3` — SUCCEEDED / 6 PASS
+- check result: 10 shots, 30.000 s, determinism PASS, timeline PASS, draw PASS, max swept cost 42 ms
+- active half-scale stub preview: `416a9de5-a522-48e6-a6bb-e008d75cef2d`
+- preview input commit: `17b027eae746aa4c47b430f7b679984f9abdcde0`
+
+Exact resume instruction:
+- first query `416a9de5-a522-48e6-a6bb-e008d75cef2d`;
+- do not start a second preview unless this job explicitly fails;
+- after success, snap the stub film as a whole for sequence verification and then close Stub pass.
