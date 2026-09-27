@@ -23,10 +23,15 @@
   function halftone(c,pts,color,spacing=13,r=1.5,alpha=.22,seed=1){
     c.save();trace(c,pts,true);c.clip();c.fillStyle=color;c.globalAlpha*=alpha;
     const ox=(L.hash(seed,'x')%spacing),oy=(L.hash(seed,'y')%spacing);
+    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    for(const p of pts){if(p[0]<minX)minX=p[0];if(p[0]>maxX)maxX=p[0];if(p[1]<minY)minY=p[1];if(p[1]>maxY)maxY=p[1];}
+    minX-=spacing;maxX+=spacing;minY-=spacing;maxY+=spacing;
+    const y0=Math.floor((minY-oy)/spacing)*spacing+oy;
     c.beginPath();
-    for(let y=-spacing+oy;y<1920+spacing;y+=spacing){
+    for(let y=y0;y<=maxY;y+=spacing){
       const shift=(Math.floor(y/spacing)&1)?spacing*.5:0;
-      for(let x=-spacing+ox+shift;x<1080+spacing;x+=spacing){c.moveTo(x+r,y);c.arc(x,y,r,0,TAU);}
+      const x0=Math.floor((minX-ox-shift)/spacing)*spacing+ox+shift;
+      for(let x=x0;x<=maxX;x+=spacing){c.moveTo(x+r,y);c.arc(x,y,r,0,TAU);}
     }
     c.fill();c.restore();
   }
