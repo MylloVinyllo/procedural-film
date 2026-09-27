@@ -20,8 +20,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Storyboard delta | COMPLETE | 36 s / 12 shots / five-beat cleaning block / self-review closed | Timeline |
 | Timeline | COMPLETE | 36 s / 12-shot timeline + cue grid | Stub/sequence validation |
 | Stub/sequence validation | COMPLETE | green gate + 12-shot sheet + 36 s half-scale stub preview | Scenes |
-| Scenes | IN PROGRESS | product-first dense batch 05–09, then retained story scenes | scene sheets + batch gates |
-| Music/SFX | PENDING | audio QA | after scenes |
+| Scenes | COMPLETE | product-first batch 05–09 + accepted V3 story scenes 01–04/10–12 + whole-film sheet + green gate | Music/SFX |
+| Music/SFX | IN PROGRESS | rebuild 36 s cue structure around real Myllo stages | audio QA |
 | Critic waves | PENDING | whole-film sheet + fixes | after audio |
 | Deliver | PENDING | preview/master | after critic |
 | Human review | PENDING | viewer notes | after master |
@@ -442,3 +442,48 @@ Exact next action:
 2. run the full native six-check;
 3. if story order and gate are clean, mark Scenes COMPLETE;
 4. then rebuild V4 music/SFX for the 36 s timeline rather than reusing the 30 s V3 score unchanged.
+
+
+### TX-V4-007 final result — Scenes
+
+Whole-film scene sheet:
+- job `4eafe52c-ceee-4fae-8d00-d14f85c8d0f7` — SUCCEEDED
+- 12 samples in correct story order
+- product block reads as a coherent five-shot sequence:
+  Myllo reveal → solution/feed → brush/reverse → vacuum → matched before/after
+- retained discovery/problem/playback/payoff scenes remain visually coherent around the new product block
+
+Scene-complete native gate:
+- job `e9624693-ba4f-4033-ad6b-4e747726af67` — SUCCEEDED / 6 PASS
+- media PASS
+- determinism PASS
+- sources PASS
+- timeline PASS
+- draw PASS
+- cost PASS
+- max swept cost: 132 ms
+- result: `OK in 27.4s`
+
+Scenes: COMPLETE.
+
+## Active transaction
+
+**TX-V4-008 — Music / SFX**
+
+Required:
+1. preserve the accepted V3 discovery / dirty-playback / final motif language;
+2. expand the composition from 30 s to 36 s;
+3. assign distinct physical sound signatures to:
+   - Myllo reveal / clamp / START,
+   - supply-node pivot,
+   - PUMP / solution feed,
+   - brush contact,
+   - REVERSE direction change,
+   - vacuum-node pivot/contact,
+   - VACUUM / suction,
+   - before/after comparison,
+   - return,
+   - clean mirrored playback;
+4. keep the final clean payoff at T 33–36;
+5. run native audio QA;
+6. run a post-audio native gate before Critic waves.
