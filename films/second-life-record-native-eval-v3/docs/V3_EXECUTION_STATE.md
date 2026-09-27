@@ -731,3 +731,21 @@ Do not alter the film before that review unless a reproducible technical defect 
 
 Final source render commit:
 `df552f1ded781799f40218d8fec390ab4368d2db`
+
+
+## Post-delivery review package
+
+Created after Deliver completion:
+
+- final V3 evaluation: `docs/V3_FINAL_EVALUATION.md`
+  - commit `cc6bfa1928919c89ce5a5da3f261ae9e4f153fad`
+- blind human review protocol: `docs/V3_HUMAN_REVIEW_PROTOCOL.md`
+  - commit `ddbdf78dd4b0866f5403938621e958de01aba786`
+
+Current state:
+- production source is frozen at `df552f1ded781799f40218d8fec390ab4368d2db`;
+- no further source changes should be made before human viewing feedback;
+- the next actionable input is the viewer's unaided comprehension / ambiguity report;
+- after that, either open a bounded V3 correction transaction or use the findings as V4 input.
+
+If the chat stream breaks at this point, resume from the human-review stage rather than rerendering or rebuilding V3.
