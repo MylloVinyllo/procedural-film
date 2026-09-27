@@ -37,8 +37,8 @@ If the ChatGPT stream times out:
 | Art Bible | COMPLETE | `docs/art-bible.md` + mirrored `src/lib.js` + palette sheet | Storyboard |
 | Storyboard | COMPLETE | `docs/storyboard.md`, 30 s / 10 shots / self-review closed | Timeline |
 | Timeline | COMPLETE | `src/timeline.js`, exact storyboard data / cues | Stub pass |
-| Stub pass | IN PROGRESS | stubgen + materialised ten stubs | native gate + preview |
-| Scenes | PENDING | scene files + six-frame sheets | after stub |
+| Stub pass | COMPLETE | six-check + preview + 10-shot sheet | Scenes |
+| Scenes | IN PROGRESS | isolated scene batches with six-frame review | continue batch B |
 | Music | PENDING | `src/music.js` + audio QA | after scenes |
 | Critic waves | PENDING | whole-film sheet + fresh corrections | after music |
 | Deliver | PENDING | preview/master/shots list | after critic |
@@ -308,3 +308,65 @@ Exact resume instruction:
 - first query `416a9de5-a522-48e6-a6bb-e008d75cef2d`;
 - do not start a second preview unless this job explicitly fails;
 - after success, snap the stub film as a whole for sequence verification and then close Stub pass.
+
+
+## TX-V3-007 result — Stub pass
+
+Native gate:
+- job `b037a994-4258-4710-8d8c-1a89b7768cf3` — SUCCEEDED / 6 PASS
+- max swept frame cost 42 ms
+- determinism / media / sources / timeline / draw / cost all PASS
+
+Half-scale stub preview:
+- job `416a9de5-a522-48e6-a6bb-e008d75cef2d` — SUCCEEDED
+- 30.000 s / 720 frames / 540×960
+- artifact `output/preview.mp4`
+- SHA-256 `08e43c7c1e7c1ee0363b5d3275ebf4f67a766aa0cfb35d759856eea4e302665e`
+
+Whole-film stub sheet:
+- job `1e93b601-a27e-4d08-acd5-e680d001322c` — SUCCEEDED
+- 10 samples, one per shot in story order
+- order/timing verified against storyboard
+
+Status: COMPLETE.
+
+## Scene implementation protocol
+
+V3 scenes are implemented as isolated ownership passes.
+After each small batch:
+1. six-frame snap each scene;
+2. visually inspect all six frames at quarter scale;
+3. fix P1/P2 readability issues immediately;
+4. record accepted scene IDs / job IDs here;
+5. only then advance.
+
+### Batch A — scenes 01–02
+
+Source commits:
+- 01 `find-record`: `88a1986dc85126589dfef6f0e0d422dc23db36da`
+- 02 `inspect-dust`: `48e3a1ed424147a0b28177161d781c967a633fef`
+
+Six-frame evidence:
+- 01 job `927f4cd1-4ebd-42b2-978b-5aa08f8001ed` — SUCCEEDED
+- 02 job `995c2e84-4498-4c91-bc61-bcd90cd61f08` — SUCCEEDED
+
+Visual acceptance:
+- 01 clearly reads as a person removing/holding a vinyl record from a sleeve in a listening room;
+- 02 clearly reads as the same person inspecting a visibly dusty record under a lamp, with a concrete groove/dust macro inset;
+- protagonist clothing/hair/face language is consistent;
+- vinyl is recognisable from label, spindle mark, grooves and reflections;
+- story no longer depends on abstract marker interpretation.
+
+Batch A: ACCEPTED.
+
+## Active transaction
+
+**TX-V3-008 — Scene batch B: 03 first-play + 04 hear-crackle**
+
+Required:
+- exact G2 playback rig;
+- exact G3 stylus macro;
+- G4 reaction panel;
+- physical playback before noise effects;
+- controlled badMagenta/badCyan distortion only after contact;
+- six-frame sheets for both before advancing.
