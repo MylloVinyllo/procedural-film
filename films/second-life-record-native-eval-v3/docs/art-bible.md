@@ -1,257 +1,1083 @@
-# Art bible: <FILM TITLE>
+# Art bible: Second Life of a Record
 
-The visual rules every scene follows.
-Where this file and a scene brief disagree on a colour, weight or rule, this file wins.
-Where this file and `docs/storyboard.md` disagree on a position or a time, the storyboard wins.
+The visual rules every V3 scene follows.
 
-Sections 1 to 9 are the house style, fixed by the reference analysis — change them only after a fresh one (the skill's `templates/reference-analysis.md` shows the method). Sections 2.2, the identity tints in 2.3, and 10 are rewritten per film from the captured research.
+Where this file and a scene brief disagree on colour, weight, character model, prop model or comic grammar, this file wins.
+Where this file and `docs/storyboard.md` disagree on a position or time, the storyboard wins.
 
-## 1. Frame
+This is a deliberate rewrite of native Procedural Film house sections 1–9 following `docs/reference-analysis.md`.
+V3 is an **animated comic**, not the default illustrated-vs-blueprint explainer.
 
-The canvas is 1080 px wide and 1920 px tall at 24 fps.
-Every pixel value in this file assumes that size.
-The origin is the top-left corner and y grows downward.
+## 1. Frame and comic composition
+
+Canvas: **1080 × 1920**, 24 fps.
 
 ### 1.1 Shorts safe area
 
-YouTube Shorts draws its own interface over the video.
-The title and channel row covers roughly the bottom 380 px, the button column covers roughly x 950 to 1080 from y 1000 down, and the top bar covers roughly the top 180 px.
-Anything the viewer must read (the subject, a match-cut shape, a glyph that carries meaning, the wordmark) sits inside x 60 to 940 and y 220 to 1540.
-Backgrounds, stripes, grain, guide geometry, construction lines and decorative scenery run full bleed.
-The safe area is non-negotiable: the storyboard may never move must-read content outside it. If a composition collides with it, move the scenery — never the must-read content.
+Must-read story information stays inside:
+- x = 60–940
+- y = 220–1540
 
-### 1.2 Composition for a tall frame
+The UI-risk areas are treated as scenery-only:
+- top ~180 px;
+- right x ≈ 950–1080 from mid/lower frame;
+- bottom ~380 px.
 
-Compose for the height, never crop a square.
-Hanging, climbing, falling and rising subjects use the vertical axis.
-The frame centre line x = 540 is the default axis for the subject.
-Large subjects fill 60 to 90 percent of the frame width so they read on a phone.
+Panel borders may extend into the risk areas, but:
+- face,
+- hand-object contact,
+- stylus contact,
+- record condition,
+- cleaning contact,
+- critical sound word,
+- decisive reaction
 
-## 2. Palettes
+must remain inside the safe area.
 
-Names below are the keys of `FILM.lib.pal`.
-Where a key already exists in `src/lib.js`, the value here is the published final value.
+### 1.2 The frame is a comic page, not a stack of UI cards
+
+The 9:16 canvas may contain:
+- one full-bleed panel;
+- one dominant panel plus one inset;
+- two panels split vertically or diagonally;
+- rarely three panels when the causal relation is obvious.
+
+Default is **one panel**.
+
+A multi-panel frame is allowed only when it communicates:
+- action + reaction;
+- wide action + macro detail;
+- before + after;
+- simultaneous sound source + listener response.
+
+Never split the screen merely to add density.
+
+### 1.3 Panel borders and gutters
+
+At 1080 px:
+- primary panel border: 5 px, `comicBorder`;
+- secondary/inset border: 4 px;
+- ordinary gutter: 22 px;
+- narrow kinetic gutter: 12 px;
+- wide narrative pause: 36 px;
+- inset corner radius: 0–8 px, usually square.
+
+Gutter colour: `gutter`.
+
+Panel borders may:
+- slide;
+- expand;
+- become a wipe;
+- be overtaken by the record circle;
+- break for an impact object.
+
+They never wobble independently unless the whole panel is in the “bad playback” distortion state.
+
+### 1.4 Tall-frame staging
+
+Human medium shot:
+- head normally y 360–650;
+- hands / record action y 700–1220;
+- turntable / work surface y 1030–1510.
+
+Full-body character height in a wide environmental shot:
+- 930–1220 px.
+
+Head-and-hands close-up:
+- face fills 280–420 px height;
+- hand/prop fills 320–650 px.
+
+Macro prop shot:
+- record/stylus/brush detail may occupy 70–95% frame width.
+
+### 1.5 Readability hierarchy
+
+Every shot has exactly one dominant verb.
+
+Visual priority:
+1. action silhouette / hand-object contact;
+2. hero prop;
+3. facial reaction;
+4. immediate environment;
+5. comic effect;
+6. decorative texture.
+
+If a viewer cannot name the verb from a still, adding more detail is forbidden until the composition is fixed.
+
+---
+
+## 2. Palette
+
 Colour is flat.
-Tone in illustrated mode comes from hatching, never from gradients.
-Radial glow halos are allowed only in schematic mode.
+No photographic gradient shading.
+Large tonal changes come from:
+- flat second values;
+- halftone;
+- hatch;
+- sharp cast shadows;
+- limited print-registration offsets.
 
-### 2.1 Warm illustrated palette (paper plate)
+### 2.1 V3 comic house palette
 
-| Name | Hex | Use |
-|---|---|---|
-| paper | #EFE3C9 | Paper base |
-| paperShade | #E2D1B0 | Paper shadow, tucked edges on white |
-| paperDeep | #CDB58C | Paper vignette, deep paper tone |
-| stripeCream | #F2E7CF | Stripe band A, default |
-| stripeYellow | #EFDCA3 | Stripe band B, warm default |
-| stripeApricot | #F0D9B5 | Stripe band B, dawn or tender acts |
-| stripeSage | #DCE3CC | Stripe band B, foliage acts |
-| stripeSpring | #E4EDD0 | Stripe band B, new-growth acts |
-| stripeSky | #C9D3D2 | Stripe band B, open-sky acts |
-| ink | #2A1C13 | Main outlines |
-| inkSoft | #5B4331 | Secondary outlines, detail lines |
-| inkFaint | #8A735C | Construction lines, graticule |
-| tan | #C8A47A | Dry organic matter |
-| ochre | #C38F2E | Earthy accent |
-| rose | #C88C86 | Dusty rose accents |
-| duskRose | #E3B1A1 | Dusk sky band |
-| sage | #94A47F | Generic foliage |
-| teal | #3C8783 | Water hatching, teal accents |
-| tealDeep | #285F5D | Deep water hatching |
-| sun | #F1BF4A | Sun disc |
-| nightSky | #4E3F6E | Night sky band |
-| night | #2F2748 | Deepest night, star-field base |
-| white | #FBF6EA | Highlights, silk, moon |
-
-Stripe band B changes by act; the storyboard assigns one per act.
-`orange #D8742B`, `leaf #6E8F4F`, `wood #A8784C`, `sunset #E79D8F`, `dusk #5A4878` and `red #BF3F2C` stay available in `lib.pal` for incidental scenery.
-
-### 2.2 Subject palette, warm
-
-REWRITE PER FILM. One row per subject colour, named for what it colours rather than its hue
-(`hero`, `heroDeep`, `heroPale`, …). Fill from the research; 8 to 30 names is typical.
-This table publishes the final values — enter every one into the marked block in `src/lib.js`,
-which mirrors it exactly.
+These keys reuse the foundation names for compatibility, but their V3 values are the published values for this film.
 
 | Name | Hex | Use |
 |---|---|---|
-| … | #… | … |
+| paper | #F3E7D3 | warm uncoated comic paper |
+| paperShade | #D7C7AD | page / wall shadow |
+| paperDeep | #B79F80 | deep warm paper / room recess |
+| stripeCream | #F5ECD9 | compatibility background A; rarely used as stripes |
+| stripeYellow | #E8D3A2 | warm discovery accent |
+| stripeApricot | #E7C3A4 | skin-adjacent background accent |
+| stripeSage | #C9D3BE | calm secondary room accent |
+| stripeSpring | #D7E2C8 | clean-state pale green |
+| stripeSky | #BFCED1 | cool problem-state background |
+| ink | #201B1A | primary outer contour |
+| inkSoft | #493C37 | interior contour / prop detail |
+| inkFaint | #7F6D63 | environment / construction |
+| tan | #C9A779 | paper sleeve / domestic neutral |
+| ochre | #C68A35 | warm small accent |
+| rose | #C97B74 | muted emotional accent |
+| duskRose | #D79A8C | warm wall / late listening accent |
+| sage | #85977A | plant / room accent |
+| teal | #2F8A87 | cleaning / clean-state accent |
+| tealDeep | #1E5D5D | deep cleaning / clean-state shade |
+| sun | #E8B64A | lamp / warm highlight |
+| nightSky | #37405B | deep cool panel field |
+| night | #202333 | deepest cool / speaker recess |
+| white | #FFF8E8 | highlight / paper-white |
+| orange | #D66A36 | shirt / kinetic warm accent |
+| leaf | #5E7B4B | plants |
+| wood | #936B4B | table / shelf |
+| sunset | #D88A73 | final-room warmth |
+| dusk | #544767 | problem-state cool-violet |
+| red | #B33B32 | warning / tiny impact accent |
 
-### 2.3 Cool schematic palette (blueprint plate)
+### 2.2 Subject palette
+
+These values are mirrored exactly into the marked subject block in `src/lib.js`.
 
 | Name | Hex | Use |
 |---|---|---|
-| navy | #0B1230 | Blueprint base |
-| navyDeep | #060A1C | Near-black navy for the opening spark frame |
-| navyLight | #18234D | Inset circle fills, panel tint |
-| grid | #3A4A86 | 60 px grid lines |
-| lavender | #C8C1EF | Main linework |
-| lineWhite | #EEF0FF | Emphasis lines, veins, ticks |
-| paleBlue | #9CC2EA | Secondary accent, frost |
-| glow | #FFF3DC | Nucleus cores, sun glyph, glows |
-| magenta | #FF3D98 | Moments of change only |
+| skin | #D9A37F | protagonist lit skin |
+| skinShadow | #AF765C | protagonist skin shadow |
+| hair | #2B2423 | hair / eyebrow mass |
+| shirt | #D56A3B | rust overshirt |
+| shirtDeep | #9F4630 | overshirt shadow |
+| tee | #EADFC8 | inner T-shirt |
+| pants | #38404B | trousers |
+| shoe | #2B2D31 | shoes |
+| vinyl | #191A1D | LP playing surface |
+| vinylEdge | #090A0B | disc outer edge / deepest groove |
+| groove | #4B4D52 | readable groove bands / reflected ring |
+| label | #D58C45 | generic record label |
+| labelDeep | #A95D2A | label shadow / typography substitute marks |
+| sleeve | #D8B86A | generic paper sleeve/jacket |
+| sleeveShadow | #A9864E | sleeve folds / inner shadow |
+| turntableBody | #C9C1B2 | generic turntable plinth |
+| platter | #4D535A | platter edge |
+| mat | #25282C | platter mat |
+| metal | #AAB0B3 | spindle / arm hardware |
+| tonearm | #B8B7AE | tonearm tube |
+| cartridge | #3B3A39 | cartridge body |
+| stylus | #B9D4DC | stylus/cantilever highlight |
+| dust | #C7B59D | loose dust, fibre, lint |
+| grit | #8D7766 | darker contamination flecks |
+| brush | #8C5B3D | brush handle/body |
+| brushFiber | #292A2B | brush fibres |
+| fluid | #67B8B2 | visible cleaning liquid |
+| fluidPale | #B9E1DA | thin wet film highlight |
+| machine | #DBD5C7 | generic cleaning-machine shell |
+| machineDeep | #707B7E | machine recess / shadow |
+| vacuum | #343B3E | vacuum wand / slot |
+| speaker | #4A382F | speaker cabinet |
+| speakerCone | #262328 | driver cone |
+| lamp | #D6A95A | lamp shade / warm practical |
+| roomWall | #E1D4BF | home-listening wall |
+| table | #9A694A | turntable / cleaning table |
+| badMagenta | #DE3F86 | dirty-playback registration error |
+| badCyan | #36A7B7 | dirty-playback registration error |
+| cleanGold | #E3B74E | satisfying clean-music accent |
+| cleanTeal | #3A9990 | satisfying clean-music accent |
+| soundWord | #E95538 | short comic sound word |
 
-PER FILM: add 1 to 3 subject identity tints (e.g. `schemHero #F2A66A`), here and in `src/lib.js`.
-Subject tints are line or dot colours, never fills, and a schematic shot uses at most one of them besides magenta.
+### 2.3 Technical / inset palette
 
-### 2.4 Overlay colours on illustrations
+V3 does **not** default to separate blueprint scenes.
+These keys remain available for rare macro/inset construction drawings and native fixtures.
 
 | Name | Hex | Use |
 |---|---|---|
-| annMagenta | #E43D8C | Change rings, trajectories, target rings |
-| annBlue | #3B8EE0 | Trajectory and motion lines, fluid paths, rulers |
-| annYellow | #EAB530 | Attention rings, brackets, tally rings, sun paths |
-| teal | #3C8783 | Secondary guide lines when blue is already in use |
+| navy | #172033 | technical inset base |
+| navyDeep | #0D121D | deepest technical inset |
+| navyLight | #263550 | inset panel tint |
+| grid | #4B5D79 | guide grid |
+| lavender | #C8C1EF | technical construction line |
+| lineWhite | #F4F0E8 | strong inset line |
+| paleBlue | #9FC7D0 | secondary technical line |
+| glow | #FFF0C8 | small highlight |
+| magenta | #DE3F86 | process-change accent |
+| schemVinyl | #8CA7C2 | record/groove technical line |
+| schemClean | #67B8B2 | cleaning-contact technical line |
+| schemNoise | #DE3F86 | noise/problem technical line |
 
-Overlays sit above the illustration at full opacity and never get hatched or grained.
+### 2.4 Story-state colour script
 
-## 3. Line
-
-All widths are at 1080 px wide.
-Illustrated lines come from `lib.inkPath` with pressure variation of plus or minus 25 percent.
-
-### 3.1 Illustrated weights
-
-| Element | Width | Colour and opacity |
+| State | Background bias | Accent |
 |---|---|---|
-| Hero subject outline | 5 px | ink 100% |
-| Doubled hero outline, occasional | 1.5 px, offset 3 px | ink 40% |
-| Secondary form outline | 3 px | ink 100% |
-| Detail lines: segment rings, veins, ridges | 1.8 px | inkSoft 90% |
-| Hatch strokes | 1.2 to 1.8 px | ink or the form's deep colour, 70 to 90% |
-| Construction lines | 1.5 px | inkFaint 30% |
+| Discovery | paper / tan / wood | label, shirt, lamp |
+| Suspicion / inspection | paper + cool grey | dust / cyan |
+| Bad playback | stripeSky / dusk / night | badMagenta + badCyan |
+| Decision | neutral paper | shirt + one warm red |
+| Cleaning | paper / machine | fluid / teal |
+| Return to turntable | neutral warm | label / metal |
+| Clean playback | warm paper / sunset | cleanGold + cleanTeal |
+| Final listening | richest warm room | cleanGold |
 
-Hero-specific line treatments (for example the band widths of a wing's veins) are specified in section 10 with exact widths at a stated subject size, and scale with the drawn size.
+The badMagenta/badCyan pair is **for the problem state only**.
+It is not a permanent chromatic effect.
 
-### 3.2 Schematic weights
+---
 
-| Element | Width | Colour and opacity |
-|---|---|---|
-| Primary outline, double | outer 2.5 px and inner 1.5 px, 9 px apart | lavender 85% outer, 50% inner |
-| Secondary outline | 1.5 px | lavender 60% |
-| Lattice and cell lines | 1 px | lavender 30 to 40% |
-| Grid | 1 px, 60 px pitch | grid 35% |
-| Guide circles | 1.5 px | lavender 12 to 18% |
-| Long diagonals | 1 px | lavender 12% |
-| Ticks | 1.5 px, 10 to 20 px long | lineWhite 60% |
-| Brackets | 1.5 px, end ticks 16 px | lavender 60% |
-| Magenta flashes and rings | 3 px | magenta 100%, fading |
+## 3. Line and contour
 
-### 3.3 Overlay weights
+The image must read as authored comic drawing, not smooth vector infographic.
 
-| Element | Width |
-|---|---|
-| Attention and change rings | 3 px |
-| Trajectory lines | 2.5 px |
-| Dashed trajectories | 2.5 px, 14 px on and 10 px off |
-| Motion rings | 2 px |
-| Arc annotations | 2 px with 8 px end ticks |
-| Rulers | 2 px, short ticks 12 px, long ticks 28 px |
+### 3.1 Character and hero prop weights
 
-## 4. Tone
+At 1080 px width:
 
-### 4.1 Hatching
+| Element | Width | Notes |
+|---|---:|---|
+| character outer silhouette | 6.0 px | `ink`, pressure ±20% |
+| face / hand outer contour | 5.0 px | `ink` |
+| record outer contour | 5.5 px | `ink` or `vinylEdge` |
+| turntable / cleaning-machine hero edge | 4.5 px | `ink` |
+| clothing fold / facial plane | 2.3 px | `inkSoft` |
+| prop construction | 2.0 px | `inkSoft` |
+| environment major | 2.2 px | `inkSoft` 70–85% |
+| environment minor | 1.2–1.6 px | `inkFaint` |
+| hatch | 1.0–1.6 px | shadow colour |
+| halftone dot radius | 1.1–2.3 px | see §4 |
+| speed / action line | 2.0–3.0 px | tapered |
+| panel border | 5 px | `comicBorder` / `ink` |
 
-Light comes from the upper left, so shadow falls on the lower right of each form.
-Only shadow sides and recesses get hatched, and lit sides stay flat colour.
-The primary hatch runs at 45 degrees, rising from lower left to upper right.
-Cross-hatch adds a second layer at 105 degrees for deep shadow.
-Spacing sets the tone: 12 px for light shade, 8 px for mid shade, 5 px for dark shade, with the cross layer at 7 px.
-Cylinders (stems, bodies, trunks) take contour hatching perpendicular to the long axis, slightly curved, 6 to 8 px apart, on the shadow half only.
-Foliage takes hatching parallel to the side veins, between the veins.
-Bark takes lengthwise hatching.
-Water takes horizontal hatching, and coastlines take engraved hatching parallel to the coast that fades with distance offshore.
-Every stroke jitters: angle plus or minus 3 degrees, spacing plus or minus 15 percent, each end plus or minus 6 px.
+### 3.2 Contour hierarchy
 
-### 4.2 Stipple
+Rules:
+- outer silhouette never uses the same weight as environment detail;
+- a hand gripping a record must have one uninterrupted readable outer shape;
+- finger separations are interior lines, not five separate outlined sausages;
+- the record stays geometrically circular even though ink boil affects the contour by ±1.0–1.5 px;
+- turntable hardware may wobble less than character outlines to remain mechanically legible.
 
-Stipple dots have a radius of 1.0 to 2.2 px.
-Use stipple for hairs, frost, stars, fine tissue texture, and the body texture of a subject seen very small.
-Density runs from 0.002 dots per px² (sparse) to 0.02 dots per px² (dense).
+### 3.3 Controlled print offset
 
-### 4.3 Grain and boil
+Dirty-playback effect only:
+- duplicate selected contour fragments in `badMagenta` and `badCyan`;
+- offset 4–9 px in opposite directions;
+- apply to speaker vibration, stylus contact inset, sound word and occasionally the listener's head edge;
+- never offset the entire frame for longer than 6 frames;
+- never use it during clean playback.
 
-`core` lays paper grain over illustrated shots and fine noise over schematic shots, re-seeded on the 12 fps boil clock.
-Scenes do not add their own full-frame grain.
-Every ink and schematic line wobbles on the same 12 fps boil through `lib.boil(T)`, so still frames shimmer like drawn animation.
+---
 
-### 4.4 Stripes
+## 4. Tone and print texture
 
-The stripe background uses `lib.stripes` with a band width of 140 px at 30 degrees, rising left to right (`width: 140, angle: -0.52`).
-Band A is stripeCream and band B changes by act, as listed in 2.1.
-Stripes drift 6 px along their normal per beat unless a shot says otherwise.
+### 4.1 Halftone
 
-## 5. Schematic language
+Primary midtone device.
 
-The schematic shots explain what happens inside, and they never show the outside life.
-Every schematic frame starts from `lib.blueprint`: navy base, 60 px grid, at least one large faint guide circle, and two long diagonals.
-The subject is a double lavender outline with fine internal structure.
-Cell structure is a lattice: hexagons (14 to 18 px cells) for tissue and eyes, rectangular cells for shells and sections.
-Nuclei and points of activity are glow dots: core radius 8 to 10 px in glow, halo radius 40 px, and 8 to 16 radial ticks 14 to 22 px long at 70 percent.
-Measurement is shown with brackets, tick scales and arc annotations, never with numbers.
-No text appears in any schematic shot except the final wordmark.
-Relationships are shown as a network: thin curved lavender lines from a source region to small circular node glyphs 90 to 120 px across.
-Magenta marks a moment of change and each magenta event lasts at most 12 frames before fading.
-PER FILM: design one recurring progress glyph that tracks where the story is (for example a ring split into one arc per story stage, the current arc lit). It sits at (900, 300) in every schematic shot.
+Dot size at full resolution:
+- subtle face/clothing midtone: radius 1.2–1.6 px, pitch 9–13 px;
+- room/background midtone: radius 1.3–2.0 px, pitch 12–18 px;
+- dramatic shadow patch: radius 1.8–2.4 px, pitch 8–11 px.
 
-## 6. Overlays on illustrations
+Halftone is clipped to a deliberate tonal region.
+It does not fill every object.
 
-Overlays show what the drawing cannot: paths, attention, sound, time and scale.
-They are thin rings, arcs, straight guide lines, rulers and brackets in the four overlay colours.
-Rings expand with `outExpo` and fade over 5 to 12 frames.
-Trajectory lines draw on behind a moving subject at 24 fps.
-Every illustrated shot carries at least one overlay and at most four overlay colours at once.
+### 4.2 Hatching
+
+Use for:
+- deep clothing folds;
+- underside of hand;
+- sleeve interior;
+- turntable/plinth shadow;
+- brush handle;
+- vacuum arm;
+- deep room corners.
+
+Primary angle: 45°.
+Cross-hatch only for the darkest 10–15% of a form.
+
+Spacing:
+- light: 14 px;
+- medium: 9 px;
+- dark: 6 px;
+- cross layer: 8 px.
+
+### 4.3 Dust / grit stipple
+
+Dust is **not** generic atmospheric snow.
+
+On record close-up:
+- 18–45 loose pale dust/fibre marks in a 500×500 px macro area before cleaning;
+- 4–12 darker irregular grit flecks;
+- 3–8 short fibres 25–70 px long;
+- distribution biased toward visible groove valleys and static-like clusters, but not every groove.
+
+After cleaning:
+- no magical zero-particle state;
+- 0–6 tiny incidental marks may remain;
+- visual proof is the reduction plus stable reflection/groove readability.
+
+### 4.4 Sharp shadows
+
+Cast/form shadows use flat second shapes:
+- no Gaussian blur;
+- edge may be inked or halftoned;
+- light direction defaults upper-left;
+- final listening scene may use warmer, broader shadows.
+
+### 4.5 Paper / print surface
+
+The native core paper grain remains.
+Scenes do not add a full-frame noise layer.
+
+Comic print feel comes from:
+- native paper grain;
+- halftone regions;
+- small line boil;
+- selected registration offsets;
+- hard colour boundaries.
+
+---
+
+## 5. Character language
+
+### 5.1 Protagonist model
+
+Production design choice, not a sourced fact.
+
+Adult record collector, visually neutral enough to function as a recurring story character.
+
+Canonical medium-shot proportions:
+- total standing height reference: 1160 px;
+- head height: 170 px;
+- head width: 128 px;
+- neck: 52 × 60 px;
+- shoulder width: 315 px;
+- torso shoulder-to-waist: 350 px;
+- upper arm: 210 px;
+- forearm: 205 px;
+- hand palm length: 105 px;
+- hand full length including fingers: 160 px.
+
+Identity:
+- short dark hair with one forward notch;
+- rust overshirt, sleeves rolled to forearm;
+- cream T-shirt;
+- dark trousers;
+- no logos;
+- no glasses unless storyboard later proves a readability need.
+
+Face:
+- eyebrow angle and mouth curve do most emotional work;
+- nose is one short ink plane;
+- eyes are simple dark upper line + pupil/iris mark at medium scale;
+- no hyper-detailed portrait rendering.
+
+### 5.2 Canonical emotional poses
+
+**Curiosity**
+- head +8° down toward record;
+- eyebrows slightly raised;
+- shoulders neutral;
+- elbows open.
+
+**Listening concern**
+- head turns 12° toward speaker/turntable;
+- one brow lowered;
+- mouth slight diagonal;
+- shoulders rise 10–18 px.
+
+**Decision**
+- chin lowers 4°;
+- gaze locks onto record;
+- elbow bends decisively toward stop/control/record;
+- body leans 3–5° forward.
+
+**Care / concentration**
+- head down 10–14°;
+- shoulders stable;
+- wrist aligned with brush/tool;
+- mouth neutral.
+
+**Relief / enjoyment**
+- shoulders drop 16–24 px relative to problem pose;
+- head tilts back 4–7°;
+- eyes soften / partially close;
+- mouth small upward curve;
+- one hand may leave the equipment and rest.
+
+### 5.3 Hand model
+
+Hands are a P1 story component.
+
+At close-up:
+- palm is one tapered quadrilateral/curved mass;
+- thumb is a separate articulated form;
+- fingers are grouped 2+2 or 3+1 when not individually important;
+- fingertips get individual silhouettes only at grip/contact.
+
+Record handling poses:
+- edge grip: thumb on label/inner safe region, fingers at outer rim;
+- two-edge grip: hands at approximately 4 and 8 o'clock;
+- never place flat fingertips across playable grooves.
+
+Brush/tool grip:
+- thumb opposes first two fingers;
+- wrist line continues into tool axis;
+- brush fibres visibly contact surface.
+
+---
+
+## 6. Comic panel and effect grammar
+
+### 6.1 Allowed panel structures
+
+**Full bleed**
+Best for:
+- discovery,
+- cleaning hero shot,
+- final listening.
+
+**Action + reaction split**
+Best for:
+- dirty playback: stylus/record plus protagonist reaction.
+
+**Wide + macro inset**
+Best for:
+- inspection,
+- brush contact,
+- stylus/groove contact.
+
+**Before/after mirror**
+Use the same geometry in dirty and clean playback rather than literal split-screen unless storyboard needs an explicit comparison beat.
+
+### 6.2 Panel motion
+
+Panel edges may animate:
+- wipe in 4–8 frames;
+- slide in 6–10 frames;
+- crop around a circular record over 8–14 frames;
+- collapse into a gutter over 4–6 frames.
+
+Panel movement must not outpace the story action it reveals.
+
+### 6.3 Sound words
+
+Use at most 3–4 unique words across the whole film.
+
+Candidate vocabulary:
+- **KRRK** / **KRK** for dirty crackle;
+- **CHK** for stylus/control click;
+- **SHFF** for brush sweep;
+- no word for clean music unless needed.
+
+Rules:
+- all caps;
+- hand-drawn block sans;
+- 70–150 px height depending on importance;
+- soundWord/badMagenta in problem state;
+- may overlap a panel edge;
+- never replace the actual physical sound source.
+
+### 6.4 Bad-playback visual grammar
+
+Dirty playback uses a combination of:
+- broken vibration marks;
+- 4–9 px magenta/cyan registration offsets;
+- 2–5 irregular short crackle bolts;
+- brief panel-edge jitter;
+- protagonist reaction;
+- dust/groove macro.
+
+No single effect is sufficient by itself.
+
+### 6.5 Clean-playback visual grammar
+
+Clean playback mirrors the same camera/prop geometry but uses:
+- stable contours;
+- no crackle bolts;
+- no registration offsets;
+- cleanGold / cleanTeal concentric or flowing music curves;
+- calmer panel borders;
+- protagonist relaxation.
+
+The before/after must remain visible even with audio muted.
+
+---
 
 ## 7. Motion
 
-### 7.1 The on-twos rule
+### 7.1 Cadence
 
-Anything that is drawn as a character or object moves on twos.
-Compute its pose from `lib.onTwos(t)`, so it changes 12 times a second and holds each drawing for 2 frames.
-Camera moves, zooms, overlay draw-on progress and ring expansion run at a full 24 fps so they stay smooth.
-Line wobble follows the 12 fps boil clock.
+Character body, face and hands:
+- primarily on twos, 12 fps poses.
 
-### 7.2 Timing
+Mechanical motion:
+- record/platter rotation may run smoothly at 24 fps;
+- tonearm pivot is 24 fps but stylus-contact impact can snap on a 1–2 frame accent;
+- cleaning platter rotation smooth;
+- vacuum-arm lowering may use 12 fps with a smooth camera.
 
-The beat is 60/bpm seconds; at the default 120 bpm that is 0.5 s, which is 12 frames at 24 fps, an 8th note 6 frames and a 16th note 3.
-Every pop, cut and hit lands on a beat, an 8th or a 16th, exactly on the frame.
-Pops use `outBack` over 3 frames with a 6 to 10 percent overshoot.
-Draw-ons use `outExpo` over 6 frames.
-Character motion never eases for longer than one beat, and only camera moves may run slower.
-Motion should feel snappy, never floaty.
+Camera:
+- 24 fps.
 
-### 7.3 Determinism
+Panel borders:
+- 24 fps.
 
-Seed every random choice from `lib.hash(shotId, ...)` through `lib.rng`.
-A scene draws from `t` alone and never depends on a previous frame.
-A scene may be asked for `t` slightly beyond its duration during a transition, so clamp to the final pose.
+Ink boil:
+- native 12 fps.
 
-## 8. Match cuts
+### 7.2 Action hierarchy
 
-A match cut keeps a shape on the same pixels across a mode change.
-The shared geometry tables live in `docs/storyboard.md`, section "Shared geometry", and scenes copy those numbers exactly.
-Line weights may change across the cut, positions may not.
+Every scene implements, in order:
 
-## 9. Wordmark
+1. **primary action**
+   - e.g. remove record, lower stylus, brush grooves;
 
-The wordmark is the film's word in lowercase.
-Draw it with `lib.text` in a thin system sans-serif (light weight), 44 px, letter-spacing 0.12 em, lavender at 85 percent.
-It is centred on x = 540 with its baseline at y = 1470, inside the Shorts safe area (the bottom-right corner sits under the button column).
-The baseline stays at y = 1470. If the closing diagram collides with the wordmark, move the diagram — never the wordmark.
+2. **secondary reaction**
+   - sleeve flex, dust displacement, arm recoil, facial change;
+
+3. **ambient motion**
+   - lamp glow flicker is forbidden as default;
+   - plant leaf / curtain / tiny room motion only if it gives depth or rhythm.
+
+If ambient motion competes with the hand/record action, remove it.
+
+### 7.3 Key-pose timing
+
+Ordinary human action:
+- anticipation: 2–4 frames;
+- move: 4–10 frames;
+- contact: 1–2 frames;
+- settle/reaction: 4–12 frames.
+
+Brush cleaning:
+- visible contact established before travel;
+- travel 10–24 frames per readable sweep;
+- fibres lag 1–3 frames behind handle direction.
+
+Stylus lowering:
+- arm pivot;
+- cartridge approaches;
+- stylus/cantilever contact;
+- tiny 1–3 px compression cue;
+- sound/graphic hit on the contact frame.
+
+### 7.4 Rotation
+
+Record/platter:
+- use continuous angular motion;
+- label geometry rotates with disc;
+- spindle stays screen-fixed relative to turntable;
+- dust stuck to disc rotates with it;
+- loose/floating dust does not rotate as if glued.
+
+### 7.5 No floaty default
+
+Do not use long `inOutCubic` easing for every action.
+Human/comic action prefers:
+- short anticipation;
+- decisive move;
+- held read pose.
+
+Long ease is reserved for:
+- camera push;
+- panel reveal;
+- final listening settle.
+
+---
+
+## 8. Match cuts and continuity
+
+Match cuts preserve concrete object geometry.
+
+The storyboard will publish exact tables for each reused shape.
+
+### 8.1 Record circle
+
+Canonical top-down reference:
+- centre: (540, 930)
+- radius: 285 px
+- spindle: (540, 930)
+- label radius: 92 px
+- spindle-hole radius: 8 px
+
+Use for:
+- inspection macro;
+- first playback top-down;
+- cleaning platter;
+- second playback.
+
+A transition may change environment around the circle while the centre/radius remain fixed.
+
+### 8.2 Tonearm playback mirror
+
+Dirty and clean playback must share:
+- platter centre;
+- record scale;
+- tonearm pivot point;
+- cartridge/stylus contact point;
+- camera crop;
+- protagonist reaction panel location when possible.
+
+This is a narrative proof device.
+
+### 8.3 Hand continuity
+
+When a hand carries the record across a cut:
+- rim contact angle changes by no more than 15° at the cut;
+- thumb/finger side remains consistent;
+- the disc does not teleport between left/right hands without an intervening action.
+
+### 8.4 Sleeve continuity
+
+Generic sleeve:
+- square;
+- record circle readable inside/against it;
+- opening edge consistent within the shot sequence;
+- no invented cover art that becomes a competing hero.
+
+### 8.5 Panel-edge continuity
+
+A gutter/panel border may become:
+- table edge;
+- sleeve edge;
+- turntable plinth edge;
+- vacuum-arm edge.
+
+The shared line must preserve position for at least the cut frame.
+
+---
+
+## 9. Titles, captions and end treatment
+
+V3 does not rely on narration or explanatory captions.
+
+### 9.1 Story text
+
+Allowed:
+- tiny record-label marks with no legible brand;
+- 3–4 comic sound words;
+- optional final short phrase if later storyboard testing proves it adds value.
+
+Not allowed:
+- explanatory labels such as “dirty”, “clean”, “before”, “after” as a substitute for drawing;
+- technical paragraph text;
+- subtitles explaining the plot.
+
+### 9.2 Final frame
+
+Default final frame:
+- protagonist listening in the same home environment;
+- record turning in foreground/midground;
+- clean music curves;
+- relaxed pose;
+- no player-specific UI element.
+
+A wordmark is optional, not mandatory.
+
+If used:
+- thin system sans;
+- 38–44 px;
+- inside safe area;
+- never the primary story payoff.
+
+---
 
 ## 10. Subject reference
 
-REWRITE PER FILM from the captured sources. Header line: "Sources checked on <date>: <name every
-source captured in .tmp/research/>". Then one subsection per drawable element:
+Sources checked on 2026-09-27:
+- Library of Congress: care, handling and storage of audio-visual materials;
+- Library of Congress National Jukebox: disc cleaning / preparation workflow;
+- Ortofon: record and stylus care / FAQ;
+- Pro-Ject VC-S3 user guide;
+- Technics SL-1500C operating instructions.
 
-### 10.1 <element>
+Captured notes:
+- `.tmp/research/01-loc-handling.md`
+- `.tmp/research/02-loc-cleaning.md`
+- `.tmp/research/03-ortofon-care.md`
+- `.tmp/research/04-project-technics-operation.md`
+- `.tmp/research/00-phase-map.md`
 
-Facts as drawing rules: sizes and ratios ("height-to-width 4 to 3"), counts ("18 ridges on the
-visible face"), poses, sequences, what shows through what, what happens first. Where the subject
-has stages, use a table with one row per stage.
+Source-derived facts and production drawing conventions are separated below.
 
-### 10.N Mistakes to avoid
+### 10.1 Vinyl record
 
-The wrong drawings a scene agent produces without this list — the plausible defaults that are
-wrong for this subject. Pair each with the correct drawing: "The pupa hangs head-down — never
-head-up."
+Source-derived handling fact:
+- hold by outer edge and/or label area;
+- avoid fingertip contact with the playable groove field.
+
+Production drawing convention:
+- generic 12-inch-LP-like disc, not a claim about every record format;
+- top-down radius at canonical story scale: 285 px;
+- label radius: 92 px;
+- spindle hole: 8 px;
+- outer dead/rim band: 11–16 px;
+- playable groove field: label edge + 18 px to outer rim − 18 px.
+
+Grooves:
+- do **not** draw hundreds of evenly spaced vector rings;
+- draw 22–44 grouped arcs/rings with spacing variation;
+- add 5–12 brighter reflected groove segments at a time;
+- groove bands curve perfectly around the spindle centre even when ink lines boil slightly.
+
+Three-quarter view:
+- disc ellipse ratio y/x = 0.26–0.42 depending on camera;
+- thickness 5–10 px at medium shot;
+- outer edge gets one strong `vinylEdge` contour.
+
+### 10.2 Sleeve / discovery
+
+Narrative invention:
+the record is found in a home shelf/sleeve.
+
+Production model:
+- sleeve appears as a square 500–650 px wide at close medium scale;
+- top/right opening orientation is fixed by storyboard and maintained;
+- cover is generic geometric print only, 2–4 large flat shapes maximum;
+- no fake artist/title text.
+
+Removal sequence:
+1. one hand stabilises sleeve;
+2. second hand reaches inner sleeve/record edge;
+3. record edge emerges;
+4. hand transfers to edge/label-safe grip;
+5. record clears sleeve.
+
+Secondary material motion:
+- sleeve mouth flexes 4–10 px;
+- paper corner trails 2–4 frames;
+- inner sleeve may bow slightly.
+
+### 10.3 Protagonist inspecting the record
+
+Dominant action:
+look at record under a practical lamp.
+
+Readable geometry:
+- record tilted 15–28° from vertical;
+- lamp highlight sweeps across grooves as wrist changes 4–8°;
+- face and record occupy opposite thirds;
+- gaze line lands on a dust cluster.
+
+Macro inset:
+- 350–520 px diameter crop of groove field;
+- dust marks per §4.3;
+- one fibre crossing 2–5 groove bands;
+- no magic glow around dirt.
+
+### 10.4 Turntable
+
+Source-derived playback sequence:
+record on platter → platter rotation → tonearm/stylus moved/lowered to record.
+
+Generic production design:
+- plinth: rounded rectangle 760 × 560 px in top-down hero scale;
+- platter radius: 310 px;
+- record radius: 285 px;
+- spindle radius: 8 px;
+- tonearm pivot: approximately 210–260 px right of platter edge in the designed frame;
+- tonearm tube: 12–18 px visual width at hero scale;
+- cartridge: 70 × 38 px at macro scale;
+- stylus/cantilever: 26–48 px line assembly in macro.
+
+Controls:
+- one start/stop control;
+- one cue/lever-like control may be implied;
+- avoid copying a specific brand layout.
+
+### 10.5 Stylus-groove contact
+
+Production macro:
+- groove arcs occupy 60–80% of frame;
+- cartridge enters from upper/right or upper/left consistently across dirty/clean mirrors;
+- cantilever is a thin angled member;
+- stylus tip contacts one groove valley.
+
+Contact sequence:
+1. cartridge above record;
+2. stylus approaches;
+3. contact;
+4. tiny 1–3 px compression/settle;
+5. groove passes under stylus while stylus remains spatially stable.
+
+Dirty playback:
+- nearby dust/fibre may approach stylus;
+- crackle effect is a comic perception device, not a literal electrical diagram.
+
+Clean playback:
+- same camera geometry;
+- reduced visible contamination;
+- stable line registration.
+
+### 10.6 Dirty playback
+
+Supported context:
+sources support dust/dirt as a legitimate care/listening concern.
+
+Narrative scope:
+this particular record is staged as audibly noisy before cleaning.
+
+Visual proof requires all three:
+1. record/stylus is physically playing;
+2. crackle/problem graphics appear;
+3. protagonist reacts.
+
+Problem graphics:
+- 2–5 broken `badMagenta` / `badCyan` vibration fragments;
+- one “KRRK” or “KRK” word;
+- selected 4–9 px print-offset contour;
+- 1–3 short speaker-cone jolts.
+
+Do not:
+- turn the entire scene into digital glitch;
+- imply the grooves themselves are electrically glowing;
+- imply every record crackle is caused by dust.
+
+### 10.7 Decision / stop action
+
+Concrete action:
+- protagonist lifts/cues tonearm or stops playback;
+- gaze returns to record;
+- cleaning tool/setup enters the next panel.
+
+Pose:
+- one hand near turntable control/tonearm;
+- other hand prepares safe record grip;
+- torso leans forward.
+
+Transition opportunity:
+record circle match-cuts to cleaning platter.
+
+### 10.8 Cleaning setup
+
+Source-derived:
+wet solution + soft brush + rotation + vacuum removal + drying are legitimate elements of a cleaning workflow.
+
+Generic V3 cleaning machine, not a branded product:
+- base: 720 × 500 px rounded rectangle at top-down hero scale;
+- cleaning platter: record-centred, visually smaller support under disc;
+- vacuum wand: 360–470 px long, 42–62 px wide;
+- brush: 220–300 px visible length;
+- fluid bottle/nozzle: small secondary prop.
+
+The machine must look mechanically different from the turntable:
+- more utilitarian body;
+- visible vacuum wand/contact slot;
+- fluid/brush stage;
+- no tonearm cartridge.
+
+### 10.9 Fluid application
+
+Drawing convention:
+- show 6–16 visible fluid beads or a narrow applied ribbon before spreading;
+- `fluid` / `fluidPale`, no glow;
+- wet area changes reflected groove segments, not the base vinyl colour.
+
+Sequence:
+1. nozzle enters;
+2. fluid contacts rotating surface;
+3. bead/ribbon is carried by rotation;
+4. brush arrives and spreads a thin film.
+
+Avoid:
+- flooding label;
+- fluid floating above record;
+- instantly turning the whole disc bright teal.
+
+### 10.10 Brush contact
+
+Source-derived:
+a soft brush can be used in cleaning.
+
+Drawing:
+- handle visible;
+- fibre bed visibly touches groove field;
+- fibre tips trail 4–12 px behind travel direction;
+- brush angle 15–30° relative to local groove tangent;
+- contact width 120–220 px.
+
+Motion systems:
+- disc rotation;
+- stable hand/tool pressure;
+- fibre lag;
+- wet-film line;
+- displaced dust/fibre marks.
+
+Comic accent:
+one brief “SHFF” may follow the brush, never covering the contact point.
+
+### 10.11 Vacuum removal
+
+Source-derived:
+vacuum removal of cleaning liquid is a legitimate record-cleaning step.
+
+Drawing:
+- vacuum wand/contact slot makes physical contact/near-contact along the rotating disc;
+- wet film is visible entering the slot;
+- behind the slot, surface becomes visually drier;
+- suction direction is shown by short converging fluid lines, not a sci-fi beam.
+
+Sequence:
+1. wand approaches;
+2. contact established;
+3. vacuum audio/graphic begins;
+4. wet film narrows toward slot;
+5. dry groove reflection emerges behind;
+6. wand lifts.
+
+Avoid:
+- giant tornado;
+- glowing energy ray;
+- water disappearing before it reaches the contact slot.
+
+### 10.12 Dry / ready state
+
+Source-derived:
+the record should be dry before removal/handling after wet cleaning.
+
+Visual:
+- no wet-film highlight;
+- groove arcs crisp/stable;
+- contamination substantially reduced;
+- protagonist returns to edge/label grip.
+
+Do not depict a mirror-polished glass disc.
+Vinyl remains dark and textured.
+
+### 10.13 Second playback mirror
+
+This is the most important continuity proof.
+
+Repeat shot geometry from first playback:
+- record centre;
+- scale;
+- platter position;
+- tonearm pivot;
+- stylus contact;
+- split/inset placement if used.
+
+Differences:
+- surface visibly cleaner;
+- contour registration stable;
+- crackle word/bolts absent;
+- smooth cleanGold/cleanTeal music curves;
+- speaker response rhythmic rather than jolting;
+- protagonist shoulders/head soften.
+
+### 10.14 Listening environment
+
+Production design:
+- compact home listening corner;
+- wood table/shelf;
+- generic turntable;
+- one speaker or two speakers depending composition;
+- practical lamp;
+- 3–8 record spines in background;
+- optional plant and chair.
+
+Environment density:
+- each hero room shot uses at least 5 recognisable secondary forms;
+- secondary forms never use more line weight than character/record;
+- record-spine text is abstract ticks/bars, not legible fake titles.
+
+### 10.15 Speaker / sound
+
+Speaker:
+- cabinet rectangle with one larger woofer + smaller tweeter;
+- woofer cone 90–150 px radius in medium shot;
+- dirty playback: 1–3 irregular cone jolts;
+- clean playback: smaller rhythmic excursion.
+
+Sound lines:
+- dirty: broken/angular, magenta/cyan;
+- clean: smooth curves/rings, gold/teal.
+
+They are emotional/graphic notation, not measured acoustics.
+
+### 10.16 Recurring visual motif
+
+The record circle is the film's recurring geometry.
+
+It may become:
+- sleeve reveal;
+- lamp inspection circle;
+- platter;
+- cleaning platter;
+- panel mask;
+- speaker/music ring.
+
+The circle must remain recognisably tied to a physical object whenever it carries story meaning.
+
+### 10.17 Motion density target
+
+Every production shot must have at least **three temporally distinct systems**, chosen from:
+- character pose/action;
+- prop mechanics;
+- material response;
+- panel motion;
+- camera;
+- reaction;
+- sound graphics;
+- environmental parallax.
+
+But only one remains the dominant action.
+
+### 10.18 Mistakes to avoid
+
+- **Wrong:** fingertips lie across the playable groove field.  
+  **Correct:** grip outer edge and/or label-safe area.
+
+- **Wrong:** “vinyl record” is just a black circle.  
+  **Correct:** outer edge, groove field, label, spindle hole and changing reflections make it unmistakable.
+
+- **Wrong:** turntable and cleaning machine are the same generic rectangle.  
+  **Correct:** turntable has platter/tonearm/cartridge; cleaning machine has fluid/brush/vacuum-contact logic.
+
+- **Wrong:** bad sound is shown only as abstract magenta lightning.  
+  **Correct:** stylus is playing, speaker/listener reacts, and graphic noise supports the physical event.
+
+- **Wrong:** cleaning is a glow sweep that magically removes dots.  
+  **Correct:** fluid → brush contact → rotating surface → vacuum removal → dry surface.
+
+- **Wrong:** vacuum is a beam hovering above the record.  
+  **Correct:** show a physical wand/contact slot and wet film converging into it.
+
+- **Wrong:** cleaning implies scratches/wear are repaired.  
+  **Correct:** only surface contamination/noise improvement is implied for this fictional record.
+
+- **Wrong:** protagonist changes hairstyle/clothes/proportions between scenes.  
+  **Correct:** copy the canonical model and pose library.
+
+- **Wrong:** hands are mitten blobs when they perform the key action.  
+  **Correct:** thumb/finger opposition and exact prop contact are visible.
+
+- **Wrong:** every frame is covered in halftone, hatch and effects.  
+  **Correct:** texture hierarchy preserves focal clarity.
+
+- **Wrong:** comic panels are decorative windows.  
+  **Correct:** every split/inset explains action, reaction, macro detail or comparison.
+
+- **Wrong:** all motion is eased and floaty.  
+  **Correct:** held key poses + decisive action + short settle, with smooth motion reserved for mechanics/camera.
+
+- **Wrong:** clean playback is simply a different colour scene.  
+  **Correct:** it deliberately mirrors first-playback geometry so reduced noise and changed reaction are obvious.
+
+- **Wrong:** the viewer needs the storyboard to recognise what happened.  
+  **Correct:** every still has a nameable verb and the 24-frame sheet exposes the full narrative.
