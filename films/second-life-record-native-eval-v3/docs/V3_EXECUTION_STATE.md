@@ -370,3 +370,42 @@ Required:
 - physical playback before noise effects;
 - controlled badMagenta/badCyan distortion only after contact;
 - six-frame sheets for both before advancing.
+
+
+### TX-V3-008 result — Scene batch B (03–04)
+
+Implementation commits:
+- 03 `first-play`: `7a6d2393e3dfb33464dbdd2b523436e89b2871ae`
+- 04 `hear-crackle`: `09a36f3ba5a53cdd444ea1b5d6296989cae0de9d`
+
+Fresh six-frame evidence after stream recovery:
+- 03 job `74c85f8f-2d0d-4d1f-868a-d2fd5dc7a86b` — SUCCEEDED
+- 04 job `1f9e3ce2-41c8-441f-8d0b-7e7fbe49fb52` — SUCCEEDED
+
+Fresh full native gate:
+- job `f32e0c60-ad7f-4dea-967f-94febf528c94` — SUCCEEDED / 6 PASS
+- 10 shots / 30.000 s / determinism PASS
+- max swept frame cost 134 ms (under gate threshold)
+- draw/media/sources/timeline all PASS
+
+Visual re-check:
+- 03 reads immediately as a real turntable + record + moving tonearm sequence; late macro inset clearly shows stylus approach/contact.
+- 04 reads as physical playback plus a human reaction, not as abstract signal graphics; speaker, stylus macro and the KRRK event remain spatially legible.
+- badMagenta/badCyan is limited to the problem beats and does not contaminate the rest of the frame.
+- P1 issue found: none.
+- P2 note for later critic wave: the reaction facial change is intentionally restrained and may benefit from a stronger shoulder/eyebrow delta if whole-film readability drops at quarter scale.
+
+Batch B: ACCEPTED.
+
+## Active transaction
+
+**TX-V3-009 — Scene batch C: 05 decide-clean + 06 wet-brush**
+
+Required:
+- same record identity carried safely from playback into cleaning;
+- cleaning machine must look mechanically distinct from the turntable;
+- exact G1/G5 record geometry at the handoff;
+- fluid must physically contact the record before brush action;
+- brush fibres must visibly contact grooves;
+- no magical glow-cleaning shortcut;
+- six-frame sheets for both scenes and fresh gate before advancing.
