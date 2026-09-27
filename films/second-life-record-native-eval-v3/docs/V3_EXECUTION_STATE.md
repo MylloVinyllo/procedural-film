@@ -409,3 +409,42 @@ Required:
 - brush fibres must visibly contact grooves;
 - no magical glow-cleaning shortcut;
 - six-frame sheets for both scenes and fresh gate before advancing.
+
+
+### TX-V3-009 result — Scene batch C (05–06)
+
+Implementation:
+- 05 `decide-clean`: `d758848e9621323dce60cc874e1d0f66e4bc5a73`
+- 05 handling correction: `331e717baf11719f6ee9fa46b27cfa5177a5960e`
+- 06 `wet-brush`: `923bc93378f9bd89b85fafdffb429732bdd4bafc`
+
+Fresh six-frame evidence:
+- 05 job `eee03601-7f6f-48fb-b162-0971061a3485` — SUCCEEDED
+- 06 job `10b94f96-32da-4b5b-9555-44a8c3c79dbb` — SUCCEEDED
+
+Visual acceptance:
+- 05 clearly reads as the same protagonist lifting the same record and transferring it from the listening setup to a mechanically distinct cleaning setup.
+- safe edge handling was corrected before acceptance; hands now hook the rim rather than lying across the groove field.
+- 06 clearly reads as wet record cleaning: visible liquid, rotating record, contacting brush, hand/tool relationship, SHFF accent, and groove/fibre macro.
+- cleaning is physical and sequential; there is no glow-wipe or abstract “cleaning beam”.
+- P1 issue found: none after grip correction.
+
+Fresh native gate:
+- job `46d27a7f-5dbc-4d6d-ba77-97ab4d662701` — SUCCEEDED / 6 PASS
+- max swept frame cost: 124 ms
+- determinism / media / sources / timeline / draw / cost all PASS
+
+Batch C: ACCEPTED.
+
+## Active transaction
+
+**TX-V3-010 — Scene batch D: 07 vacuum-dry + 08 return-record**
+
+Required:
+- physical vacuum wand/contact slot over the same G5 record;
+- wet film must visibly converge into the vacuum contact;
+- dry groove state must emerge behind the contact line;
+- vacuum action must not resemble a beam or magic erasure;
+- scene 08 must carry the same dry record back with a safe G6 grip;
+- the return must resolve into exact G2 playback geometry for the mirrored second-play shot;
+- six-frame sheets for both scenes and a fresh gate before advancing.
