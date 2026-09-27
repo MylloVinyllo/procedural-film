@@ -1,19 +1,19 @@
 // STUB
-// Placeholder for V4 shot 03 'first-play' (illustrated). Replaced during dense scene implementation.
+// Placeholder for V4 shot 09 'grooves-before-after' (illustrated). Replaced during dense scene implementation.
 FILM.scene({
-  id: 'first-play',
+  id: 'grooves-before-after',
   draw(ctx, t, info) {
     const L = info.lib, P = L.pal;
     const p = L.clamp(t / info.dur);
     const q = L.clamp(L.onTwos(t) / info.dur);
-    const seed = L.hash('first-play');
+    const seed = L.hash('grooves-before-after');
     L.paper(ctx);
     L.inkPath(ctx, L.ellipsePts(540, 860, 300, 400, 72), { closed: true, width: 5, seed: seed + 1, double: true });
     L.inkLine(ctx, 140, 1300, 940, 1300, { width: 3, seed: seed + 2 });
     L.inkCircle(ctx, 240 + 600 * q, 1230, 44, { width: 3, seed: seed + 3, fill: P.orange });
-    L.text(ctx, 'V4 STUB 03', 540, 330, { size: 58, weight: 600, align: 'center', color: P.annMagenta });
-    L.text(ctx, 'First try', 540, 1420, { size: 42, align: 'center', color: P.ink });
-    L.text(ctx, 'first-play', 540, 1480, { size: 28, align: 'center', color: P.inkSoft });
+    L.text(ctx, 'V4 STUB 09', 540, 330, { size: 58, weight: 600, align: 'center', color: P.annMagenta });
+    L.text(ctx, 'Before / after', 540, 1420, { size: 42, align: 'center', color: P.ink });
+    L.text(ctx, 'grooves-before-after', 540, 1480, { size: 28, align: 'center', color: P.inkSoft });
     if (p > 0.01) L.inkLine(ctx, 140, 1530, 140 + 800 * p, 1530, { width: 4, color: P.annBlue, seed: seed + 4, taper: 0 });
   },
 });
