@@ -172,9 +172,12 @@
     L.inkCircle(c,895,910,62+2.5*pulse,{color:P.ink,width:3,fill:P.speakerCone,seed:sd('woofer')});
     L.inkCircle(c,895,790,26+1.2*pulse,{color:P.inkSoft,width:2,fill:P.speakerCone,seed:sd('tweet')});
 
-    // chair / grounded protagonist
-    inkFill(c,[[260,1150],[520,1150],[570,1505],[210,1505]],P.paperDeep,sd('chair'),3,.78);
-    drawRelaxedPerson(c,400,980,pull);
+    // unmistakable lounge chair behind the seated protagonist
+    rrect(c,235,1080,330,360,42,P.paperDeep,sd('chair-back'),3,.82);
+    rrect(c,205,1255,92,210,32,P.paperDeep,sd('chair-arm-l'),3,.82);
+    rrect(c,503,1255,92,210,32,P.paperDeep,sd('chair-arm-r'),3,.82);
+    line(c,[[255,1415],[545,1415]],sd('chair-seat'),4,P.inkSoft,.48);
+    drawRelaxedPerson(c,400,1060,pull);
 
     c.restore();
 
@@ -184,7 +187,8 @@
       const alpha=.22*m;
       L.arcAnnotation(c,895,910,115,-2.8,-.7,{color:P.cleanGold,width:2.6,p:m,arrow:0,alpha});
       L.arcAnnotation(c,895,910,165,-2.9,-.55,{color:P.cleanTeal,width:2.2,p:m,arrow:0,alpha:.18*m});
-      line(c,[[760,1040],[690,1010],[620,1030],[555,1005],[490,1025]],sd('room-music'),2.6,P.cleanGold,.22*m);
+      line(c,[[760,1040],[690,1010],[620,1030],[555,1005],[490,1025]],sd('room-music'),3.0,P.cleanGold,.28*m);
+      line(c,[[790,980],[720,945],[650,965],[585,940],[520,960]],sd('room-music2'),2.4,P.cleanTeal,.22*m);
     }
   }
 
@@ -196,12 +200,17 @@
     halftone(c,[[25,-90],[130,-80],[155,100],[125,280],[50,250]],P.inkSoft,13,1.4,.12,sd('shirt-dot'));
     inkFill(c,[[-55,-104],[-14,-128],[38,-116],[61,-78],[28,-37],[-27,-37]],P.tee,sd('tee'),2.3,.96);
 
-    // relaxed arms: one rests on chair, one near knee
-    line(c,[[-120,35],[-165,150],[-135,250]],sd('armL'),42,P.shirt,.96);
-    line(c,[[115,28],[145,155],[100,250]],sd('armR'),42,P.shirt,.96);
-    // hands
-    L.inkCircle(c,-136,255,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handL')});
-    L.inkCircle(c,100,255,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handR')});
+    // relaxed arms: elbows fall, hands rest on chair arms
+    line(c,[[-120,35],[-165,155],[-145,255]],sd('armL'),42,P.shirt,.96);
+    line(c,[[115,28],[150,155],[118,255]],sd('armR'),42,P.shirt,.96);
+    L.inkCircle(c,-145,260,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handL')});
+    L.inkCircle(c,118,260,28,{color:P.ink,width:2.6,fill:P.skin,seed:sd('handR')});
+
+    // seated legs make the posture unambiguous
+    inkFill(c,[[-92,300],[-18,298],[-8,505],[-78,515],[-115,385]],P.pants,sd('legL'),4,.98);
+    inkFill(c,[[18,300],[92,302],[118,390],[82,515],[12,505]],P.pants,sd('legR'),4,.98);
+    inkFill(c,[[-88,500],[-8,500],[10,535],[-90,540]],P.shoe,sd('shoeL'),2.5,.98);
+    inkFill(c,[[12,500],[84,502],[108,535],[8,540]],P.shoe,sd('shoeR'),2.5,.98);
 
     // head
     const head=L.ellipsePts(-10,-210,72,103,48,-.09);inkFill(c,head,P.skin,sd('head'),5,.99);
