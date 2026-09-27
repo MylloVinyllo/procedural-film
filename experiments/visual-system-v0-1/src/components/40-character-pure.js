@@ -54,6 +54,10 @@
       if(R.right)hand(ctx,R.right.wrist,Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]),o.rightHand||'edge');
     });
   }
+  function audit(o){
+    const R=rig(o);
+    return {leftOverreach:R.left?R.left.overreach:0,rightOverreach:R.right?R.right.overreach:0};
+  }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('pure',{draw,drawBody,drawArms,drawHands});
+  V.registerCharacter('pure',{draw,drawBody,drawArms,drawHands,audit});
 })();
