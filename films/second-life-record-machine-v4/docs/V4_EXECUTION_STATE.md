@@ -587,3 +587,15 @@ Exact next action:
 - render one 1080×1920 master from the same V4 source state;
 - record its artifact metadata;
 - do not build/repair the HTML player.
+
+
+### TX-V4-010 active master checkpoint
+
+Master render:
+- job `a06c9abd-08d4-4e1b-8b31-cdb9dfd56d2a`
+- input commit `3e32e9c176317d6a4696f4342b6d1221b68ba74a`
+
+Exact resume after any stream interruption:
+1. query `a06c9abd-08d4-4e1b-8b31-cdb9dfd56d2a`;
+2. do not queue a second master unless this job explicitly fails;
+3. on success record `output/master.mp4` metadata and close Deliver.
