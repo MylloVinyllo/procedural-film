@@ -2,102 +2,72 @@
 
 Updated: 2026-09-27
 
-## Current stage
+## Current state
 
-Architecture proof is implemented and technically green. Human-quality approval is NOT granted and nothing is promoted into the canonical procedural-film foundation yet.
+Active branch: `rd/visual-system-v0.1`
 
-## Isolated workstream
+Current candidate:
+`0e9feb6b17f74d9cdf61a3435dac9c77f17bcdca`
 
-- Branch: `rd/visual-system-v0.1`
-- Lab: `experiments/visual-system-v0-1`
-- Current runtime-tested candidate: `13447ed4d30d6b52e99b5afbe4f3b19bad53aef1`
-
-V4 remains untouched as historical evidence. No V5 production is active.
+V4 remains untouched. No V5 production is active.
 
 ## Implemented
 
-### Reusable visual runtime
-- component registry for characters, products, props and actions;
-- shared 2-bone IK solver with explicit overreach diagnostics;
-- Path2D bridge for compiled vector geometry;
-- component files loaded independently from scene files.
+- reusable registry for characters, products, props and semantic actions;
+- two character backends behind one action contract: pure procedural and compiled vector;
+- reusable vinyl record and Myllo washer components with named anchors;
+- shared two-bone IK with hard reach clamping;
+- explicit body -> arms -> product -> record -> hands occlusion order;
+- semantic HOLD / PLACE / PRESS proof;
+- separate single-backend quality-proof shot;
+- optional Gate 7 for visual contracts;
+- component files included in static source QA;
+- canonical palette use across reusable components and lab scenes;
+- authored vector source SVG plus deterministic runtime path payload.
 
-### Reusable assets
-- vinyl record with named anchors;
-- Myllo washer with one stable coordinate system and named contact/control anchors;
-- pure-procedural protagonist backend;
-- compiled-vector protagonist backend.
+## Verification
 
-### Interaction grammar
-- hold;
-- place-record;
-- press-pump.
+Latest check:
+- job `d4a16746-caac-4698-98b2-9e437196e0a0`
+- 7/7 PASS
+- max swept frame cost: 21 ms
+- determinism PASS
+- visual-contracts PASS
 
-Scenes request semantic actions. They no longer author local hand/arm geometry.
+Latest quality-proof sheet:
+- job `8209a1f0-f520-4971-a289-020482373957`
+- SHA-256 `04bfe776239ef01f98b6c3470228e55081844fb2e2fc2f8d0b6b5bdfdbd73f4b`
 
-### Occlusion contract
-Canonical draw order for interaction shots:
-body -> arms -> product -> manipulated object -> hands.
+Latest preview:
+- job `1c2bd06a-4611-4468-bdff-ed579cdfa3ed`
+- 14 s, 336 frames, 540x960
+- SHA-256 `f004631a5137ce3a2086f6ccba72964253d1191879aad4ae4a6f8aac1c2bb82d`
 
-### Visual QA extension
-A new optional Gate 7 runs reusable visual contracts.
-Current contracts reject:
-- impossible anatomical reach;
-- hand/contact targets that miss the product anchor.
+## Active queue
 
-The first visual-contract run intentionally failed on 44 reach violations. After interaction staging was corrected the same gate passed.
+P0 — authored visual quality
+1. Improve hand library beyond edge-grip/index-press prototype.
+2. Refine protagonist proportions and pose language.
+3. Build higher-fidelity Myllo geometry from product references.
+4. Make the same assets survive close framing, not only medium framing.
 
-## Latest verification
+P1 — reusable quality system
+1. Add product-geometry anchor invariants.
+2. Add golden-frame manifests for approved component poses.
+3. Add component-level visual fixtures independent of narrative scenes.
+4. Keep human approval above technical PASS.
 
-Runtime check job: `ec5e9efc-a1df-4734-9921-8e167172a00d`
+P2 — integration
+Only after P0/P1 acceptance:
+- promote approved components into procedural-film foundation;
+- replace ad-hoc V4-style character/product drawing in future films;
+- build a new production film from the approved primitives rather than patch V4.
 
-PASS:
-- media
-- determinism
-- timeline
-- draw
-- cost
-- visual-contracts
+## Figma
 
-WARN:
-- component-local literal colours are not yet migrated into the canonical palette.
-
-Latest A/B contact sheet:
-- job `27330027-e1b7-4d23-9988-9e00fffbd38f`
-- `output/snap/visual-system-ab-sheet.png`
-- SHA-256 `a836f7a8352ed19c1a371d1454bf3b24986b0eb9b5a4a0de47d0b8b41499fe6c`
-
-Latest 8 s motion preview:
-- job `fd508c20-5c95-4510-b3f8-0249567f074f`
-- `output/preview.mp4`
-- 540x960, 192 frames, 8.000 s
-- SHA-256 `7cd60cbfa96c8b0c65ef874f108cb4aaa3d75543af5d61ac6ff008fef442e27c`
-
-## Visual assessment
-
-The architecture proof removes the catastrophic stretched/detached-arm failure class seen in V4. It does NOT yet meet the final designer-grade visual target.
-
-Remaining quality work:
-1. authored hand silhouettes and finger grouping;
-2. authored character proportions and pose language;
-3. richer Myllo product geometry/material hierarchy;
-4. palette centralisation;
-5. motion polish after static asset approval.
-
-## Authored-vector workstream
-
-A Figma design file was created for the authored-vector source:
+A separate Figma source file exists:
 `Myllo Procedural Visual System v0.1`
 
 File key: `aHMAvfnHoNBUKKV4GC6MHM`
 
-The next Figma MCP read hit the Starter-plan MCP call limit, so asset export/verification cannot be claimed yet. Do not treat Figma-authored assets as accepted or imported until a successful read/export provides evidence.
-
-## Promotion rule
-
-Nothing in this lab moves to `skills/procedural-film/foundation` until:
-1. authored character/product proof is visually reviewed;
-2. interaction preview is approved by the owner;
-3. all reusable QA contracts are green;
-4. palette warning is resolved;
-5. golden examples and regression fixtures are recorded.
+The current Figma Starter MCP read quota is exhausted, so no unverified Figma export is treated as canonical evidence. Repo-authored vector source remains the active source until Figma round-trip verification is available.
