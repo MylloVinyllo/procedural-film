@@ -311,6 +311,19 @@ async function main() {
       for (const e of pg.pageErrors) drawFails.push(`page error: ${e}`);
       report(5, 'draw', drawFails.length === 0, drawFails.length ? `${drawFails.length} error(s)` : `${drawn} frames (first, middle, last of ${TL.shots.length} shots) drew without errors`, drawFails);
 
+      // ---------------------------------------------------------------- 7 visual contracts (optional component-system hook)
+      const visualContractFails = await pg.page.evaluate(() => {
+        if (!window.FILM || !FILM.visual || typeof FILM.visual.runContracts !== 'function') return [];
+        return FILM.visual.runContracts();
+      });
+      report(
+        7,
+        'visual-contracts',
+        visualContractFails.length === 0,
+        visualContractFails.length ? `${visualContractFails.length} visual contract failure(s)` : 'reusable interaction/contact contracts pass',
+        visualContractFails
+      );
+
       // ---------------------------------------------------------------- 6 cost
       const total = Math.round(TL.duration * FPS);
       const sweep = [];
