@@ -17,8 +17,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Setup | COMPLETE | V3 accepted source copied; smoke + baseline native gate green | Product reference / Research |
 | Product reference / Research | COMPLETE | Myllo manual + physical video + prior brand animation + V4 phase map | Art Bible delta |
 | Art Bible delta | COMPLETE | Myllo product model + labels + G8 before/after + proof sheet + green fixture gate | Storyboard delta |
-| Storyboard delta | IN PROGRESS | expand V3 story to explicit 12-shot machine-cleaning sequence | self-review then Timeline |
-| Timeline | PENDING | `src/timeline.js` | after storyboard |
+| Storyboard delta | COMPLETE | 36 s / 12 shots / five-beat cleaning block / self-review closed | Timeline |
+| Timeline | IN PROGRESS | materialise 12-shot storyboard + cue grid | stubgen validation |
 | Stub/sequence validation | PENDING | runtime evidence | after timeline |
 | Scenes | PENDING | scene sheets | after sequence validation |
 | Music/SFX | PENDING | audio QA | after scenes |
@@ -200,3 +200,51 @@ Required:
 8. run arithmetic, safe-area, semantic-readability, product-identity, and research-traceability self-review before Timeline.
 
 Do not edit `src/timeline.js` until the V4 storyboard self-review is closed.
+
+
+### TX-V4-004 result — Storyboard delta
+
+Output:
+- `docs/storyboard.md`
+- commit `63ae6f45e93330e98e7973da7194002a704d2403`
+
+Frozen structure:
+- 36.000 s
+- 864 frames
+- 120 bpm
+- 18 bars
+- 12 shots × 3.000 s
+- midpoint T 18.000
+
+Frozen V4 verb spine:
+**FIND → INSPECT → PLAY → HEAR → PLACE → APPLY → CLEAN → VACUUM → VERIFY → RETURN → PLAY AGAIN → ENJOY**
+
+Cleaning block:
+- 05 machine reveal / record placement
+- 06 START + PUMP / solution
+- 07 brush cleaning + REVERSE
+- 08 VACUUM collection
+- 09 matched groove BEFORE / AFTER
+
+Self-review:
+- arithmetic PASS
+- product identity PASS
+- physical causality PASS
+- label semantics PASS
+- before/after proof PASS
+- playback mirror PASS
+- safe area PASS
+- research traceability PASS
+
+Storyboard delta: COMPLETE.
+
+## Active transaction
+
+**TX-V4-005 — Timeline**
+
+Exact next actions:
+1. write `src/timeline.js` exactly from the frozen storyboard;
+2. run native stubgen;
+3. materialise 12 generated stubs into `src/scenes/`;
+4. run native six-check;
+5. render a lightweight whole-sequence stub/contact proof before dense V4 scene work.
