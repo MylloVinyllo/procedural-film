@@ -203,20 +203,19 @@
       drawRoom(c,t);
       drawBust(c,t,615,brow);
 
-      // arms support the record in a safe two-edge grip
-      capsule(c,[160,900],[300,1015],64,P.skin,sd('foreL'));
-      capsule(c,[405,850],[490,1010],64,P.skin,sd('foreR'));
-
+      // One coherent body rig: shoulders belong to the bust, wrists are locked to the same
+      // record rim points for the whole inspection. Arms are drawn behind the disc, hands above it.
       const rot=lerp(.08,-.035,tilt);
       const rx=285,ry=lerp(250,235,tilt);
+      const leftGrip=[335,1115], rightGrip=[790,1080];
+      L.v4ArmIK(c,{shoulder:[160,835],target:leftGrip,l1:180,l2:165,bend:-1,
+        upperWidth:70,foreWidth:54,drawHand:false});
+      L.v4ArmIK(c,{shoulder:[420,800],target:rightGrip,l1:205,l2:195,bend:1,
+        upperWidth:70,foreWidth:54,drawHand:false});
+
       recordEllipse(c,570,1030,rx,ry,rot,t,true);
-
-      // grip at visually clear outer edge positions
-      drawHand(c,335,1115,.42,.68,sd('handL'));
-      drawHand(c,790,1080,2.68,.68,sd('handR'));
-
-      // gaze lands on the reflected/dust region
-      drawHead(c,260,610,1.12,615,brow,t);
+      L.v4GripHand(c,{x:leftGrip[0],y:leftGrip[1],rot:.42,scale:.60,grip:'edge'});
+      L.v4GripHand(c,{x:rightGrip[0],y:rightGrip[1],rot:2.68,scale:.60,grip:'edge'});
 
       // small physical dust cue on the main record, linked to macro by a leader line
       const link=sstep(1.25,1.75,t);
