@@ -33,8 +33,8 @@ If the ChatGPT stream times out:
 | Brief | COMPLETE | `docs/V3_BRIEF.md` | Setup |
 | Setup | COMPLETE | scaffold + smoke + fixture gate + fixture render | Reference analysis |
 | Reference analysis | COMPLETE | `docs/reference-analysis.md` + Butterfly benchmark sheet | Research |
-| Research | IN PROGRESS | authoritative vinyl handling / playback / cleaning sources | capture source notes and phase map |
-| Art Bible | PENDING | `docs/art-bible.md` | after research |
+| Research | COMPLETE | `.tmp/research/00-phase-map.md` + four authoritative captures | Art Bible |
+| Art Bible | IN PROGRESS | rewrite sections 1–10 for comic house + mirror palette into `src/lib.js` | palette verification |
 | Storyboard | PENDING | `docs/storyboard.md` | after art bible |
 | Timeline | PENDING | `src/timeline.js` | after storyboard |
 | Stub pass | PENDING | runtime jobs | after timeline |
@@ -124,3 +124,41 @@ Planned source classes:
 Exact next action:
 - capture 2–4 authoritative sources into `.tmp/research/`, one fact set per file;
 - then build the research phase map and close TX-V3-003.
+
+
+## TX-V3-003 result — Research
+
+Captured sources:
+- `.tmp/research/01-loc-handling.md` — Library of Congress grooved-disc handling
+- `.tmp/research/02-loc-cleaning.md` — Library of Congress cleaning workflow
+- `.tmp/research/03-ortofon-care.md` — Ortofon record/stylus care
+- `.tmp/research/04-project-technics-operation.md` — Pro-Ject wet/vacuum cleaning + Technics playback mechanics
+- `.tmp/research/00-phase-map.md` — every narrative phase mapped to source support or explicit narrative invention
+
+Research commits:
+- `5f7c59cf6dbe4fb1c18f6a2cd0827bd2ccb52ad6`
+- `f688c0dc850e8442cd391aca9a56ea23a3abcb29`
+- `f4b336e2951122bcac5e58e8ef707906c2d6cc36`
+- `22e039293eb644b1948b98f0d1ed0c51a689440e`
+- phase map `291b5a9c8106e38e21f8eecbaf95fa012e2663e0`
+
+Status: COMPLETE.
+
+## Active transaction
+
+**TX-V3-004 — Art Bible**
+
+Inputs:
+- frozen reference rules in `docs/reference-analysis.md`;
+- research captures under `.tmp/research/`;
+- V3 brief and carry-forward constraints.
+
+Required outputs:
+1. rewrite art-bible sections 1–9 for animated-comic grammar;
+2. publish complete V3 palette in section 2 and mirror every changed/new value into `src/lib.js`;
+3. write section 10 as drawable character/prop/action reference;
+4. include explicit “Mistakes to avoid” pairs;
+5. verify palette/toolchain before Storyboard.
+
+Exact next action:
+- write the full art bible and mirrored `src/lib.js` palette on this branch.
