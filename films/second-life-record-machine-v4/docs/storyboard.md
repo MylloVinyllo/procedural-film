@@ -1,1012 +1,1201 @@
-# Storyboard: Second Life of a Record
+# Storyboard: Second Life of a Record — Machine-Cleaning V4
 
 ## Logline
 
-A record collector finds a visibly dirty LP, hears an unpleasant first playback, carefully wet-cleans and vacuums the record, then repeats the same playback setup and finally relaxes into cleaner sound.
+A record collector finds a dirty LP, hears an unpleasant first playback, moves the same record to a recognisable Myllo Vinyllo vacuum record-cleaning machine, follows visibly distinct solution / brush / reverse / vacuum stages, verifies cleaner grooves in a matched before/after macro, then repeats the same playback setup and enjoys the improved result.
 
-Method: a 30-second vertical animated comic built from concrete human actions, stable character/prop models, panel grammar, macro insets and mirrored before/after playback geometry.
+V4 keeps the comic-story clarity that passed in V3, but turns the cleaning sequence into the film's central product/process proof.
 
 ## Numbers
 
 - BPM: **120**
 - beat: **0.5 s = 12 frames**
 - bar: **2.0 s = 48 frames**
-- duration: **30.0 s = 15 bars = 720 frames**
+- duration: **36.0 s = 18 bars = 864 frames**
 - canvas: **1080 × 1920**
 - fps: **24**
-- shot count: **10**
-- every shot: **3.0 s = 72 frames = 6 beats**
-- all cuts land on the 0.5 s beat grid
-- midpoint downbeat: **T 15.0**, the first frame of active cleaning
+- shot count: **12**
+- each shot: **3.0 s = 72 frames = 6 beats**
+- every cut lands on the 0.5 s beat grid
+- exact midpoint: **T 18.0**, first committed brush-cleaning/reverse beat
 
-V3 intentionally does not alternate the native paper/blueprint plates. The fresh reference analysis replaces that grammar with a single comic world plus occasional macro/technical insets inside illustrated shots.
+The extra six seconds versus V3 are allocated entirely to making the machine process self-explanatory.
 
 ## Summary
 
-| Order | Id | Start | End | Mode | Dominant verb | Title |
-|---|---|---:|---:|---|---|---|
-| 01 | find-record | 0.0 | 3.0 | illustrated | FIND | The sleeve |
-| 02 | inspect-dust | 3.0 | 6.0 | illustrated | INSPECT | Something is wrong |
-| 03 | first-play | 6.0 | 9.0 | illustrated | PLAY | First try |
-| 04 | hear-crackle | 9.0 | 12.0 | illustrated | HEAR | KRRK |
-| 05 | decide-clean | 12.0 | 15.0 | illustrated | DECIDE | Do it properly |
-| 06 | wet-brush | 15.0 | 18.0 | illustrated | CLEAN | Into the grooves |
-| 07 | vacuum-dry | 18.0 | 21.0 | illustrated | VACUUM | Lift it away |
-| 08 | return-record | 21.0 | 24.0 | illustrated | RETURN | Back to the deck |
-| 09 | second-play | 24.0 | 27.0 | illustrated | PLAY AGAIN | Same needle |
-| 10 | enjoy-music | 27.0 | 30.0 | illustrated | ENJOY | Different ending |
+| # | Id | Start | End | Dominant verb | Main label / semantic proof |
+|---|---|---:|---:|---|---|
+| 01 | find-record | 0.0 | 3.0 | FIND | concrete record + safe handling |
+| 02 | inspect-dust | 3.0 | 6.0 | INSPECT | dirty groove macro |
+| 03 | first-play | 6.0 | 9.0 | PLAY | exact playback geometry |
+| 04 | hear-crackle | 9.0 | 12.0 | HEAR | crackle + human reaction |
+| 05 | reveal-myllo | 12.0 | 15.0 | PLACE | ОЧИСТКА ПЛАСТИНКИ |
+| 06 | pump-solution | 15.0 | 18.0 | APPLY | МОЮЩИЙ РАСТВОР |
+| 07 | brush-reverse | 18.0 | 21.0 | CLEAN | ОЧИСТКА КАНАВОК / REVERSE |
+| 08 | vacuum-collect | 21.0 | 24.0 | VACUUM | ВАКУУМ |
+| 09 | grooves-before-after | 24.0 | 27.0 | VERIFY | ДО / ПОСЛЕ |
+| 10 | return-record | 27.0 | 30.0 | RETURN | ПОВТОРНОЕ ПРОСЛУШИВАНИЕ |
+| 11 | second-play | 30.0 | 33.0 | PLAY AGAIN | exact playback mirror |
+| 12 | enjoy-music | 33.0 | 36.0 | ENJOY | clean reaction / payoff |
 
 Files are `src/scenes/NN-<id>.js`.
 
 ## Structure
 
-### Act 1 — discovery, bars 1–3 (T 0–6)
+### Act 1 — discovery and diagnosis, T 0–6
 
-The protagonist and record are introduced as concrete recurring characters/props.
-The audience must understand the record is dirty before any playback occurs.
+Shots 01–02 remain close to the successful V3 semantics:
+- person;
+- record;
+- visible debris;
+- concrete groove macro.
 
-### Act 2 — failed playback, bars 4–6 (T 6–12)
+The viewer should already know “this record is dirty/problematic” before any sound problem is introduced.
 
-The record is placed on a recognisable turntable.
-The tonearm/stylus lands.
-The next shot proves the problem through sound-source, comic crackle graphics and protagonist reaction.
+### Act 2 — first playback and failure, T 6–12
 
-### Act 3 — decision and cleaning, bars 7–10.5 (T 12–21)
+Shots 03–04 preserve the V3 playback proof:
+- record on turntable;
+- platter rotates;
+- tonearm/stylus lands;
+- sound is visibly/audio-visibly bad;
+- listener reacts.
 
-T 12–15 turns concern into a concrete decision and transfers the same record to a distinct cleaning setup.
-The midpoint downbeat T 15 starts actual wet cleaning.
-Fluid → brush contact → vacuum removal → visibly dry surface.
+This is the “before” playback geometry that shots 11–12 will mirror.
 
-### Act 4 — return and proof, bars 10.5–15 (T 21–30)
+### Act 3 — Myllo Vinyllo cleaning process, T 12–27
 
-The record returns to the turntable.
-Shot 09 deliberately repeats shot 03 geometry.
-Shot 10 begins as a clean mirror of shot 04, then opens into a warm listening-room payoff.
+This is the V4 expansion.
 
-### Story hinge
+- T 12–15: dedicated machine reveal and record placement;
+- T 15–18: START / PUMP / wet-film stage;
+- T 18–21: brush cleaning plus visible reverse direction;
+- T 21–24: collection node + vacuum removal;
+- T 24–27: matched groove before/after evidence.
 
-**T 15.0** is the midpoint and the irreversible action:
-the brush makes committed contact with the wet rotating record.
+The cleaning section is **15 seconds**, almost half the film.
 
-Before T 15 the protagonist is discovering/diagnosing.
-After T 15 the protagonist is solving/proving.
+### Act 4 — return and proof, T 27–36
 
-### Scale changes
+- T 27–30: same record returns to the listening setup;
+- T 30–33: shot 11 mirrors shot 03;
+- T 33–36: shot 12 mirrors shot 04, then opens into the warm final room.
 
-- 01: environmental medium → record close medium
-- 02: record/face close-up → groove macro inset
-- 03: top-down turntable
-- 04: sound-source / reaction split
-- 05: character + transfer → top-down cleaning platter
-- 06: top-down cleaning → brush/groove macro
-- 07: vacuum-contact macro → dry top-down record
-- 08: close safe grip → top-down turntable
-- 09: exact playback mirror
-- 10: exact reaction mirror → room pull-back
+## Story hinge
 
-### Time device
+**T 18.0** is the midpoint and physical commitment:
+the brush node is engaged and the machine begins the unmistakable cleaning action.
 
-No calendar or abstract progress glyph.
-Time is shown through completed actions and repeated physical geometry.
+Before T 18:
+- diagnosis;
+- machine identification;
+- fluid setup.
 
-### Loop
+After T 18:
+- active cleaning;
+- vacuum;
+- proof;
+- repeat playback.
 
-V3 is not required to loop.
-The ending resolves emotionally rather than hiding a loop seam.
+## Dynamic label grammar
 
-## Conventions
+All process labels use the art-bible V4.8 system:
+- x 90–930;
+- y 225–350;
+- charcoal/near-black process band;
+- stage index at left;
+- 44–52 px uppercase main line;
+- optional 28–32 px second line;
+- 4–6 frame entrance/exit;
+- no bounce;
+- no label obscures hardware/contact.
 
-- `T` is global seconds; `t = T − shot.start`.
-- Camera uses `lib.camera`.
-- Character/object poses use `lib.onTwos(t)`.
-- Record/platter rotation and camera movement may run at 24 fps.
-- Hard cut is default.
-- Incoming shot owns any non-cut transition.
-- All must-read content remains in x 60–940, y 220–1540.
-- Comic panels remain inside that safe region when they carry action/reaction.
-- There is no explanatory dialogue.
-- Sound words are graphic effects, not narration.
+Labels appear only during the product/process block and repeat-playback handoff.
 
 ## Shared geometry
 
-### G1 — canonical record circle
+### G1 — record identity
 
-Used in inspection, playback, cleaning and return match cuts.
+Inherited from V3 for top-down/macro matching:
+- canonical record centre: (540, 930)
+- radius: 285
+- label radius: 92
+- spindle hole radius: 8
 
-| Property | Value |
-|---|---:|
-| centre x | 540 |
-| centre y | 930 |
-| record radius | 285 |
-| label radius | 92 |
-| spindle hole radius | 8 |
-| outer rim band | 14 |
-| label orientation mark | radial at −32° on first appearance |
+V4 3/4 scenes derive from the same physical object but use perspective ellipse geometry.
 
-The record may rotate, but whenever a transition claims an exact G1 match, the centre/radius stay fixed on the cut frame.
+### G2 — playback turntable
 
-### G2 — playback turntable top-down
+Inherited exact V3 geometry for shots 03 and 11:
+- plinth x 105, y 575, w 870, h 760;
+- platter centre (540, 930);
+- platter radius 312;
+- tonearm pivot (900, 655);
+- stylus contact (698, 814);
+- start/stop centre (865, 1225), r 34.
 
-Canonical geometry for shots 03 and 09.
+Shots 03 and 11 must match pixel-for-pixel in their playback proof frames.
 
-| Element | Geometry |
-|---|---|
-| plinth | x 105, y 575, w 870, h 760, corner r 38 |
-| platter centre | (540, 930) |
-| platter radius | 312 |
-| record | G1 |
-| tonearm pivot | (900, 655) |
-| arm elbow guide | (828, 725) |
-| stylus contact | (698, 814) |
-| cartridge long axis | 140° |
-| start/stop control centre | (865, 1225), r 34 |
+### G3 — stylus macro
 
-Shots 03 and 09 copy these pixels exactly.
+Inherited exact V3:
+- inset x 555, y 255, w 350, h 430;
+- groove macro centre (730, 480);
+- stylus tip contact (730, 515);
+- same cartridge entry angle in before/after playback.
 
-### G3 — stylus-contact macro inset
+### G4 — listener reaction panel
 
-Used at the end of 03, in 04, at the end of 09 and the opening of 10.
+Inherited exact V3:
+- box x 85, y 285, w 365, h 455;
+- face centre (270, 490);
+- head height 215;
+- shoulders y 650.
 
-| Property | Value |
-|---|---:|
-| inset box | x 555, y 255, w 350, h 430 |
-| groove macro centre | (730, 480) |
-| visible groove band centre | y 515 |
-| stylus tip contact | (730, 515) |
-| cartridge entry angle | 140° |
-| inset border | 4 px |
+Shot 12 begins from the same G4 geometry used in shot 04.
 
-The macro may be absent in earlier frames but when present its border and contact point remain exact.
+### M1 — Myllo 3/4 machine recognition view
 
-### G4 — reaction inset
+From V4 art bible:
+- machine top back-left (185,620);
+- top back-right (835,620);
+- top front-right (950,900);
+- top front-left (110,900);
+- front lower-left (155,1370);
+- front lower-right (895,1370);
+- record ellipse centre (535,785);
+- record ellipse rx 310, ry 118;
+- supply pivot (285,645);
+- vacuum pivot (790,645);
+- front plate centre (530,1130).
 
-Used in dirty reaction and clean reaction.
+Shots 05–08 keep these anchors unless a macro crop explicitly takes over.
 
-| Property | Value |
-|---|---:|
-| panel box | x 85, y 285, w 365, h 455 |
-| face centre | (270, 490) |
-| head height | 215 |
-| shoulder line y | 650 |
-| eye/gaze target | toward lower-right |
+### M2 — front control plate
 
-Shot 10 opens on the same G4 box before the panel expands away.
+Exact button anchors:
+- START (450,1045)
+- REVERSE (610,1045)
+- PUMP (450,1200)
+- VACUUM (610,1200)
 
-### G5 — cleaning platter
+The active ring is a semantic cue. It may not light before the corresponding physical action.
 
-The record itself remains exact G1.
+### M3 — supply/brush node
 
-| Element | Geometry |
-|---|---|
-| machine body | x 120, y 600, w 840, h 700, r 42 |
-| cleaning platter centre | (540, 930) |
-| record | G1 |
-| brush approach anchor | (815, 690) |
-| brush contact centre | (650, 815) |
-| vacuum pivot/hinge | (205, 695) |
-| vacuum contact line | from (320, 770) to (680, 975) |
+Left working node:
+- pivot anchored at M1;
+- visible bristle fringe;
+- settles onto the record before PUMP/brush effects;
+- remains engaged through brush/reverse stage;
+- moves away before vacuum node is engaged.
 
-Shots 05–07 use the same machine/record anchors.
+### M4 — collection/vacuum node
 
-### G6 — safe hand grip at 4/8 o'clock
+Right working node:
+- pivot anchored at M1;
+- long clean metal wand;
+- dark continuous contact slot;
+- engages only after supply node clears.
 
-When the record is carried:
-- left contact centre: polar angle 145°, radius 278 from G1;
-- right contact centre: polar angle 35°, radius 278 from G1;
-- thumb may enter toward label-safe area but never crosses into the hero groove field;
-- cut-to-cut change in contact angle ≤15°.
+### G8 — matched groove before/after
 
-### G7 — listening-room anchor
+Exact comparison geometry from V4 art bible:
+- BEFORE panel x 75–515, y 520–1230;
+- AFTER panel x 565–1005, y 520–1230;
+- identical groove curvature/radius family;
+- 50 px gutter.
 
-Recurring environmental anchors:
-- table top y = 1260;
-- lamp centre = (790, 430);
-- speaker main centre = (840, 930);
-- record-shelf block = x 80–335, y 420–1040.
+### G9 — machine-to-groove macro bridge
 
-Used in shots 01, 03/04 background fragments, 08/09 and 10.
+For shots 06–08:
+- macro inset default box x 580, y 520, w 360, h 420;
+- local record/groove motion runs left-to-right under the stationary tool contact;
+- the inset may expand to full frame for a maximum of 0.75 s;
+- same physical contact direction carries across brush → vacuum transitions.
 
 ## Transition map
 
-| From → To | Mechanism | Conserved story element |
+| From → To | Mechanism | Conserved element |
 |---|---|---|
-| 01 → 02 | hard cut on held record | record edge / safe grip |
-| 02 → 03 | record circle expands to G1 top-down | record circle |
-| 03 → 04 | stylus macro inset persists | G3 |
-| 04 → 05 | protagonist hand stops action, hand exits toward record | hand direction / concern pose |
-| 05 → 06 | exact G1 turntable circle becomes G5 cleaning circle | record circle |
-| 06 → 07 | brush contact line becomes vacuum contact line across same rotating disc | G1 + contact arc |
-| 07 → 08 | dry record lifted on G6 grip | record + hand |
-| 08 → 09 | record settles onto exact G2 platter | G1 / G2 |
-| 09 → 10 | exact G3 + mirrored reaction G4 | stylus contact / reaction panel |
-| 10 → end | panel borders retract into full warm room | protagonist + turning record |
+| 01 → 02 | hard cut closer | same record + safe hand grip |
+| 02 → 03 | record circle expands/rotates | G1 |
+| 03 → 04 | G3 persists | stylus contact |
+| 04 → 05 | stop hand lifts same record; comic panel follows circle | record identity |
+| 05 → 06 | M1 holds | machine/record/control plate |
+| 06 → 07 | brush contact continues; PUMP label swaps to CLEAN label | M1 + M3 |
+| 07 → 08 | supply node retracts; same record remains; vacuum node enters from opposite side | M1 record plane |
+| 08 → 09 | vacuum slot becomes split comparator bar | groove/contact line |
+| 09 → 10 | AFTER groove panel zooms back into same physical record | record/groove identity |
+| 10 → 11 | record settles into exact G2 | G1/G2 |
+| 11 → 12 | exact G3/G4 mirror | playback proof |
+| 12 → end | reaction panel retracts into full room | protagonist + turning record |
 
 # Shots
 
 ---
 
-## 01 find-record: The sleeve
+## 01 find-record — The sleeve
 
-T 0.0 to 3.0, illustrated, hard cut.
+T 0.0–3.0, illustrated, hard cut.
 
 ### Composition
 
-Full-bleed comic panel in the home listening corner.
+Keep V3's successful full-bleed home listening panel.
 
-Foreground left:
-- cropped shelf edge and 4–7 record spines.
+Foreground:
+- cropped record shelf and 4–7 spines.
 
 Midground:
-- protagonist three-quarter torso, occupying x 290–860, y 350–1450;
-- left hand stabilises a generic sleeve;
-- right hand begins sliding the record out.
+- recurring protagonist, three-quarter torso;
+- one hand stabilises sleeve;
+- second hand slides record out.
 
 Background:
-- G7 lamp, table edge, partial speaker and turntable silhouette establish this as a listening space without stealing focus.
+- lamp;
+- turntable;
+- speaker;
+- table edge.
 
-The record emerges into the safe-area centre by the end.
+The record becomes the dominant object by T 2.0.
 
 ### Forms
 
-Protagonist follows §5.1 model:
-- hair, rust `shirt`, `tee`, `skin`.
+Use V3 protagonist model unchanged.
 
 Sleeve:
-- `sleeve` / `sleeveShadow`;
-- generic geometric cover shapes only.
+- square construction;
+- generic flat graphic cover;
+- visible paper thickness and opening edge.
 
 Record:
-- `vinyl`, `vinylEdge`, `label`;
-- enough groove reflections to read as an LP, not a black disc.
+- black vinyl;
+- label;
+- spindle hole;
+- groove reflections;
+- 5–10 px edge thickness at the three-quarter angle.
+
+Hands:
+- exact edge/label-safe grip.
 
 ### Overlays
 
-No explanatory arrows.
+No explanatory text.
 
-One comic panel crop line at the left shelf edge.
-At T 2.5 a small `cleanGold` attention arc follows the emerging record edge, not a halo.
+One short gold attention arc may follow the emerging record edge after it is already recognisable.
 
 ### Motion
 
-- T 0.0: cold open already shows a hand selecting the sleeve.
-- T 0.5: sleeve clears the shelf by ~80 px.
-- T 1.0: second hand establishes a safe edge/label grip.
+- T 0.0: hand already selecting sleeve.
+- T 0.5: sleeve clears shelf.
+- T 1.0: safe grip established.
 - T 1.5: record edge appears.
-- T 2.0: record is half exposed; sleeve flexes 6–8 px.
-- T 2.5: record fully clears sleeve; hand transfers to a stable edge grip.
-- T 3.0: held record occupies the outgoing composition.
+- T 2.0: half exposed.
+- T 2.5: fully removed, sleeve flex settles.
+- T 3.0: record held for close inspection.
+
+Primary action: remove record.
+
+Secondary: sleeve flex, gaze shift.
+
+Ambient: minimal room parallax only.
 
 ### Camera
 
-Slow 1.00 → 1.08 push from T 1.5 to 3.0.
-Camera remains smooth at 24 fps; hand/body on twos.
+Slow 1.00 → 1.08 push from T 1.5.
 
 ### Enter and exit
 
 Cold open.
 
-Exit holds the physical record at a readable angle.
-Shot 02 hard-cuts closer while preserving the hand/edge relationship, not exact G1.
+Hard cut to shot 02 preserving hand side and record orientation.
 
 ### Subject
 
 Source-derived:
-- grooved record is handled by edge/label-safe areas, not flat fingers on the playing surface.
+- edge/label-safe handling.
 
-Narrative invention:
-- the protagonist discovers this record in a home shelf.
+Narrative:
+- record selected from home collection.
 
 ### Sound
 
-- T 0.0: soft room tone; four-note motif seed A4, E5, C#5, B4 played sparsely on muted mallet.
-- T 0.5: sleeve paper scrape.
-- T 1.5: soft card/paper friction as disc emerges.
-- T 2.5: small glassy A5 curiosity accent.
-- T 3.0: dry cut tick.
+- T 0.0 room tone + sparse motif seed.
+- T 0.5 sleeve scrape.
+- T 1.5 inner-sleeve friction.
+- T 2.5 small curiosity bell.
+- T 3.0 dry comic cut.
 
 ---
 
-## 02 inspect-dust: Something is wrong
+## 02 inspect-dust — Something is wrong
 
-T 3.0 to 6.0, illustrated, hard cut.
+T 3.0–6.0, illustrated, hard cut.
 
 ### Composition
 
-Dominant panel:
-protagonist holds record beneath G7 lamp, face on upper-left third, record on lower/right two-thirds.
+Protagonist + tilted record under lamp.
 
-The record is tilted 15–28° so a lamp reflection sweeps across grooves.
+Main view:
+- face upper-left;
+- record lower-right / centre;
+- reflected light travels across grooves.
 
-A macro inset grows at upper-right/lower-right without covering hand contact:
-- groove field;
-- dust clusters;
-- one fibre;
-- cleanly readable concentric groove arcs.
+Macro inset:
+- concrete groove bands;
+- dust;
+- grit;
+- 2–5 fibres.
 
-By T 5.5 the inset is the visual focus.
+By T 5.5 the dirt macro is unmistakable.
 
 ### Forms
 
-Record is three-quarter ellipse derived from G1 proportions.
-Dust uses `dust` and `grit`.
-Macro inset border 4 px `comicBorder`.
-Halftone on face/shirt shadow; sparse hatching under fingers.
+Preserve V3 character identity.
+
+Improve over V3:
+- record ellipse more precise;
+- fingers wrap rim with individual thumb opposition;
+- dust remains spatially attached to the groove plane.
 
 ### Overlays
 
-- one `badCyan` attention bracket around the dust cluster;
-- one tiny `badMagenta` broken mark appears only after the viewer has seen the physical dirt;
-- no word “dirty”.
+One cyan attention bracket around the physical dirt cluster after T 4.5.
+
+No “грязь” caption.
 
 ### Motion
 
-- T 3.0: record already held, stable.
-- T 3.5: wrist tilts +5°; reflected groove arc travels.
-- T 4.0: protagonist gaze moves to the highlight.
-- T 4.5: macro inset pops in over 3 frames.
-- T 5.0: inset pushes from 1.0× to 1.35×; fibre/dust become obvious.
-- T 5.5: one dust fibre lifts slightly with static-like motion; protagonist brow tightens.
-- T 6.0: record circle fills enough of frame to cut into playback geometry.
+- T 3.0 held record.
+- T 3.5 wrist tilt.
+- T 4.0 eye tracks reflection.
+- T 4.5 macro inset enters.
+- T 5.0 fibre/dust becomes obvious.
+- T 5.5 brow changes.
+- T 6.0 circle prepares match to turntable.
 
 ### Camera
 
-Main camera locked.
-Macro inset has a short 1.35× push.
+Main locked, macro short push.
 
 ### Enter and exit
 
-Enter from shot 01's held record.
+Held record from shot 01.
 
-Exit: the visible circular record expands/rotates into exact G1 on shot 03's turntable.
+Circular match to G2/G1 in shot 03.
 
 ### Subject
 
-Source-derived:
-- dust/dirt is a legitimate record-care concern;
-- preservation cleaning workflows target dust/microscopic contamination;
-- do not imply every speck causes one exact noise.
+Dust/dirt is a legitimate cleaning concern; do not imply every speck causes every noise.
 
 ### Sound
 
-- T 3.0: room tone narrows; motif pauses.
-- T 3.5: soft fingertip/sleeve micro-rustle.
-- T 4.5: macro-inset paper snap.
-- T 5.0: tiny high filtered tick as fibre comes into focus.
-- T 5.5: low questioning E3 tone.
-- T 6.0: turntable-start mechanical cue begins under cut.
+- T 3.0 room tone narrows.
+- T 4.5 inset snap.
+- T 5.0 high focus tick.
+- T 5.5 low questioning E3.
+- T 6.0 motor lead-in.
 
 ---
 
-## 03 first-play: First try
+## 03 first-play — First try
 
-T 6.0 to 9.0, illustrated, hard cut.
+T 6.0–9.0, illustrated, hard cut.
 
 ### Composition
 
-Top-down comic panel of the complete generic turntable using exact G2.
+Exact V3 G2 top-down playback setup.
 
-Record is exact G1.
-Tonearm is visibly separate from the record until the lowering beat.
-A small G3 stylus macro inset appears during the final second.
-
-One cropped protagonist hand enters only for start/cue action.
+The main purpose is to create a clean mirror target for shot 11.
 
 ### Forms
 
-- `turntableBody` plinth;
-- `platter`, `mat`;
-- `vinyl`, `label`;
-- `tonearm`, `cartridge`, `stylus`;
-- metal spindle and hardware.
+Turntable, record, tonearm, stylus all keep V3 canonical geometry.
 
-The record is unmistakably a grooved LP.
+Improve only drawing polish if required:
+- clearer cartridge;
+- cleaner record edge;
+- better mechanical pivot details.
 
 ### Overlays
 
-- short `cleanGold` rotational cue arc around the label;
-- tiny “CHK” in `soundWord` on stylus contact;
-- no bad-sound distortion until contact has physically occurred.
+- small rotation cue;
+- “CHK” on stylus contact;
+- no bad-sound graphics before contact.
 
 ### Motion
 
-- T 6.0: record is already placed at G1, safe hand exits.
-- T 6.5: start control is pressed; platter begins smooth rotation.
-- T 7.0: label rotation makes movement unmistakable.
-- T 7.5: tonearm pivots from rest.
-- T 8.0: G3 macro inset appears, showing cartridge above grooves.
-- T 8.5: stylus descends to exact G3 contact; 1–3 px settle.
-- T 9.0: first irregular crackle begins as the shot cuts to reaction.
+- T 6.0 record already placed.
+- T 6.5 start control.
+- T 7.0 visible label rotation.
+- T 7.5 tonearm pivots.
+- T 8.0 G3 inset appears.
+- T 8.5 stylus contacts.
+- T 9.0 first crackle enters.
 
 ### Camera
 
-Locked top-down.
-Inset uses a 1.1× micro push from T 8.0–8.5.
+Locked top-down + tiny G3 push.
 
 ### Enter and exit
 
-Enter by circular match from inspected record to G1.
+G1 match from shot 02.
 
-Exit preserves G3 macro inset position/contact into shot 04.
+G3 persists into shot 04.
 
 ### Subject
 
-Source-derived:
-- record on platter;
-- platter rotation;
-- tonearm/stylus lowered to contact the record.
+Playback mechanics as captured in V3 research.
 
 ### Sound
 
-- T 6.0: motor/platter low mechanical tone.
-- T 6.5: start-control click.
-- T 7.5: soft tonearm pivot/felt movement.
-- T 8.5: stylus “CHK”, short high transient + quiet sub body.
-- T 9.0: first synthetic vinyl crackle spike begins.
+Mirror V3:
+motor → start click → arm cue → CHK → crackle onset.
 
 ---
 
-## 04 hear-crackle: KRRK
+## 04 hear-crackle — KRRK
 
-T 9.0 to 12.0, illustrated, hard cut.
+T 9.0–12.0, illustrated, hard cut.
 
 ### Composition
 
-Comic action/reaction frame.
-
-Main lower panel:
-- turning record and stylus contact;
-- speaker at right edge;
-- G3 macro inset remains upper-right.
-
-Reaction inset:
-- exact G4 at upper-left;
-- protagonist listens, then visibly winces/concerns.
-
-Bad-sound graphics bridge the physical source and reaction but never obscure stylus/face.
+Preserve V3 action/reaction layout:
+- physical playing record/stylus;
+- speaker;
+- G3 macro;
+- G4 protagonist reaction.
 
 ### Forms
 
-Same turntable/record identity as shot 03.
-Speaker uses `speaker`, `speakerCone`.
-Reaction face follows “listening concern” pose.
+Improve hand and facial-plane drawing if needed, but do not change story geometry.
 
 ### Overlays
 
-Controlled problem language:
-- “KRRK” appears T 9.5;
-- 2–5 broken `badMagenta`/`badCyan` vibration marks;
-- selected contour fragments offset 4–9 px;
-- speaker cone gets 1–3 irregular jolts.
+Controlled bad-playback language:
+- KRRK;
+- broken vibration lines;
+- magenta/cyan local registration offset;
+- speaker jolt.
 
 ### Motion
 
-- T 9.0: exact G3 persists from previous shot.
-- T 9.5: first major crackle; “KRRK” pops; speaker jolt.
-- T 10.0: protagonist eye shifts toward speaker/turntable.
-- T 10.5: second crackle cluster; shoulder rises; mouth changes.
-- T 11.0: hand enters toward cue/stop.
-- T 11.5: playback is stopped / tonearm begins lifting.
-- T 12.0: bad graphics collapse and hand direction carries into shot 05.
+- T 9.5 first major crackle.
+- T 10.0 eye shift.
+- T 10.5 second crackle / shoulder reaction.
+- T 11.0 hand approaches stop/cue.
+- T 11.5 playback lifts/stops.
+- T 12.0 graphics collapse.
 
 ### Camera
 
-Locked comic layout.
-No dramatic zoom; reaction comes from pose/panel effects.
+Locked.
 
 ### Enter and exit
 
-Enter with exact G3.
+G3 continuity from shot 03.
 
-Exit on the protagonist's hand moving toward the physical record/controls, making the next decision/action causal.
+Exit uses the hand/record direction to lead to machine reveal.
 
 ### Subject
 
-Supported context:
-- dust/dirt is a legitimate care/listening concern.
-
-Narrative scope:
-- this particular record is noisy before cleaning.
-- film does not claim all crackle is dirt.
+Narrative claim remains local to this record.
 
 ### Sound
 
-- T 9.0: irregular filtered-noise crackle bed enters.
-- T 9.5: loud crackle cluster + “KRRK” visual.
-- T 10.5: second cluster, lower and shorter.
-- T 11.0: music motif attempts A4–E5 but is interrupted/masked.
-- T 11.5: stop/cue click; motor sound begins decaying.
-- T 12.0: problem noise cuts cleanly.
+Crackle physically follows stylus contact and is stopped by the playback-stop action.
 
 ---
 
-## 05 decide-clean: Do it properly
+## 05 reveal-myllo — Cleaning machine
 
-T 12.0 to 15.0, illustrated, hard cut.
+T 12.0–15.0, illustrated, cut/panel transform.
 
 ### Composition
 
-Starts as a medium character panel:
-protagonist leans forward in “decision” pose and safely lifts the record.
+This is the first major V4 product-recognition shot.
 
-The panel edge slides to reveal a distinct cleaning station.
-By T 14.0 the record becomes exact G1 over G5 cleaning machine.
+Start:
+- protagonist safely lifts the record from the turntable.
 
-Fluid bottle and brush are visible as concrete tools.
-The vacuum wand is present in the background, not active yet.
+By T 12.75:
+- comic panel edge sweeps to reveal the Myllo machine.
+
+By T 13.25:
+- full canonical M1 elevated 3/4 machine view occupies the frame.
+
+Must simultaneously show:
+- black metal body depth;
+- top record plane;
+- silver centre clamp;
+- left brush/supply node;
+- right vacuum node;
+- white Myllo control plate;
+- 2×2 buttons;
+- blue LED.
+
+Top label:
+**ОЧИСТКА ПЛАСТИНКИ**
 
 ### Forms
 
-Character:
-rust overshirt, rolled sleeves.
+Machine strictly follows M1–M4 and product video reference.
 
-Record:
-same label/orientation marker.
+Hands:
+- one hand places record over spindle;
+- second hand turns/sets the central clamp with thumb/finger opposition.
 
-Cleaning machine:
-`machine`, `machineDeep`, `vacuum`.
-
-Brush:
-`brush`, `brushFiber`.
-
-Fluid:
-bottle/nozzle only, no liquid contact before T 15.
+Do not cover the front plate with hands.
 
 ### Overlays
 
-- one decisive red/orange action slash behind the lifting arm at T 12.5;
-- panel border becomes table/plinth edge;
-- no “clean” label.
+Process band:
+- stage index 01;
+- main line `ОЧИСТКА ПЛАСТИНКИ`.
+
+At T 14.25 a subtle callout line may briefly connect the label to the machine body, but no component labels yet.
 
 ### Motion
 
-- T 12.0: hand completes tonearm/stop action.
-- T 12.5: G6 safe grip established.
-- T 13.0: record lifts clear of turntable.
-- T 13.5: panel slides, revealing cleaning setup.
-- T 14.0: record settles to exact G1/G5.
-- T 14.5: fluid nozzle enters; brush hand prepares.
-- T 15.0: first fluid bead contacts the rotating record on the midpoint downbeat.
+- T 12.0 record lift.
+- T 12.5 carry toward machine.
+- T 13.0 M1 product view fully revealed.
+- T 13.5 record lowers onto spindle.
+- T 14.0 clamp is placed/tightened.
+- T 14.5 hand leaves clamp; machine silhouette gets a 0.5 s clean read.
+- T 15.0 START button ring activates on the cut into shot 06.
 
 ### Camera
 
-Medium character framing transitions to top-down through an 8-frame panel/camera reframe.
-Final 0.5 s locked on G5.
+Starts medium carry, transitions into M1.
+Final 1.5 s camera mostly locked for product recognition.
 
 ### Enter and exit
 
-Enter from shot 04 hand direction.
+Record identity carries from turntable to machine.
 
-Exit exact G1/G5 on first fluid contact into shot 06.
+Shot 06 preserves exact M1 anchors.
 
 ### Subject
 
-Source-derived:
-- safe record handling;
-- machine cleaning and brushing are legitimate care actions.
+Manual/video-backed:
+- recognisable Myllo Vinyllo washer;
+- record/clamp;
+- supply and collection nodes;
+- front controls.
 
 ### Sound
 
-- T 12.0: silence/room tone after crackle.
-- T 12.5: decisive low tom-like hit.
-- T 13.5: panel slide paper/wood swish.
-- T 14.0: record settles with soft spindle click.
-- T 14.5: bottle/nozzle handling tick.
-- T 15.0: liquid-contact plip + first clean-state teal tonal layer.
+- T 12.0 stop/handling.
+- T 12.75 panel swish.
+- T 13.5 spindle placement.
+- T 14.0 metal clamp turn/click.
+- T 15.0 START button click + low motor.
 
 ---
 
-## 06 wet-brush: Into the grooves
+## 06 pump-solution — Solution
 
-T 15.0 to 18.0, illustrated, hard cut.
+T 15.0–18.0, illustrated, M1 + macro inset.
 
 ### Composition
 
-Hero cleaning shot.
+Exact M1 holds.
 
-Exact G5 top-down record/machine fills the frame.
-Fluid beads form a thin moving wet film.
-Brush hand enters from upper-right and establishes visible fibre contact.
+Top process band:
+stage 02
+**МОЮЩИЙ РАСТВОР**
 
-A macro inset briefly shows fibres contacting groove bands, but the main physical action remains clear at full shot scale.
+Subline for first 1.5 s:
+**ПОДАЧА НА ЩЁТКУ**
+
+Front plate remains visible.
+
+Supply/brush node physically pivots from parked position toward the record before PUMP activates.
+
+A G9 macro inset shows:
+- bristle bed;
+- black groove plane;
+- initial liquid beads.
 
 ### Forms
 
-- rotating `vinyl` record;
-- `fluid` / `fluidPale` film;
-- `brush` handle;
-- `brushFiber` bristle bed;
-- `skin` hand;
-- G5 machine body.
+Supply node must be visually distinct:
+- visible bristle fringe;
+- short thick brush mass;
+- metal cylinder above it.
 
-Dust marks ahead of the brush reduce/move; they do not vanish in a glowing wipe.
+Liquid:
+- small beads;
+- then a thin wet ribbon;
+- black vinyl remains dominant.
 
 ### Overlays
 
-- one “SHFF” appears behind the brush at T 16.5;
-- 2–3 short `cleanTeal` action strokes indicate brush travel;
-- no magenta/cyan problem offset.
+Button logic:
+- START ring remains subtly active;
+- PUMP ring becomes bright only after node contact.
+
+No turquoise full-record recolouring.
 
 ### Motion
 
-- T 15.0: first fluid bead lands.
-- T 15.5: rotating disc carries fluid into an arc/ribbon.
-- T 16.0: brush fibres visibly contact; handle pressure settles.
-- T 16.5: brush sweep crosses ~140 px; fibres lag 1–3 frames; “SHFF”.
-- T 17.0: wet film becomes more even; visible dust is displaced/reduced.
-- T 17.5: macro inset shows groove/fibre contact, then retracts.
-- T 18.0: brush lifts; wet record remains rotating and vacuum wand begins moving in.
+- T 15.0 record visibly rotating.
+- T 15.5 supply node begins pivot.
+- T 16.0 bristles settle onto record.
+- T 16.25 PUMP ring lights.
+- T 16.5 liquid beads appear at contact.
+- T 17.0 rotation carries liquid into thin arc/ribbon.
+- T 17.5 G9 macro shows wet bristles and moving groove plane.
+- T 18.0 process band changes as active brush cleaning begins.
 
 ### Camera
 
-Locked G5 top-down.
-Macro inset 1.3× only.
+M1 locked, with one short macro inset.
+No top-down switch.
 
 ### Enter and exit
 
-Enter exact G1/G5 from shot 05.
+Exact M1 from shot 05.
 
-Exit keeps same record centre/rotation; brush contact line is replaced by the incoming vacuum contact line in shot 07.
+Brush remains engaged into shot 07.
 
 ### Subject
 
-Source-derived:
-- cleaning solution;
-- soft brush;
-- rotating disc;
-- controlled physical contact.
+Manual-backed:
+START → supply node onto record → PUMP → brush wet/contact.
 
 ### Sound
 
-- T 15.0: liquid plip.
-- T 15.5: light wet rotation noise.
-- T 16.0: brush contact dry/wet sweep begins.
-- T 16.5: “SHFF” brush sweep, broadband noise with short mid-frequency body.
-- T 17.0: motif seed C#5 quietly returns.
-- T 17.5: macro contact tick.
-- T 18.0: low vacuum motor starts under cut.
+- low rotation motor continuous;
+- pivot hardware movement;
+- PUMP click at T 16.25;
+- short fluid feed/flow;
+- first soft brush friction by T 17.5.
 
 ---
 
-## 07 vacuum-dry: Lift it away
+## 07 brush-reverse — Groove cleaning
 
-T 18.0 to 21.0, illustrated, hard cut.
+T 18.0–21.0, illustrated, M1 → process macro.
 
 ### Composition
 
-Same G5 record and machine.
+Top label:
+stage 03
+**ОЧИСТКА КАНАВОК**
 
-Vacuum wand pivots into the exact contact line.
-Wet film converges visibly toward the slot.
-Behind the slot, groove reflections become dry/stable.
+At T 19.25 a temporary secondary chip appears:
+**REVERSE · ОБРАТНОЕ ВРАЩЕНИЕ**
 
-The frame uses a diagonal comic crop late in the shot to compare wet-ahead vs dry-behind without text.
+M1 remains visible for the first half.
+G9 macro expands for the second half to show actual brush/fibre contact.
 
 ### Forms
 
-Vacuum wand:
-`vacuum` with `machineDeep` hardware.
-
-Wet film:
-`fluidPale`.
-
-Dry surface:
-`vinyl`, `groove` with stable reflected arcs.
+Visible physical causality:
+- brush fibres compressed against groove plane;
+- thin wet film;
+- moving dirt/fibres ahead/along contact;
+- no abstract “cleaning ray”.
 
 ### Overlays
 
-- short `cleanTeal` converging suction lines;
-- no sci-fi beam;
-- one narrow diagonal panel divider T 19.5–20.5 shows the wet/dry contrast.
+REVERSE must be supported by real motion:
+- REVERSE button ring lights;
+- record label direction changes;
+- reflected groove highlight reverses;
+- one small curved direction arrow appears for ≤0.75 s.
 
 ### Motion
 
-- T 18.0: wand moves in while record rotates.
-- T 18.5: contact/near-contact established; vacuum sound rises.
-- T 19.0: wet film visibly narrows into slot.
-- T 19.5: diagonal comparison divider appears.
-- T 20.0: dry groove reflections follow behind the contact line.
-- T 20.5: wand lifts; no visible wet-film highlight remains on the hero area.
-- T 21.0: protagonist hands approach G6 safe grip.
+- T 18.0 brush fully engaged, record rotates first direction.
+- T 18.5 visible bristle lag / wet-film transport.
+- T 19.0 one dirt/fibre cluster is displaced through the contact region.
+- T 19.25 REVERSE ring lights.
+- T 19.5 rotation direction changes visibly.
+- T 20.0 macro fills more of frame; fibres trail opposite direction.
+- T 20.5 label chip clears; cleaning continues.
+- T 21.0 supply node begins lifting/parking away.
 
 ### Camera
 
-Locked G5 top-down.
-Very small 1.00 → 1.06 push during T 18.5–20.0.
+M1 → low oblique G9 macro.
+Macro must preserve the same physical brush orientation.
 
 ### Enter and exit
 
-Enter same record/contact axis as brush shot.
+Direct continuation of brush contact from shot 06.
 
-Exit dry G1 + G6 hands, preparing literal carry back to the turntable.
+Exit shows supply node clearly moving away, creating space for shot 08 vacuum node.
 
 ### Subject
 
-Source-derived:
-- vacuum removes cleaning liquid;
-- record should be dry before removal/handling.
+Manual-backed:
+brush cleaning in one direction + reverse direction.
+
+Real-world duration is compressed; order remains truthful.
 
 ### Sound
 
-- T 18.0: vacuum motor/hum opens.
-- T 18.5: suction contact accent.
-- T 19.0: filtered broadband suction peaks.
-- T 20.0: suction thins while cleanGold overtone appears.
-- T 20.5: vacuum motor falls.
-- T 21.0: soft hand/edge contact.
+- brush/friction texture;
+- brief REVERSE click;
+- motor pitch/direction cue changes subtly;
+- no cinematic whoosh replacing physical motion.
 
 ---
 
-## 08 return-record: Back to the deck
+## 08 vacuum-collect — Vacuum
 
-T 21.0 to 24.0, illustrated, hard cut.
+T 21.0–24.0, illustrated, M1 + low macro.
 
 ### Composition
 
-Starts close on G6 safe grip lifting the dry record.
-A panel wipe follows the record circle back into the listening corner.
+Top process band:
+stage 04
+**ВАКУУМ**
 
-By T 22.5 the turntable is fully visible and the record approaches exact G2.
-By T 23.5 the record settles onto the platter, while tonearm remains at rest.
+Optional second line:
+**ЖИДКОСТЬ И ЗАГРЯЗНЕНИЯ УДАЛЯЮТСЯ ИЗ КАНАВОК**
 
-This visually confirms it is the same record.
+Start wide in exact M1:
+- supply node is visibly parked away;
+- vacuum node pivots in from the right;
+- front VACUUM button remains visible.
+
+Second half:
+low oblique macro of the collection slot and groove plane.
 
 ### Forms
 
-Dry record:
-- clear groove arcs;
-- same `label` orientation mark.
+Vacuum node:
+- longer clean metal wand than brush node;
+- no bristles;
+- dark continuous contact slot/lips.
 
-Room:
-G7 anchors return.
-
-Turntable:
-exact G2.
+Material:
+- wet region ahead of slot;
+- drier region behind slot;
+- black vinyl remains black.
 
 ### Overlays
 
-- one thin `cleanGold` circular path follows the record transfer;
-- no before/after label;
-- panel border becomes turntable plinth edge.
+VACUUM button ring activates only after node contact.
+
+3–5 restrained teal suction lines may converge into the slot, but the main proof is wet-ahead / dry-behind.
 
 ### Motion
 
-- T 21.0: G6 grip closes.
-- T 21.5: record lifts.
-- T 22.0: record travels through panel wipe; protagonist torso passes behind.
-- T 22.5: G2 turntable revealed.
-- T 23.0: record aligns above spindle.
-- T 23.5: record settles to exact G1.
-- T 24.0: hand leaves; playback mirror begins.
+- T 21.0 supply node is parked.
+- T 21.5 vacuum node pivots.
+- T 22.0 contact slot settles onto record.
+- T 22.25 VACUUM ring lights.
+- T 22.5 wet film begins converging to slot.
+- T 23.0 dry groove reflection emerges behind contact.
+- T 23.5 macro clearly shows wet/dry boundary traveling with record motion.
+- T 24.0 vacuum cue begins to fall, transition into comparison.
 
 ### Camera
 
-Close carry framing → top-down G2 over 12 frames.
-Final 0.5 s locked.
+M1 for recognition → low G9 macro for proof.
 
 ### Enter and exit
 
-Enter dry G1/G6 from shot 07.
+Same record plane from shot 07.
 
-Exit exact G2, matching shot 09 and deliberately recalling shot 03.
+Vacuum contact slot becomes the vertical/sliding comparator boundary in shot 09.
 
 ### Subject
 
-Source-derived:
-- dry record is handled safely and returned to platter.
+Manual-backed:
+collection node placement → VACUUM → liquid/contamination removed from surface/grooves.
 
 ### Sound
 
-- T 21.0: soft edge-contact sound.
-- T 21.5: short movement swish.
-- T 22.5: room tone returns warmer/wider.
-- T 23.5: spindle/platter placement click.
-- T 24.0: same motor cue as T 6.0, now cleaner/brighter.
+- metal pivot;
+- contact tick;
+- VACUUM button click;
+- suction rises;
+- liquid noise thins as surface dries.
 
 ---
 
-## 09 second-play: Same needle
+## 09 grooves-before-after — Before / after
 
-T 24.0 to 27.0, illustrated, hard cut.
+T 24.0–27.0, illustrated macro comparison.
 
 ### Composition
 
-**Exact visual mirror of shot 03.**
+This is evidence, not decoration.
 
-G2 turntable top-down copied pixel-for-pixel.
-Same G1 record scale.
-Same tonearm pivot.
-Same G3 macro inset timing/position.
+Exact G8 split:
+- left BEFORE;
+- right AFTER;
+- identical groove curvature and crop.
 
-Differences are limited to record cleanliness and graphic/audio state.
+Top process band:
+stage 05
+**ДО / ПОСЛЕ**
+
+The comparator line initially sits near centre and can slide 70–120 px once to reveal correspondence, then settles.
 
 ### Forms
 
-Identical to shot 03.
+BEFORE:
+- 20–40 dust marks;
+- 4–10 grit flecks;
+- 2–5 fibres;
+- broken highlight;
+- one recognisable dirt cluster copied from shot 02 macro.
 
-Pre-clean dust clusters near the macro contact are absent/reduced.
-All contour registration is stable.
+AFTER:
+- same groove structure;
+- same feature location;
+- 0–6 tiny incidental marks;
+- stable reflected line.
+
+Do not make AFTER blue, glowing, chrome-like, or unrealistically pristine.
 
 ### Overlays
 
-- same rotational cue arc, now `cleanTeal`;
-- same “CHK” contact word, smaller/cleaner;
-- after contact, smooth `cleanGold` and `cleanTeal` music arcs begin instead of crackle.
+Small secondary tags inside panels:
+- `ДО`
+- `ПОСЛЕ`
+
+No paragraph description.
 
 ### Motion
 
-- T 24.0: exact G2 start state.
-- T 24.5: start control / platter begins, matching T 6.5.
-- T 25.0: label rotation matches shot 03 rhythm.
-- T 25.5: tonearm pivots, matching T 7.5.
-- T 26.0: G3 inset appears.
-- T 26.5: stylus contacts exact G3 point; 1–3 px settle.
-- T 27.0: clean musical graphic flows into shot 10.
+- T 24.0 comparison opens on exact matched geometry.
+- T 24.5 comparator slides slightly to demonstrate registration.
+- T 25.0 one dirty fibre is highlighted on BEFORE only.
+- T 25.5 stable after-reflection sweeps across same groove position.
+- T 26.0 camera begins pulling from AFTER panel.
+- T 26.5 AFTER macro becomes physical record surface.
+- T 27.0 protagonist's G6 grip enters for return.
 
 ### Camera
 
-Exactly mirrors shot 03.
+Static matched macro for first 2 s, then controlled zoom-out from AFTER side.
 
 ### Enter and exit
 
-Enter exact G2 from shot 08.
+Vacuum contact line becomes comparator divider.
 
-Exit exact G3 into shot 10, mirroring 03 → 04.
+AFTER panel resolves into same record for shot 10.
 
 ### Subject
 
-Source-derived:
-same physical playback sequence.
+This is a visual comparison of the film's fictional record before/after the shown cleaning process.
 
-Narrative scope:
-this particular cleaned record is staged as audibly improved; no claim that cleaning fixes scratches/wear/every noise source.
+It does not claim cleaning repairs scratches or groove wear.
 
 ### Sound
 
-- T 24.0: motor cue mirrors T 6.0.
-- T 24.5: same start click as T 6.5.
-- T 25.5: same tonearm cue as T 7.5.
-- T 26.5: same physical “CHK” transient as T 8.5.
-- T 27.0: full stable motif A4–E5–C#5–B4 starts on eighths with no crackle mask.
+- vacuum tail ends at T 24.25;
+- comparison opens with dry paper/click cue;
+- BEFORE gets one tiny residual crackle tick;
+- AFTER gets stable clean bell/teal harmonic;
+- music motif begins reforming underneath.
 
 ---
 
-## 10 enjoy-music: Different ending
+## 10 return-record — Back to the deck
 
-T 27.0 to 30.0, illustrated, hard cut.
+T 27.0–30.0, illustrated, carry → G2.
 
 ### Composition
 
-Opening 1.0 s deliberately mirrors shot 04:
-- exact G3 stylus macro;
-- exact G4 reaction panel;
-- record/speaker source relationship.
+Start:
+close G6 safe grip on the cleaned/dry record.
 
-But:
-- no dirty registration;
-- smooth gold/teal music curves;
-- protagonist transitions from listening check to visible relief.
+Top label:
+stage 06
+**ПОВТОРНОЕ ПРОСЛУШИВАНИЕ**
 
-At T 28.0 the G4 panel border retracts.
-Camera pulls to the full G7 listening corner:
-- protagonist sits/leans back;
-- turning record remains visible;
-- speaker and lamp establish warm room depth;
-- the record collection frames the scene.
+The label remains only through T 28.5, then clears.
 
-Final frame is a resolved comic panel, not a technical end card.
+Room/listening setup returns.
+By T 29.5 the record is aligned to exact G2.
 
 ### Forms
 
-Character “relief/enjoyment” pose.
-Warmest room palette:
-`paper`, `sunset`, `lamp`, `wood`, `cleanGold`, `cleanTeal`.
-
-Record keeps rotating.
-Speaker motion is rhythmic/subtle.
+Improved V4 hand model:
+- clear thumb/finger opposition;
+- record edge thickness;
+- label orientation preserved.
 
 ### Overlays
 
-- 2–4 smooth music rings/curves from speaker/turntable;
-- one cleanGold curve passes behind protagonist, not across face;
-- no magenta/cyan offset;
-- no explanatory caption by default.
+A thin gold circular motion trace may guide the record toward the turntable.
+
+No process-machine graphics remain.
 
 ### Motion
 
-- T 27.0: exact mirror state opens.
-- T 27.5: smooth musical arc replaces the crackle event that occurred at T 9.5.
-- T 28.0: protagonist shoulders drop 18–22 px; mouth/eye pose softens.
-- T 28.5: reaction panel border retracts to reveal full room.
-- T 29.0: camera pulls back 1.0 → 0.82; record/speaker continue.
-- T 29.5: protagonist settles; one small hand/foot rhythmic motion may remain.
-- T 30.0: hold a strong final comic frame with turning record still readable.
+- T 27.0 safe grip established.
+- T 27.5 record leaves machine.
+- T 28.0 room panel opens.
+- T 28.5 turntable fully visible.
+- T 29.0 record aligns with spindle.
+- T 29.5 settles on platter.
+- T 30.0 hand leaves, exact playback mirror begins.
 
 ### Camera
 
-T 27–28 locked mirror.
-T 28.5–29.5 smooth pull-back.
-T 29.5–30 hold.
+Close carry → exact G2 top-down.
 
 ### Enter and exit
 
-Enter exact G3/G4 from shot 09.
+AFTER groove zoom-out from shot 09.
+
+Exact G2 into shot 11.
+
+### Subject
+
+Clean/dry record safely handled and returned for playback.
+
+### Sound
+
+- edge grip;
+- carry swish;
+- room tone returns;
+- spindle placement;
+- playback motor cue at cut.
+
+---
+
+## 11 second-play — Same needle
+
+T 30.0–33.0, illustrated, exact mirror.
+
+### Composition
+
+Pixel-match shot 03's G2/G3 geometry.
+
+The viewer should recognise the repeat before any “good” graphic appears.
+
+### Forms
+
+Same turntable, record, tonearm, macro crop.
+
+Only cleanliness and graphics differ.
+
+### Overlays
+
+- no magenta/cyan problem offset;
+- no crackle bolts;
+- clean gold/teal curves begin only after stylus contact.
+
+### Motion
+
+- T 30.0 exact G2 start.
+- T 30.5 same start click.
+- T 31.0 same label rotation.
+- T 31.5 same tonearm pivot.
+- T 32.0 same G3 inset.
+- T 32.5 same stylus contact.
+- T 33.0 stable music begins.
+
+### Camera
+
+Exact shot 03 mirror.
+
+### Enter and exit
+
+G2 from shot 10.
+
+G3/G4 geometry into shot 12.
+
+### Subject
+
+Same playback mechanics; film-local improvement after cleaning.
+
+### Sound
+
+Same physical cue chain as shot 03, minus crackle.
+Stable motif enters on contact/outgoing cut.
+
+---
+
+## 12 enjoy-music — Different ending
+
+T 33.0–36.0, illustrated, mirror → full room.
+
+### Composition
+
+First second mirrors shot 04:
+- same G3 stylus contact;
+- same G4 reaction panel.
+
+Difference:
+- stable contours;
+- no problem graphics;
+- listener softens instead of winces.
+
+At T 34.0 the reaction panel retracts into the full warm listening room.
+
+Final frame:
+- seated protagonist clearly enjoying music;
+- record still rotating;
+- speaker visible;
+- lamp / shelf / table provide depth;
+- no process label.
+
+### Forms
+
+Keep corrected V3 seated-pose requirements:
+- grounded legs;
+- shoulders dropped;
+- hands resting;
+- softened/closed eyes;
+- small relaxed mouth curve.
+
+### Overlays
+
+2–4 smooth gold/teal music curves.
+No explanatory end card.
+
+### Motion
+
+- T 33.0 mirror opens.
+- T 33.5 clean musical arc corresponds to the crackle beat from shot 04.
+- T 34.0 shoulders drop / face relaxes.
+- T 34.5 panel retracts to room.
+- T 35.0 camera pulls back.
+- T 35.5 pose settles; small rhythmic speaker/foot movement may remain.
+- T 36.0 strong held comic ending.
+
+### Camera
+
+Mirror locked first second, then smooth room pull-back.
+
+### Enter and exit
+
+Exact playback/reaction mirror.
 
 No loop requirement.
-End on emotional resolution and a still-readable record/listening setup.
 
 ### Subject
 
-No additional technical claim.
-
-Emotional/narrative resolution:
-the protagonist is satisfied with the improved playback.
+Emotional resolution only.
 
 ### Sound
 
-- T 27.0: full procedural motif A4–E5–C#5–B4, stable and unmasked.
-- T 27.5: warm chord pad opens; smooth speaker pulse.
-- T 28.0: soft cleanGold bell overtone on relaxed reaction.
-- T 28.5: room/stereo ambience widens.
-- T 29.0: bass foundation enters lightly.
-- T 29.5: motif resolves on A4/E5 dyad.
-- T 30.0: natural musical tail, no terminal impact.
+- stable motif;
+- warm pad;
+- clean bell;
+- room/stereo width;
+- soft bass;
+- natural tail.
 
-## Storyboard self-review
+# Storyboard self-review
 
-### Arithmetic
+## Arithmetic
 
-- 10 shots × 3.0 s = 30.0 s.
-- Each shot boundary is a multiple of 0.5 s.
-- 30.0 s × 24 fps = 720 frames.
-- 120 bpm → 0.5 s beat, 2.0 s bar.
-- 30.0 / 2.0 = 15 whole bars.
-- Midpoint is T 15.0 exactly and lies on a beat/downbeat boundary.
+- 12 shots × 3.0 s = **36.0 s**
+- 36.0 s × 24 fps = **864 frames**
+- beat at 120 bpm = **0.5 s / 12 frames**
+- all boundaries are multiples of 0.5 s
+- bar = 2.0 s
+- total = **18 bars**
+- midpoint = **T 18.0**, exact shot boundary and beat/downbeat-aligned
 
-### Narrative readability
+PASS.
 
-The ten dominant verbs form a direct sentence:
+## Story readability
 
-**FIND → INSPECT → PLAY → HEAR → DECIDE → CLEAN → VACUUM → RETURN → PLAY AGAIN → ENJOY.**
+The V4 verb chain is:
 
-No shot requires a technical diagram to understand its dominant action.
+**FIND → INSPECT → PLAY → HEAR → PLACE → APPLY → CLEAN → VACUUM → VERIFY → RETURN → PLAY AGAIN → ENJOY**
 
-### Before/after proof
+The cleaning block is no longer one generic action. It has five separate readable process beats:
+- PLACE machine/record;
+- APPLY solution;
+- CLEAN/REVERSE;
+- VACUUM;
+- VERIFY before/after.
 
-Shots 03/09 and 04/10 deliberately reuse:
-- G1;
-- G2;
-- G3;
-- G4;
-- timing pattern.
+PASS by storyboard design.
 
-Therefore the improvement is staged as a controlled visual comparison, not merely a palette change.
+## Product identity
 
-### Safe area
+Shots 05–08 require simultaneously visible:
+- black depthful body;
+- record/clamp;
+- left brush node or right vacuum node as appropriate;
+- white four-button front plate;
+- active button cue;
+- process label.
 
-All must-read coordinates in G1–G7 are inside x 60–940 and y 220–1540.
-The rightmost critical playback anchor is tonearm pivot x 900.
-No required text sits in the bottom 380 px.
+The product proof sheet already demonstrated that these elements survive quarter scale.
 
-### Research traceability
+PASS as a storyboard contract.
 
-- handling: shots 01, 05, 08;
-- visible contamination: shot 02;
-- playback mechanics: shots 03, 09;
-- cleaning: shots 05–07;
-- improved listening for this fictional record: shots 09–10 with explicit narrative limitation.
+## Physical causality
 
-### V3 anti-ambiguity check
+PUMP cannot precede brush/feed-node engagement.
+VACUUM cannot precede vacuum-node contact.
+Supply node clears before vacuum node enters.
+Wet film becomes dry only behind the vacuum contact path.
+REVERSE changes actual motion, not only text.
 
-A still from each shot must visibly contain the concrete noun and verb:
-- hand + sleeve/record;
-- eye/lamp + dusty grooves;
-- record + turntable + descending tonearm;
-- playing stylus/speaker + reacting face;
-- lifted record + cleaning tools;
-- wet rotating record + contacting brush;
-- rotating wet record + contacting vacuum wand;
-- dry record + safe carry + turntable;
-- same turntable + same stylus descent;
-- same listener + stable music + turning record.
+PASS.
 
-If any six-frame scene sheet fails this test later, it is a P1 composition failure.
+## Label semantics
+
+Labels support visible action:
+- no label is the sole evidence of a phase;
+- no paragraph subtitles;
+- top safe zone remains clear of machine controls/contact.
+
+PASS.
+
+## Before/after proof
+
+G8 uses identical groove geometry and a matched contamination cluster from shot 02.
+AFTER differs in physical contamination/reflection, not by magical recolouring.
+
+PASS.
+
+## Dirty vs clean playback mirror
+
+Shots 03/11 and 04/12 preserve G2/G3/G4.
+This keeps the final improvement structural and immediately comparable.
+
+PASS.
+
+## Safe area
+
+Critical product anchors:
+- control plate and buttons remain within x 350–710, y 985–1265;
+- record centre (535,785);
+- node pivots x 285/790;
+- process labels x 90–930, y 225–350;
+all inside must-read safe area.
+
+PASS.
+
+## Research traceability
+
+- machine silhouette / controls / node arrangement → physical Myllo video;
+- START / PUMP / REVERSE / VACUUM sequence → Myllo instruction manual;
+- vacuum removes liquid + contamination → manual;
+- general handling/playback → V3 retained research;
+- existing Myllo animation used only as brand/explanation precedent, not as physical authority.
+
+PASS.
+
+## V4 anti-ambiguity test
+
+At quarter scale, a representative frame from each cleaning shot must answer:
+
+- 05: **what is it?** → dedicated record-cleaning machine
+- 06: **what happens?** → liquid is being fed/applied at the brush
+- 07: **what happens?** → brush is cleaning while rotation changes direction
+- 08: **what happens?** → vacuum node is removing wet liquid
+- 09: **what changed?** → same grooves are visibly cleaner after the process
+
+Any failure becomes P1 during scene critic.
+
+Storyboard delta: ready for Timeline.
