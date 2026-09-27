@@ -124,3 +124,9 @@ Native deliver note:
 - self-contained HTML player exists
 - shot list exists
 - the current Procedural Film Runtime MCP exposes render_preview, render_master and build_player, but no ffmpeg-transcode operation; therefore the template's separate 720×1280 phone transcode was not generated inside this chat/runtime surface. This is a harness-delivery limitation, not a source-film failure.
+
+
+## Final evaluation
+
+- native V2 evaluation: `docs/V2_FINAL_EVALUATION.md`
+- final documentation head: `cd4711fac725948f87a8c10b4feee9e724f9279f`
