@@ -152,6 +152,8 @@ These keys reuse the foundation names for compatibility, but their V3 values are
 | sunset | #D88A73 | final-room warmth |
 | dusk | #544767 | problem-state cool-violet |
 | red | #B33B32 | warning / tiny impact accent |
+| comicBorder | #211C1A | panel borders / graphic frame |
+| gutter | #F6EEDC | panel gutter / page break |
 
 ### 2.2 Subject palette
 
