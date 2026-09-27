@@ -10,7 +10,8 @@
   function macro(c,p,dry){
     if(p<=0)return;
     const box={x:110,y:720,w:860,h:590};
-    c.save();c.globalAlpha*=p;
+    c.save();
+    c.beginPath();c.rect(box.x,box.y,box.w,box.h*p);c.clip();
     L.v4GrooveMacro(c,box,{dirt:.38*(1-dry),wet:1-dry*.75,reflection:.55+.25*dry,seed:sd('macro')});
     c.save();c.translate(545,865);c.rotate(-.06);
     c.fillStyle=P.metal;c.strokeStyle=P.inkSoft;c.lineWidth=3;
