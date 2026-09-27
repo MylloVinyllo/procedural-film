@@ -252,6 +252,37 @@ Machine:
 Brand plate:
 - must remain legible at quarter-scale as a white control plate with four button points and central dark wordmark mass.
 
+### V4.13 Proof-driven refinements
+
+Evidence:
+- isolated model project: `experiments/v4-myllo-machine-model`
+- source commit: `777e282903719406591c314e66871f8e1818414e`
+- six-frame sheet job: `811b28d8-d166-4b6a-bdfd-ed8f03685c43`
+
+The proof established that the 3/4 machine silhouette and process-label concept work at quarter scale. Production scenes must refine four details exposed by that sheet:
+
+1. **Front plate spacing**
+   - keep a larger quiet zone around the central MYLLO VINYLLO wordmark;
+   - do not let button labels collide with the wordmark;
+   - button-ring centres remain the visual anchors, tiny labels remain secondary.
+
+2. **Node silhouette separation**
+   - supply node gets an exaggerated visible bristle fringe and slightly thicker lower brush mass;
+   - vacuum node gets a longer, cleaner metal wand and a dark continuous contact slot;
+   - the two nodes must remain distinguishable even when the front plate is only ~90 px wide in the quarter-scale sheet.
+
+3. **Wet-film restraint**
+   - the PUMP stage uses a narrow, physically thin wet sheen/ribbon rather than a broad turquoise ring;
+   - black vinyl remains dominant;
+   - fluid colour is an accent describing a real film, not a recolouring of the record.
+
+4. **Vacuum proof**
+   - during VACUUM, one side of the contact path remains visibly wet and the already-passed side becomes visibly dry;
+   - the wet/dry boundary follows the actual collection slot;
+   - suction lines are secondary to this material before/after cue.
+
+These refinements are mandatory for production, but the proof itself does not need further polishing.
+
 ---
 
 ## 1. Frame and comic composition
