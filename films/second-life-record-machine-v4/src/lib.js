@@ -2068,6 +2068,278 @@
   };
 
   // ===========================================================================
+  // V4 Myllo Vinyllo product helpers
+  // ===========================================================================
+
+  /**
+   * v4ProcessBand(ctx, {index, main, sub, p})
+   * Compact industrial/comic stage identifier in the V4 top safe zone.
+   */
+  lib.v4ProcessBand = (ctx, o = {}) => {
+    const p = o.p != null ? clamp(o.p) : 1;
+    if (p <= 0) return;
+    const x = 90, y = 235, w = 900 * p, h = 116;
+    ctx.save();
+    ctx.globalAlpha *= p;
+    ctx.fillStyle = pal.processBand;
+    const bg = lib.rrectPts(x, y, w, h, 16, 16);
+    ctx.beginPath(); lib.tracePath(ctx, bg, true); ctx.fill();
+    ctx.strokeStyle = pal.comicBorder; ctx.lineWidth = 4; ctx.stroke();
+
+    ctx.fillStyle = pal.mylloRingActive;
+    const idx = lib.rrectPts(x + 16, y + 16, 78, 84, 12, 12);
+    ctx.beginPath(); lib.tracePath(ctx, idx, true); ctx.fill();
+
+    lib.text(ctx, String(o.index != null ? o.index : 0).padStart(2, '0'), x + 55, y + 61, {
+      size: 32, weight: 800, color: pal.processText, align: 'center', baseline: 'middle'
+    });
+    lib.text(ctx, o.main || '', x + 118, y + (o.sub ? 45 : 60), {
+      size: o.mainSize || 42, weight: 800, color: pal.processText, align: 'left', baseline: 'middle'
+    });
+    if (o.sub) lib.text(ctx, o.sub, x + 118, y + 83, {
+      size: o.subSize || 24, weight: 650, color: pal.paperShade, align: 'left', baseline: 'middle'
+    });
+    ctx.restore();
+  };
+
+  function v4FillPoly(ctx, pts, fill, stroke = pal.ink, width = 3, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    lib.tracePath(ctx, pts, true);
+    ctx.fill();
+    if (stroke) {
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = width;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function v4Ellipse(ctx, cx, cy, rx, ry, fill, stroke = pal.ink, width = 2, alpha = 1) {
+    v4FillPoly(ctx, lib.ellipsePts(cx, cy, rx, ry, 56), fill, stroke, width, alpha);
+  }
+
+  function v4Button(ctx, x, y, label, active) {
+    ctx.save();
+    ctx.strokeStyle = active ? pal.mylloRingActive : pal.mylloRing;
+    ctx.lineWidth = active ? 8 : 5;
+    ctx.beginPath(); ctx.arc(x, y, 31, 0, TAU); ctx.stroke();
+    ctx.fillStyle = pal.mylloButton;
+    ctx.beginPath(); ctx.arc(x, y, 21, 0, TAU); ctx.fill();
+    if (active) {
+      ctx.strokeStyle = pal.processText; ctx.lineWidth = 1.5; ctx.globalAlpha *= 0.5;
+      ctx.beginPath(); ctx.arc(x, y, 39, 0, TAU); ctx.stroke();
+    }
+    ctx.restore();
+    lib.text(ctx, label, x, y - 47, {
+      size: 17, weight: 750, color: pal.mylloPanelInk, align: 'center', baseline: 'middle'
+    });
+  }
+
+  function v4Node(ctx, pivotX, pivotY, engage, brush) {
+    engage = clamp(engage);
+    const parkA = brush ? -1.05 : -2.05;
+    const workA = brush ? 0.62 : 2.45;
+    const a = lerp(parkA, workA, ease.inOutCubic(engage));
+    const len = brush ? 255 : 290;
+    const cx = pivotX + Math.cos(a) * len * 0.48;
+    const cy = pivotY + Math.sin(a) * len * 0.48;
+
+    // pivot column and joint
+    v4Ellipse(ctx, pivotX, pivotY, 39, 15, pal.metal, pal.inkSoft, 2.5);
+    v4FillPoly(ctx, [[pivotX-20,pivotY],[pivotX+20,pivotY],[pivotX+20,pivotY-108],[pivotX-20,pivotY-108]], pal.metal, pal.inkSoft, 2.5);
+    v4Ellipse(ctx, pivotX, pivotY-108, 22, 9, pal.white, pal.inkSoft, 1.5, 0.82);
+
+    // metal cylinder
+    v4FillPoly(ctx, lib.capsulePts(cx, cy, len, brush ? 30 : 25, a, 50), pal.metal, pal.inkSoft, 2.3);
+    const tipX = pivotX + Math.cos(a) * len * 0.94;
+    const tipY = pivotY + Math.sin(a) * len * 0.94;
+    v4Ellipse(ctx, tipX, tipY, brush ? 19 : 15, brush ? 10 : 8, pal.white, pal.inkSoft, 1.2, 0.7);
+
+    if (brush) {
+      // Exaggerated bristle fringe survives quarter-scale.
+      const nx = -Math.sin(a), ny = Math.cos(a);
+      const bx = cx + nx * 30, by = cy + ny * 30;
+      ctx.save();
+      ctx.strokeStyle = engage > 0.72 ? pal.mylloBristleWet : pal.mylloBristle;
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      for (let i = -9; i <= 9; i++) {
+        const u = i * 8.2;
+        const x0 = bx + Math.cos(a) * u, y0 = by + Math.sin(a) * u;
+        ctx.beginPath(); ctx.moveTo(x0, y0);
+        ctx.lineTo(x0 + nx * (20 + (i & 1) * 7), y0 + ny * (20 + (i & 1) * 7));
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else {
+      // Vacuum slot is longer and graphically continuous.
+      const nx = -Math.sin(a), ny = Math.cos(a);
+      const sx = cx + nx * 24, sy = cy + ny * 24;
+      ctx.save();
+      ctx.strokeStyle = pal.vacuum; ctx.lineWidth = 9; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sx - Math.cos(a) * 92, sy - Math.sin(a) * 92);
+      ctx.lineTo(sx + Math.cos(a) * 92, sy + Math.sin(a) * 92);
+      ctx.stroke();
+      ctx.restore();
+    }
+    return { angle:a, cx, cy, tipX, tipY };
+  }
+
+  /**
+   * v4MylloMachine(ctx, opts)
+   * Canonical 3/4 Myllo machine. The record and control plate retain M1/M2 anchors.
+   * opts:
+   *  rotation (radians), supply 0..1, vacuum 0..1, active 'START'|'PUMP'|'REVERSE'|'VACUUM'|null,
+   *  wet 0..1, dry 0..1, reverse bool, alpha
+   */
+  lib.v4MylloMachine = (ctx, o = {}) => {
+    const alpha = o.alpha != null ? o.alpha : 1;
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+
+    const top = [[185,620],[835,620],[950,900],[110,900]];
+    const front = [[110,900],[950,900],[895,1370],[155,1370]];
+    const right = [[835,620],[950,900],[895,1370],[825,1090]];
+    v4FillPoly(ctx, front, pal.mylloBody, pal.ink, 6);
+    v4FillPoly(ctx, right, pal.mylloEdge, pal.inkSoft, 3, 0.95);
+    v4FillPoly(ctx, top, pal.mylloTop, pal.ink, 5);
+
+    // record
+    v4Ellipse(ctx, 535, 785, 310, 118, pal.vinyl, pal.vinylEdge, 5);
+    ctx.save();
+    for (let i = 0; i < 13; i++) {
+      const rr = 290 - i * 15;
+      ctx.strokeStyle = pal.groove;
+      ctx.lineWidth = i % 4 === 0 ? 1.6 : 0.8;
+      ctx.globalAlpha = i % 4 === 0 ? 0.42 : 0.28;
+      ctx.beginPath();
+      ctx.ellipse(535, 785, rr, 116 * (rr/310), 0, 0, TAU);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // thin wet film, deliberately not a broad recolouring
+    const wet = clamp(o.wet || 0);
+    if (wet > 0) {
+      ctx.save();
+      ctx.strokeStyle = pal.mylloWetPale;
+      ctx.globalAlpha *= 0.2 + 0.35 * wet;
+      ctx.lineWidth = 8 + 4 * wet;
+      for (let k = 0; k < 3; k++) {
+        ctx.beginPath();
+        ctx.ellipse(535,785,205+k*27,78+k*10,0,0.15,5.7);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // dry-ahead/behind material wedge during vacuum
+    const dry = clamp(o.dry || 0);
+    if (dry > 0) {
+      ctx.save();
+      ctx.strokeStyle = pal.groove;
+      ctx.globalAlpha *= 0.55 * dry;
+      ctx.lineWidth = 2.2;
+      for (let k=0;k<5;k++) {
+        const rr=215+k*20;
+        ctx.beginPath();
+        ctx.ellipse(535,785,rr,82+k*7,0,3.35,5.85);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // label / rotation tick / clamp
+    v4Ellipse(ctx, 535,785,92,35,pal.label,pal.labelDeep,2.5);
+    const a = o.rotation || 0;
+    ctx.save(); ctx.strokeStyle = pal.white; ctx.globalAlpha *= .8; ctx.lineWidth = 4.5;
+    ctx.beginPath(); ctx.moveTo(535,785); ctx.lineTo(535+Math.cos(a)*68,785+Math.sin(a)*25); ctx.stroke(); ctx.restore();
+    v4Ellipse(ctx,535,800,68,29,pal.metal,pal.inkSoft,2.5);
+    v4FillPoly(ctx,[[500,798],[570,798],[558,740],[512,740]],pal.metal,pal.inkSoft,2.5);
+    v4Ellipse(ctx,535,741,24,9,pal.white,pal.inkSoft,1.5,.8);
+
+    const supply = v4Node(ctx,285,645,o.supply || 0,true);
+    const vacuum = v4Node(ctx,790,645,o.vacuum || 0,false);
+
+    // front control plate
+    v4FillPoly(ctx, lib.rrectPts(350,985,360,280,126,16), pal.mylloPanel, pal.mylloPanelInk, 3);
+    // quiet middle wordmark zone + thin routing rectangle
+    ctx.save(); ctx.strokeStyle = pal.mylloPanelInk; ctx.lineWidth = 1.5; ctx.globalAlpha *= .6;
+    ctx.beginPath(); ctx.roundRect(408,1066,244,119,12); ctx.stroke(); ctx.restore();
+    v4Button(ctx,450,1045,'START',o.active==='START');
+    v4Button(ctx,610,1045,'REVERSE',o.active==='REVERSE');
+    v4Button(ctx,450,1200,'PUMP',o.active==='PUMP');
+    v4Button(ctx,610,1200,'VACUUM',o.active==='VACUUM');
+    lib.text(ctx,'MYLLO',530,1110,{size:31,weight:900,color:pal.mylloPanelInk,align:'center',baseline:'middle'});
+    lib.text(ctx,'VINYLLO',530,1146,{size:31,weight:900,color:pal.mylloPanelInk,align:'center',baseline:'middle'});
+    v4Ellipse(ctx,530,1325,12,7,pal.mylloBlueLed,null,0);
+    ctx.save();ctx.fillStyle=pal.mylloBlueLed;ctx.globalAlpha*=.18;ctx.beginPath();ctx.arc(530,1325,21,0,TAU);ctx.fill();ctx.restore();
+
+    ctx.restore();
+    return { supply, vacuum };
+  };
+
+  /**
+   * v4GrooveMacro(ctx, box, opts)
+   * Draws a concrete groove field suitable for matched BEFORE/AFTER comparisons.
+   * opts: dirt 0..1, wet 0..1, reflection 0..1, seed, label
+   */
+  lib.v4GrooveMacro = (ctx, box, o = {}) => {
+    const x=box.x,y=box.y,w=box.w,h=box.h;
+    const dirt=clamp(o.dirt != null ? o.dirt : 0.5);
+    const wet=clamp(o.wet || 0);
+    const seed=o.seed != null ? o.seed : 1;
+    const R=lib.rng(seed);
+
+    ctx.save();
+    ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+    ctx.fillStyle=pal.vinyl;ctx.fillRect(x,y,w,h);
+
+    const cx=x+w*.28, cy=y+h*1.18;
+    ctx.save();
+    for(let i=0;i<22;i++){
+      const rr=180+i*18;
+      ctx.strokeStyle=i%5===0?pal.groove:pal.vinylEdge;
+      ctx.lineWidth=i%5===0?2:1;
+      ctx.globalAlpha=i%5===0?.55:.7;
+      ctx.beginPath();ctx.arc(cx,cy,rr,4.1,6.05);ctx.stroke();
+    }
+    ctx.restore();
+
+    // moving/reflected groove highlight
+    const refl=clamp(o.reflection != null ? o.reflection : 0.75);
+    ctx.save();ctx.strokeStyle=wet>0?pal.mylloWetPale:pal.white;ctx.globalAlpha=.12+.32*refl;ctx.lineWidth=wet>0?5:2.3;
+    for(let i=0;i<5;i++){const rr=260+i*28;ctx.beginPath();ctx.arc(cx,cy,rr,4.55,5.35);ctx.stroke();}
+    ctx.restore();
+
+    const dustN=Math.round(4+dirt*32);
+    ctx.save();
+    for(let i=0;i<dustN;i++){
+      const px=x+28+R()*(w-56), py=y+60+R()*(h-110);
+      ctx.fillStyle=i%5===0?pal.grit:pal.dust;
+      ctx.globalAlpha=.45+.45*dirt;
+      ctx.beginPath();ctx.arc(px,py,1.8+R()*3.8,0,TAU);ctx.fill();
+    }
+    const fibres=Math.round(dirt*5);
+    ctx.strokeStyle=pal.dust;ctx.lineWidth=2.1;ctx.globalAlpha=.7*dirt;
+    for(let i=0;i<fibres;i++){
+      const px=x+70+R()*(w-140), py=y+100+R()*(h-180), len=32+R()*46, a=-.5+R()*1.2;
+      ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo(px+Math.cos(a)*len*.5,py+Math.sin(a)*len*.65,px+Math.cos(a)*len,py+Math.sin(a)*len);ctx.stroke();
+    }
+    ctx.restore();
+
+    if(o.label) lib.text(ctx,o.label,x+22,y+44,{size:28,weight:800,color:pal.processText,align:'left',baseline:'middle'});
+
+    ctx.restore();
+    ctx.save();ctx.strokeStyle=pal.comicBorder;ctx.lineWidth=4;ctx.strokeRect(x,y,w,h);ctx.restore();
+  };
+
+  // ===========================================================================
   // Read-only
   // ===========================================================================
 
