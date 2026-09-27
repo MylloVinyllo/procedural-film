@@ -286,8 +286,8 @@
       if(clear>.7){
         const p=sstep(.7,1,clear);
         const support=[390+45*p,1110-75*p];
-        L.v4ArmIK(c,{shoulder:[205,1290],target:support,l1:170,l2:150,bend:-1,
-          upperWidth:68,foreWidth:52,handScale:.56,handRot:.18,grip:'edge',alpha:p});
+        L.v4ArmIK(c,{shoulder:[455,805],target:support,l1:185,l2:175,bend:-1,
+          upperWidth:72,foreWidth:52,handScale:.56,handRot:.18,grip:'edge',alpha:p});
       }
 
       // face re-drawn last for crisp story priority
