@@ -183,6 +183,7 @@ function sources({ fixtures = false, only = null, player = true, needMusic = fal
     label,
     scenesDir,
     sceneFiles,
+    componentFiles,
     shotFile,
     musicFile: fs.existsSync(musicFile) ? musicFile : null,
     warnings,
