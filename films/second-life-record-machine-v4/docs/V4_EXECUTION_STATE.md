@@ -15,8 +15,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 |---|---|---|---|
 | Brief | COMPLETE | `docs/V4_BRIEF.md` | Setup |
 | Setup | COMPLETE | V3 accepted source copied; smoke + baseline native gate green | Product reference / Research |
-| Product reference / Research | IN PROGRESS | Drive manual + product videos located and mounted | freeze product geometry/process map |
-| Art Bible delta | PENDING | `docs/art-bible.md` | after product reference |
+| Product reference / Research | COMPLETE | Myllo manual + physical video + prior brand animation + V4 phase map | Art Bible delta |
+| Art Bible delta | IN PROGRESS | add Myllo product model, label system, groove before/after, cleaning camera grammar | palette + fixture verification |
 | Storyboard delta | PENDING | `docs/storyboard.md` | after art bible |
 | Timeline | PENDING | `src/timeline.js` | after storyboard |
 | Stub/sequence validation | PENDING | runtime evidence | after timeline |
@@ -115,3 +115,45 @@ Exact next action:
 2. freeze a drawable 3/4 product model;
 3. map V4 labels to real physical stages;
 4. only then edit art bible / storyboard.
+
+
+### TX-V4-002 result — Product reference / Research
+
+Captured:
+- `.tmp/research/05-myllo-manual-v4.md`
+  - source: `guide-08-01-25.pdf`
+  - product/process facts: START, PUMP, REVERSE, VACUUM; supply node; collection node; brush contact; vacuum removal; dimensions/specs
+- `.tmp/research/06-myllo-physical-video-v4.md`
+  - source: `велика мийка.mov`
+  - physical black metal body; silver clamp; left brush/supply node; right vacuum node; white branded four-button front plate; elevated 3/4 product view
+- `.tmp/research/07-myllo-animation-reference-v4.md`
+  - source: `Ютуб + субтитры+ озвучка.mp4`
+  - prior Myllo explanatory animation used only as brand/explanation precedent
+- `.tmp/research/08-v4-product-phase-map.md`
+  - semantic map from machine reveal → solution/brush → reverse → vacuum → before/after → repeat playback
+
+Research commits:
+- `995d9e5759717497ecb828fe981e7149da43c4ee`
+- `fc41ffdd3d64131f0eced0ae0495f4ce10222809`
+- `3fef9733326cf209fab4460644b7598b7e93ca6b`
+- `c37139519817d83a061c6c805a6d755c737c1d2d`
+
+Research closure:
+- no machine geometry will be invented from memory;
+- V4 is anchored to the actual Myllo Vinyllo legacy/large washer shown in the private reference;
+- manual/video discrepancy risk is documented rather than silently merged.
+
+## Active transaction
+
+**TX-V4-003 — Art Bible delta**
+
+Required:
+1. preserve V3 comic character/turntable language unless explicitly overridden;
+2. publish a drawable Myllo machine model from the captured physical reference;
+3. define 3/4 cleaning camera geometry;
+4. define exact front control plate/buttons and active-state highlights;
+5. define solution/brush/vacuum material motion;
+6. define dynamic top action-label system;
+7. define matched groove BEFORE/AFTER macro;
+8. mirror all new palette keys into `src/lib.js`;
+9. run palette/fixture verification before Storyboard.
