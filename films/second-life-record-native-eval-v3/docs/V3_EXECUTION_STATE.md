@@ -36,8 +36,8 @@ If the ChatGPT stream times out:
 | Research | COMPLETE | `.tmp/research/00-phase-map.md` + four authoritative captures | Art Bible |
 | Art Bible | COMPLETE | `docs/art-bible.md` + mirrored `src/lib.js` + palette sheet | Storyboard |
 | Storyboard | COMPLETE | `docs/storyboard.md`, 30 s / 10 shots / self-review closed | Timeline |
-| Timeline | IN PROGRESS | materialise storyboard data + flat cue list | stubgen validation |
-| Stub pass | PENDING | runtime jobs | after timeline |
+| Timeline | COMPLETE | `src/timeline.js`, exact storyboard data / cues | Stub pass |
+| Stub pass | IN PROGRESS | stubgen + materialised ten stubs | native gate + preview |
 | Scenes | PENDING | scene files + six-frame sheets | after stub |
 | Music | PENDING | `src/music.js` + audio QA | after scenes |
 | Critic waves | PENDING | whole-film sheet + fresh corrections | after music |
@@ -256,3 +256,42 @@ Exact next action:
 2. run native stubgen;
 3. materialise the generated stubs;
 4. run full native gate and half-scale stub preview before scene investment.
+
+
+## TX-V3-006 result — Timeline
+
+Output:
+- `src/timeline.js`
+- commit `71d05968987f93c5d2e6236015bc38ff77cfa382`
+
+Timeline:
+- 10 shots;
+- 30.000 s;
+- 720 frames;
+- no gaps/overlaps by construction;
+- flat sound-cue list collected from storyboard.
+
+Native stubgen:
+- job `13c22115-5fab-41d0-97f7-1887ea930cda` — SUCCEEDED
+- generated all ten expected scene stubs.
+
+Materialised stubs:
+- commit `ae37f26f9dc86490d082416dec973f6acecc452f`
+- 10 scene files under `src/scenes/`.
+
+Status: Timeline COMPLETE.
+
+## Active transaction
+
+**TX-V3-007 — Stub pass**
+
+Input commit: `ae37f26f9dc86490d082416dec973f6acecc452f`
+
+Exact next actions:
+1. run native six-check on the complete stub film;
+2. if green, render 0.5-scale 30 s stub preview;
+3. inspect sequence/order;
+4. record gate + preview job IDs;
+5. only then start dense Scenes.
+
+If the stream breaks during either job, resume the exact job ID written here rather than requeueing.
