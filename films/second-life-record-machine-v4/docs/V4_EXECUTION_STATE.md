@@ -18,8 +18,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Product reference / Research | COMPLETE | Myllo manual + physical video + prior brand animation + V4 phase map | Art Bible delta |
 | Art Bible delta | COMPLETE | Myllo product model + labels + G8 before/after + proof sheet + green fixture gate | Storyboard delta |
 | Storyboard delta | COMPLETE | 36 s / 12 shots / five-beat cleaning block / self-review closed | Timeline |
-| Timeline | IN PROGRESS | materialise 12-shot storyboard + cue grid | stubgen validation |
-| Stub/sequence validation | PENDING | runtime evidence | after timeline |
+| Timeline | COMPLETE | 36 s / 12-shot timeline + cue grid | Stub/sequence validation |
+| Stub/sequence validation | IN PROGRESS | stubgen + clean 12-scene stub tree + green gate + sequence sheet | finish preview |
 | Scenes | PENDING | scene sheets | after sequence validation |
 | Music/SFX | PENDING | audio QA | after scenes |
 | Critic waves | PENDING | whole-film sheet + fixes | after audio |
@@ -248,3 +248,50 @@ Exact next actions:
 3. materialise 12 generated stubs into `src/scenes/`;
 4. run native six-check;
 5. render a lightweight whole-sequence stub/contact proof before dense V4 scene work.
+
+
+### TX-V4-005 result — Timeline
+
+Timeline output:
+- `src/timeline.js`
+- commit `16ecd49f987fa424be5b915e3be2c5c847340041`
+- 12 shots / 36.000 s / 864 frames
+- exact storyboard IDs, files, times and sound-cue grid
+
+Native stubgen:
+- job `ae41a43e-89e5-4704-b28f-4599fd49a981` — SUCCEEDED
+
+Materialised clean stub tree:
+- commit `51e8c881031f7ae5bd8e09bd898a9c1dcf8ced8a`
+- 12 expected V4 scene files
+- obsolete V3 filenames removed from the V4 working tree
+
+Timeline: COMPLETE.
+
+## Active transaction
+
+**TX-V4-006 — Stub / sequence validation**
+
+Native stub gate:
+- job `8fe38cea-0753-495c-8718-9447689cff82` — SUCCEEDED / 6 PASS
+- 12 shots cover 0..36 s with no gaps/overlaps
+- determinism PASS
+- draw PASS
+- cost PASS
+- max swept cost 39 ms
+- result `OK in 17.6s`
+
+Whole-sequence stub sheet:
+- job `b97d9675-7fdc-4f4f-ba42-522cc1dd52fa` — SUCCEEDED
+- samples land once per shot in correct 01→12 order
+- artifact retrieval had a transient connector read error after the successful job; the runtime job itself does not need rerun.
+
+Active half-scale stub preview:
+- job `7e7ddf2b-2553-418d-8c10-36ce391b7729`
+- input commit `51e8c881031f7ae5bd8e09bd898a9c1dcf8ced8a`
+
+Exact resume:
+1. query `7e7ddf2b-2553-418d-8c10-36ce391b7729`;
+2. do not queue a second preview unless it explicitly fails;
+3. on success close Stub/sequence validation;
+4. open dense Scenes with product-first batch 05–09 before polishing retained story scenes.
