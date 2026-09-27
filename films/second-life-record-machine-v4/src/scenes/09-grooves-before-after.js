@@ -56,7 +56,9 @@
 
       if(pull>0){
         const a=pull;
-        c.save();c.globalAlpha*=a;
+        const wipeX=1080*(1-a);
+        c.save();
+        c.beginPath();c.rect(wipeX,430,1080-wipeX,1050);c.clip();
         c.fillStyle=P.paper;c.fillRect(0,430,1080,1050);
         const cx=lerp(785,540,a),cy=lerp(875,930,a),rx=lerp(210,300,a),ry=lerp(340,118,a);
         c.fillStyle=P.vinyl;c.beginPath();c.ellipse(cx,cy,rx,ry,0,0,TAU);c.fill();
@@ -67,9 +69,11 @@
           c.beginPath();c.ellipse(cx,cy,rr,ry*(rr/rx),0,0,TAU);c.stroke();
         }
         c.globalAlpha=1;c.fillStyle=P.label;c.beginPath();c.ellipse(cx,cy,74,Math.max(25,ry*.24),0,0,TAU);c.fill();
+        if(a>.42){
+          hand(c,300,1110,-.15,.66*sstep(.42,.8,a));
+          hand(c,790,1110,Math.PI+.15,.66*sstep(.42,.8,a));
+        }
         c.restore();
-        hand(c,300,1110,-.15,.66*a);
-        hand(c,790,1110,Math.PI+.15,.66*a);
       }
 
       c.save();c.strokeStyle=P.comicBorder;c.lineWidth=5;c.strokeRect(18,18,1044,1884);c.restore();
