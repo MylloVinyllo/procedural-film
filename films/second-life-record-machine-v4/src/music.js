@@ -43,13 +43,15 @@
       [6, -6.0],
       [9, -5.0],
       [11.5, -8.0],
-      [12, -7.5],
-      [15, -5.2],
-      [18, -4.8],
-      [21, -5.3],
-      [24, -4.2],
-      [27, -1.8],
-      [30, -3.0],
+      [12, -7.2],
+      [15, -5.4],
+      [18, -5.0],
+      [21, -5.2],
+      [24, -4.4],
+      [27, -3.3],
+      [30, -2.6],
+      [33, -1.8],
+      [36, -3.0],
     ],
   };
 
@@ -1419,70 +1421,94 @@
     glide(11.5, 160, 85, .34, .045, { bus:'amb' });
     click(12.0, .045, 1200, 0);
 
-    // 12–15 · decision and transfer.
-    pad(12.0, 15.0, CH.question, .045, { att:.12, rel:.18, cut0:520, cut1:760, sine:true, room:.08 });
-    kick(12.5, .16, 'thud');
-    softMove(13.5, .34, .09, .05);
-    click(14.0, .10, 1250, 0);
-    click(14.5, .065, 2400, .16);
-    plip(15.0, 720, 1120, .12, { pan:.08, room:.16 });
+    // 12–15 · Myllo reveal / record placement / clamp / START.
+    pad(12.0, 14.9, CH.question, .042, { att:.12, rel:.2, cut0:520, cut1:760, sine:true, room:.08 });
+    softMove(12.5, .34, .085, .03);
+    click(13.5, .095, 1350, -.04);
+    click(14.0, .12, 1750, .06);
+    tock(14.0, .065, 820, { bus:'sfx', pan:.02, dec:.07 });
+    click(15.0, .15, 1500, -.08);
+    motor(15.0, 9.0, .055, 520);
 
-    // 15–18 · wet brush: new clean tonal identity enters without overpowering action.
-    pad(15.0, 18.0, CH.clean, .07, { att:.18, rel:.22, cut0:650, cut1:1100, sine:true, room:.14, hall:.04 });
-    motor(15.5, 2.5, .045, 520);
-    brush(16.0, .11, .08);
-    brush(16.5, .18, .12);
-    nz(16.5, .24, {
-      type:'bandpass', q:.7, f:[[0,1500],[.24,4200,'exp']],
-      amp:[[0,0],[.008,.08],[.09,.045,'exp'],[.24,FLOOR,'exp']],
-      pan:.12, bus:'sfx', key:'shff'
+    // 15–18 · supply node + PUMP + cleaning solution.
+    pad(15.0, 18.0, CH.clean, .065, { att:.16, rel:.22, cut0:650, cut1:1080, sine:true, room:.13, hall:.035 });
+    softMove(15.5, .38, .075, -.12);
+    brush(16.0, .085, -.08);
+    click(16.25, .14, 2050, -.08);
+    plip(16.5, 980, 1650, .10, { pan:-.12, room:.08 });
+    nz(16.5, .36, {
+      type:'bandpass', q:.68, f:[[0,620],[.36,1900,'exp']],
+      amp:[[0,0],[.012,.065],[.16,.05,'lin'],[.36,FLOOR,'exp']],
+      pan:-.1, bus:'sfx', key:'solution-feed'
     });
-    kalimba(17.0, hz('C#5'), .085, { dec:.9, room:.1, hall:.05, pan:.12 });
-    click(17.5, .06, 2800, .16);
+    brush(17.0, .12, -.04);
+    kalimba(17.45, hz('C#5'), .07, { dec:.75, room:.08, hall:.04, pan:.08 });
 
-    // 18–21 · vacuum: sustained mechanical layer with a clean overtone near release.
-    suction(18.0, 2.55, .095);
-    click(18.5, .105, 1050, -.12);
-    nz(19.0, .52, {
-      type:'bandpass', q:.55, f:[[0,380],[.25,980,'exp'],[.52,620,'exp']],
-      amp:[[0,0],[.04,.085],[.28,.1,'lin'],[.52,FLOOR,'exp']],
-      bus:'sfx', stereo:true, key:'suction-peak'
+    // 18–21 · brush cleaning + true REVERSE event.
+    pad(18.0, 21.0, CH.clean, .075, { att:.1, rel:.18, cut0:720, cut1:1220, sine:true, room:.12, hall:.04 });
+    brush(18.35, .12, -.1);
+    brush(18.85, .11, .08);
+    click(19.25, .15, 1850, .08);
+    glide(19.3, 145, 105, .34, .05, { bus:'amb' });
+    nz(19.45, .28, {
+      type:'bandpass', q:.72, f:[[0,500],[.14,920,'exp'],[.28,560,'exp']],
+      amp:[[0,0],[.02,.055],[.16,.04],[.28,FLOOR,'exp']],
+      bus:'sfx', stereo:true, key:'reverse-mech'
     });
-    glass(20.0, hz('E5'), .065, { dec:1.0, hall:.12, pan:.16 });
-    glide(20.5, 220, 90, .32, .04, { bus:'amb' });
-    click(21.0, .055, 1450, -.12);
+    brush(20.0, .13, .1);
+    brush(20.55, .085, -.06);
 
-    // 21–24 · carry back / return to deck.
-    softMove(21.5, .28, .065, -.08);
-    pad(22.5, 24.0, CH.home, .06, { att:.2, rel:.16, cut0:650, cut1:900, sine:true, room:.14 });
-    click(23.5, .11, 1450, 0);
-    motor(24.0, 3.0, .06, 520);
+    // 21–24 · collection node + VACUUM + wet-to-dry proof.
+    softMove(21.5, .34, .075, .12);
+    click(22.0, .11, 1200, .1);
+    click(22.25, .15, 1650, .08);
+    suction(22.25, 1.65, .105);
+    nz(22.5, 1.0, {
+      type:'bandpass', q:.55, f:[[0,360],[.4,820,'exp'],[1.0,460,'exp']],
+      amp:[[0,0],[.05,.07],[.55,.085],[1.0,FLOOR,'exp']],
+      bus:'sfx', stereo:true, room:.03, key:'vacuum-wet'
+    });
+    glass(23.5, hz('E5'), .055, { dec:.9, hall:.1, pan:.14 });
+    glide(23.65, 220, 95, .24, .035, { bus:'amb' });
 
-    // 24–27 · mirrored clean playback mechanics.
-    click(24.5, .13, 1650, .16);
-    softMove(25.5, .30, .065, .1);
-    click(26.5, .18, 3200, .06);
-    plip(26.5, 1450, 2200, .05, { pan:.06, room:.06 });
+    // 24–27 · matched BEFORE / AFTER evidence.
+    click(24.0, .07, 1450, 0);
+    paper(24.5, .045, .04);
+    crack(25.0, .075, -.12);
+    glass(25.5, hz('E5'), .075, { dec:1.0, hall:.14, pan:.12 });
+    ting(25.52, hz('A5'), .04, { dec:.55, hall:.1, pan:-.08 });
+    pad(26.35, 27.0, CH.home, .05, { att:.16, rel:.18, cut0:700, cut1:1050, sine:true, room:.1 });
+    kalimba(26.5, hz('C#5'), .07, { dec:.7, room:.08, hall:.04, pan:.08 });
 
-    // 27–30 · stable payoff: same motif now allowed to complete.
-    pad(27.0, 30.0, CH.open, .13, { att:.16, rel:.45, cut0:900, cut1:1700, room:.18, hall:.08, width:.62 });
-    sub(27.0, 30.0, 'A2', .095, { att:.05, rel:.28, sus:.72 });
+    // 27–30 · clean record returns to the listening deck.
+    softMove(27.5, .30, .065, -.08);
+    pad(28.5, 30.0, CH.home, .06, { att:.18, rel:.18, cut0:650, cut1:920, sine:true, room:.14 });
+    click(29.5, .11, 1450, 0);
+    motor(30.0, 3.0, .06, 520);
+
+    // 30–33 · mirrored clean playback mechanics.
+    click(30.5, .13, 1650, .16);
+    softMove(31.5, .30, .065, .1);
+    click(32.5, .18, 3200, .06);
+    plip(32.5, 1450, 2200, .05, { pan:.06, room:.06 });
+
+    // 33–36 · stable payoff: same motif now allowed to complete.
+    pad(33.0, 36.0, CH.open, .13, { att:.16, rel:.45, cut0:900, cut1:1700, room:.18, hall:.08, width:.62 });
+    sub(33.0, 36.0, 'A2', .095, { att:.05, rel:.28, sus:.72 });
     const motif=['A4','E5','C#5','B4'];
     for(let i=0;i<12;i++){
-      const t=27+i*.25;
-      kalimba(t, hz(motif[i%4]), i<4?.10:.085, { dec:.9, room:.12, hall:.09, delay:.05, pan:i%2?.13:-.13 });
+      const tt=33+i*.25;
+      kalimba(tt, hz(motif[i%4]), i<4?.10:.085, { dec:.9, room:.12, hall:.09, delay:.05, pan:i%2?.13:-.13 });
     }
-    glass(27.5, hz('E5'), .055, { dec:1.1, hall:.18, pan:.15 });
-    ting(28.0, hz('A5'), .065, { dec:.7, hall:.15, pan:-.12 });
-    pad(28.5, 30.0, CH.home, .06, { att:.18, rel:.35, cut0:900, cut1:1500, sine:true, room:.14, hall:.08 });
-    sub(29.0, 30.0, 'A2', .07, { att:.08, rel:.25, sus:.65 });
-    kalimba(29.5, hz('A4'), .09, { dec:1.0, room:.12, hall:.08, pan:-.08 });
-    kalimba(29.5, hz('E5'), .07, { dec:1.0, room:.12, hall:.08, pan:.08 });
-
-    // A very light physical pulse helps the final room feel alive, never a dance beat.
-    shaker(27.75, .025, .22);
-    shaker(28.75, .022, -.18);
-    shaker(29.75, .02, .16);
+    glass(33.5, hz('E5'), .055, { dec:1.1, hall:.18, pan:.15 });
+    ting(34.0, hz('A5'), .065, { dec:.7, hall:.15, pan:-.12 });
+    pad(34.5, 36.0, CH.home, .06, { att:.18, rel:.35, cut0:900, cut1:1500, sine:true, room:.14, hall:.08 });
+    sub(35.0, 36.0, 'A2', .07, { att:.08, rel:.25, sus:.65 });
+    kalimba(35.5, hz('A4'), .09, { dec:1.0, room:.12, hall:.08, pan:-.08 });
+    kalimba(35.5, hz('E5'), .07, { dec:1.0, room:.12, hall:.08, pan:.08 });
+    shaker(33.75, .025, .22);
+    shaker(34.75, .022, -.18);
+    shaker(35.75, .02, .16);
   }
 
   FILM.audio = {
