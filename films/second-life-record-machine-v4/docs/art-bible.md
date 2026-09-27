@@ -1,12 +1,258 @@
-# Art bible: Second Life of a Record
+# Art bible: Second Life of a Record — Machine-Cleaning V4
 
-The visual rules every V3 scene follows.
+The visual rules for V4. V3 comic/character rules remain the baseline unless a V4 override below is more specific.
 
 Where this file and a scene brief disagree on colour, weight, character model, prop model or comic grammar, this file wins.
 Where this file and `docs/storyboard.md` disagree on a position or time, the storyboard wins.
 
 This is a deliberate rewrite of native Procedural Film house sections 1–9 following `docs/reference-analysis.md`.
-V3 is an **animated comic**, not the default illustrated-vs-blueprint explainer.
+V4 remains an **animated comic**, but the cleaning section is now a product-specific Myllo Vinyllo process sequence rather than a generic cleaning abstraction.
+
+## V4 product-process overrides
+
+These rules were added after the V3 human review and the Myllo Vinyllo manual/video study.
+
+They override any older V3 rule that would make the cleaning machine generic, flat, top-down-only, or semantically ambiguous.
+
+### V4.1 Cleaning-machine identity is a P1 story requirement
+
+The machine is the **legacy/large Myllo Vinyllo vacuum washer** shown in the private product reference.
+
+A cleaning scene fails if the machine reads only as:
+- a black box;
+- a turntable;
+- a generic appliance;
+- a platter with two rods.
+
+Recognition depends on the combined silhouette:
+1. black metal body with visible depth;
+2. record + silver centre clamp on top;
+3. left supply/brush node with visible bristle bed;
+4. right collection/vacuum node;
+5. white front Myllo Vinyllo control plate;
+6. four round front buttons in a 2×2 arrangement;
+7. blue lower-front indicator.
+
+### V4.2 Canonical elevated 3/4 machine view — M1
+
+The default cleaning camera is elevated 3/4 front.
+
+At the canonical hero scale, screen-space anchors are:
+
+| Element | Canonical geometry |
+|---|---|
+| machine top back-left | (185, 620) |
+| machine top back-right | (835, 620) |
+| machine top front-right | (950, 900) |
+| machine top front-left | (110, 900) |
+| machine front lower-left | (155, 1370) |
+| machine front lower-right | (895, 1370) |
+| record ellipse centre | (535, 785) |
+| record ellipse radii | rx 310, ry 118 |
+| clamp ellipse centre | (535, 785) |
+| clamp radii | rx 58, ry 28 |
+| supply pivot | (285, 645) |
+| collection pivot | (790, 645) |
+| front control plate centre | (530, 1130) |
+| control plate size | 360 × 280 |
+| blue indicator | (530, 1330) |
+
+Small perspective adjustments are allowed, but:
+- front control plate remains visible;
+- top nodes remain readable;
+- record remains the largest moving object.
+
+### V4.3 Front control plate — M2
+
+The white front plate is a signature product cue.
+
+Canonical stage/control layout:
+
+| Button | Centre | Label |
+|---|---|---|
+| upper-left | (450, 1045) | START |
+| upper-right | (610, 1045) | REVERSE |
+| lower-left | (450, 1200) | PUMP |
+| lower-right | (610, 1200) | VACUUM |
+
+At hero scale:
+- button outer diameter 58–66 px;
+- metal centre 36–42 px;
+- inactive ring: `mylloRing`;
+- active ring: `mylloRingActive`, plus a restrained 2–4 px outer glow/bright edge;
+- central `MYLLO VINYLLO` wordmark is drawn as two stacked bold blocks, not as a generic circle icon;
+- thin dark routing line may connect the button positions as in the physical reference;
+- blue indicator is separate below the plate.
+
+Only the physically active stage button receives the bright ring.
+
+### V4.4 Supply / brush node — M3
+
+Viewer-left node:
+- vertical metal pivot column;
+- horizontal cylindrical housing;
+- dense brush/bristle bed visibly hanging below;
+- brush axis crosses a radial band of the record;
+- node physically pivots and settles before fluid/brush effects begin.
+
+At macro scale:
+- individual bristle groups are 2–4 px bundles;
+- contact compression 5–12 px;
+- wet bristles darken slightly;
+- no glow.
+
+### V4.5 Collection / vacuum node — M4
+
+Viewer-right node:
+- vertical metal pivot;
+- horizontal collection wand/housing;
+- contact slot / velvet lips visible on lower edge;
+- no brush bed.
+
+Vacuum semantics:
+- node pivots down first;
+- VACUUM button activates second;
+- wet film then converges into the slot;
+- dry groove reflections emerge behind the contact region.
+
+Never show vacuum as an energy beam.
+
+### V4.6 Cleaning liquid
+
+Liquid exists only after the PUMP stage.
+
+Visual states:
+- first contact: 3–8 small beads near feed/brush contact;
+- spread state: a thin turquoise/neutral wet ribbon carried by rotation;
+- brush state: shallow wet film, not thick foam;
+- vacuum state: film narrows toward collection slot;
+- dry state: wet highlight disappears.
+
+Keep the record black throughout.
+
+### V4.7 Reverse rotation
+
+REVERSE is a physical stage, not just a caption.
+
+The direction change must be visible through at least two of:
+- label orientation / radial marker direction;
+- moving groove reflection;
+- brush/wet-film motion;
+- short REVERSE button highlight;
+- a compact curved direction arrow.
+
+Do not rely only on text.
+
+### V4.8 Dynamic process-label system
+
+V4 introduces stage labels because human review showed that the machine process was not self-explanatory.
+
+Labels appear in the top safe zone:
+- x = 90–930;
+- y = 225–350;
+- must-read baseline near y 300;
+- never cover the machine controls or hand/tool contact.
+
+Default construction:
+- near-black/charcoal band or outlined comic plate;
+- small stage index block at left, 36–44 px;
+- main uppercase text 44–52 px;
+- optional second line 28–32 px only when needed;
+- V4 prototype language: Russian;
+- entrance 4–6 frames;
+- exit 4–6 frames;
+- no bouncing type.
+
+Preferred labels:
+- `ОЧИСТКА ПЛАСТИНКИ`
+- `МОЮЩИЙ РАСТВОР`
+- `ОЧИСТКА КАНАВОК`
+- `REVERSE · ОБРАТНОЕ ВРАЩЕНИЕ`
+- `ВАКУУМ`
+- optional second line: `ЖИДКОСТЬ И ЗАГРЯЗНЕНИЯ УДАЛЯЮТСЯ ИЗ КАНАВОК`
+- `ДО / ПОСЛЕ`
+- `ПОВТОРНОЕ ПРОСЛУШИВАНИЕ`
+
+The label supports the visible action; it never substitutes for it.
+
+### V4.9 Matched groove before/after — G8
+
+The comparison must use the same groove geometry.
+
+Canonical full comparison frame:
+- left panel: x 75–515, y 520–1230;
+- right panel: x 565–1005, y 520–1230;
+- gutter: 50 px;
+- groove macro centre in each panel: local x midpoint, y 900;
+- groove curvature/radius family identical on both sides.
+
+BEFORE:
+- 20–40 pale dust particles;
+- 4–10 darker grit flecks;
+- 2–5 fibres crossing groove bands;
+- broken/reflected highlight;
+- optional tiny badMagenta/badCyan offset on the highlight only.
+
+AFTER:
+- 0–6 incidental tiny marks;
+- same grooves;
+- stable reflection;
+- no chromatic problem offset.
+
+The record is not rendered mirror-clean or blue/teal after washing.
+
+### V4.10 Cleaning camera grammar
+
+Use three scales, not one:
+
+1. **Product recognition**
+   - elevated 3/4 M1;
+   - front controls + top nodes readable.
+
+2. **Process contact**
+   - low oblique macro of brush or vacuum node;
+   - record edge/grooves travel beneath stationary contact hardware.
+
+3. **Evidence**
+   - G8 matched macro.
+
+Top-down is allowed only as a secondary explanatory insert.
+
+### V4.11 Product-scene density target
+
+Every cleaning hero scene must simultaneously contain at least:
+- machine body;
+- record/clamp;
+- active node;
+- front control stage;
+- material response;
+- dynamic stage label;
+- one secondary depth cue / hand / reflection.
+
+But only one action remains dominant.
+
+### V4.12 V4 drawing-quality gate
+
+Hands:
+- visible thumb/finger opposition at clamp/node/button contact;
+- no mitten blob at the active control.
+
+Record:
+- ellipse/thickness/groove reflection consistent with camera;
+- label/clamp stays centred on record plane.
+
+Hardware:
+- metal cylinders have end caps, top highlight and a darker underside;
+- pivot joints are drawn, not implied by floating bars.
+
+Machine:
+- top plane, front plane and side plane separate clearly;
+- black body does not collapse into one flat rectangle.
+
+Brand plate:
+- must remain legible at quarter-scale as a white control plate with four button points and central dark wordmark mass.
+
+---
 
 ## 1. Frame and comic composition
 
@@ -202,6 +448,21 @@ These values are mirrored exactly into the marked subject block in `src/lib.js`.
 | cleanGold | #E3B74E | satisfying clean-music accent |
 | cleanTeal | #3A9990 | satisfying clean-music accent |
 | soundWord | #E95538 | short comic sound word |
+| mylloBody | #111416 | Myllo black metal front/side body |
+| mylloTop | #1B2023 | Myllo top plate |
+| mylloEdge | #07090A | deepest machine edge/recess |
+| mylloPanel | #F0EEE7 | white front control plate |
+| mylloPanelInk | #1C1D1E | wordmark / routing line |
+| mylloButton | #303236 | metal/dark pushbutton centre |
+| mylloRing | #A86235 | inactive orange/copper ring |
+| mylloRingActive | #F08B3E | active stage ring |
+| mylloBlueLed | #2F78E8 | lower-front blue indicator |
+| mylloBristle | #B7A171 | supply brush bristle |
+| mylloBristleWet | #6F705C | wet/darkened bristle |
+| mylloWet | #73BDB8 | thin wet-film body |
+| mylloWetPale | #B4E0D9 | wet-film highlight |
+| processBand | #22272A | dynamic top process label band |
+| processText | #FFF8E8 | process label text |
 
 ### 2.3 Technical / inset palette
 
