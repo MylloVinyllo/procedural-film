@@ -7,9 +7,9 @@
   const place=V.action('place-record'),press=V.action('press-pump');
 
   function panel(ctx,x,label,sub){
-    ctx.save();ctx.fillStyle='#f1ead9';ctx.fillRect(x+10,210,520,1490);ctx.strokeStyle='#2a2520';ctx.lineWidth=4;ctx.strokeRect(x+10,210,520,1490);
-    ctx.fillStyle='#25272b';ctx.font='800 27px system-ui';ctx.textAlign='center';ctx.fillText(label,x+270,270);
-    ctx.fillStyle='#6b6257';ctx.font='500 20px system-ui';ctx.fillText(sub,x+270,306);ctx.restore();
+    ctx.save();ctx.fillStyle=P.gutter;ctx.fillRect(x+10,210,520,1490);ctx.strokeStyle=P.comicBorder;ctx.lineWidth=4;ctx.strokeRect(x+10,210,520,1490);
+    ctx.fillStyle=P.ink;ctx.font='800 27px system-ui';ctx.textAlign='center';ctx.fillText(label,x+270,270);
+    ctx.fillStyle=P.inkFaint;ctx.font='500 20px system-ui';ctx.fillText(sub,x+270,306);ctx.restore();
   }
   function drawState(ctx,backend,state){
     // Canonical occlusion stack: body -> limbs -> product -> manipulated object -> hands.
@@ -27,7 +27,7 @@
 
   FILM.scene({id:ID,draw(ctx,tIn,info){
     const t=Math.max(0,Math.min(info.dur,tIn));
-    ctx.fillStyle='#ded3bd';ctx.fillRect(0,0,1080,1920);
+    ctx.fillStyle=P.paperShade;ctx.fillRect(0,0,1080,1920);
     // deliberately identical staging: only character backend differs
     panel(ctx,0,'A · PURE PROCEDURAL','canonical rig + procedural contours');
     panel(ctx,540,'B · COMPILED VECTOR','same rig + authored vector contours');
@@ -45,8 +45,8 @@
     }
     drawState(ctx,chars.left,left);drawState(ctx,chars.right,right);
 
-    ctx.save();ctx.fillStyle='#24272b';ctx.font='900 40px system-ui';ctx.textAlign='center';ctx.fillText(phase,540,155);
-    ctx.font='600 19px system-ui';ctx.fillStyle='#62584e';ctx.fillText('same semantic action · no scene-level hand geometry',540,183);
+    ctx.save();ctx.fillStyle=P.ink;ctx.font='900 40px system-ui';ctx.textAlign='center';ctx.fillText(phase,540,155);
+    ctx.font='600 19px system-ui';ctx.fillStyle=P.inkSoft;ctx.fillText('same semantic action · no scene-level hand geometry',540,183);
     ctx.restore();
   }});
 })();

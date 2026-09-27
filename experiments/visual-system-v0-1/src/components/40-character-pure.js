@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  const V=FILM.visual;
-  const C={skin:'#d5a27e',skinShadow:'#bd8261',shirt:'#6f7882',shirtDeep:'#535b64',ink:'#26282c',hair:'#24272b',tee:'#ece7dc'};
+  const V=FILM.visual,P=FILM.lib.pal;
+  const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
 
   function local(o,p){const r=o.root||[0,0],s=o.scale!=null?o.scale:1;return [(p[0]-r[0])/s,(p[1]-r[1])/s];}
   function setup(ctx,o,fn){const r=o.root||[0,0],s=o.scale!=null?o.scale:1;ctx.save();ctx.translate(r[0],r[1]);ctx.scale(s,s);fn();ctx.restore();}

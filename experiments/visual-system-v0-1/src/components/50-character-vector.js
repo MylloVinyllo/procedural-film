@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  const V=FILM.visual,A=FILM.vectorAssets.protagonist;
-  const C={skin:'#d5a27e',skinShadow:'#bd8261',shirt:'#657583',shirtDeep:'#46545f',ink:'#22262a',hair:'#25272b',tee:'#efe9dc'};
+  const V=FILM.visual,A=FILM.vectorAssets.protagonist,P=FILM.lib.pal;
+  const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
   const cache=Object.create(null),path=k=>cache[k]||(cache[k]=new Path2D(A[k]));
 
   function local(o,p){const r=o.root||[0,0],s=o.scale!=null?o.scale:1;return [(p[0]-r[0])/s,(p[1]-r[1])/s];}
