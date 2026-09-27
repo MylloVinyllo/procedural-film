@@ -571,3 +571,19 @@ Exact next actions:
 3. render 1080×1920 master;
 4. record artifact path / size / SHA-256;
 5. mark Deliver COMPLETE and hand V4 to human review.
+
+
+### TX-V4-010 preview result
+
+Half-scale preview:
+- job `0d1b81a8-fd10-48fa-8636-91f8e82a3d93` — SUCCEEDED
+- 540×960
+- 864 frames / 36.000 s
+- artifact `output/preview.mp4`
+- size 6,155,971 bytes
+- SHA-256 `0795afe2443abd5348e40c600583629351967227fdc58f026cf446ee57e8d880`
+
+Exact next action:
+- render one 1080×1920 master from the same V4 source state;
+- record its artifact metadata;
+- do not build/repair the HTML player.
