@@ -34,8 +34,8 @@ If the ChatGPT stream times out:
 | Setup | COMPLETE | scaffold + smoke + fixture gate + fixture render | Reference analysis |
 | Reference analysis | COMPLETE | `docs/reference-analysis.md` + Butterfly benchmark sheet | Research |
 | Research | COMPLETE | `.tmp/research/00-phase-map.md` + four authoritative captures | Art Bible |
-| Art Bible | IN PROGRESS | rewrite sections 1–10 for comic house + mirror palette into `src/lib.js` | palette verification |
-| Storyboard | PENDING | `docs/storyboard.md` | after art bible |
+| Art Bible | COMPLETE | `docs/art-bible.md` + mirrored `src/lib.js` + palette sheet | Storyboard |
+| Storyboard | IN PROGRESS | full 10-shot comic storyboard with shared geometry / sound grid | self-review then Timeline |
 | Timeline | PENDING | `src/timeline.js` | after storyboard |
 | Stub pass | PENDING | runtime jobs | after timeline |
 | Scenes | PENDING | scene files + six-frame sheets | after stub |
@@ -162,3 +162,50 @@ Required outputs:
 
 Exact next action:
 - write the full art bible and mirrored `src/lib.js` palette on this branch.
+
+
+## TX-V3-004 result — Art Bible
+
+Durable outputs:
+- full animated-comic art bible: `docs/art-bible.md`
+- art-bible main commit: `c0a813a7199ec18b7a3d1bf75ab52515852577ec`
+- comic border/gutter palette completion: `238328fab52a0d3cb8d30fb98404ce4effbb829c`
+- mirrored palette in `src/lib.js`: `b74a19edc6155ee5a3d0ae8afad4efdaf19edefc`
+
+Native verification:
+- fixture six-check on V3 palette head: job `38419297-e85f-417e-9557-41ec29240083` — SUCCEEDED / 6 PASS
+- fixture render: job `37526d09-a9a6-4b7c-ae35-7142bb5cdc90` — SUCCEEDED
+- isolated native palette-review project commit: `1e1d1e8002ef107dc1222c535143d562cdee323a`
+- 5-sample palette sheet: job `7f53d2c7-071e-4a09-9dbd-316efc8b8d5e` — SUCCEEDED
+- sheet: `output/snap/palette-sheet.png`
+
+Visual palette review:
+- all four palette pages were represented in the five samples;
+- warm paper/room colours separate cleanly from the cool technical plate;
+- rust protagonist, amber label/sleeve, teal cleaning, magenta/cyan problem and gold/teal clean-state accents are distinguishable;
+- dark physical prop colours are intentionally not used as technical-panel fills; `schemVinyl`, `schemClean`, `schemNoise` carry technical insets.
+
+Status: COMPLETE.
+
+## Active transaction
+
+**TX-V3-005 — Storyboard**
+
+Inputs:
+- `docs/V3_BRIEF.md`
+- `docs/reference-analysis.md`
+- `docs/art-bible.md`
+- research phase map
+- native `reference/shot-types.md`
+
+Required output:
+- 30 s / 10-shot storyboard;
+- beat/bar arithmetic;
+- acts;
+- one dominant verb per shot;
+- shared geometry for record / playback mirror / hand continuity / panel boundaries;
+- eight native subsections per shot;
+- timestamped sound cues;
+- self-review for safe area, story readability and arithmetic.
+
+Do not write Timeline until the storyboard self-review is closed.
