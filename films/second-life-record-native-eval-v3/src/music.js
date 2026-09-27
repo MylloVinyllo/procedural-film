@@ -27,7 +27,7 @@
 
   // Mix constants, tuned by measurement (tools/audio): loudness, peaks, per-bar profile.
   const MIX = {
-    trim: 1.05,
+    trim: 1.75,
     ceiling: 0.66, // soft limiter output ceiling (about -3.6 dBFS)
     knee: 0.5,
     bus: { drums: 0.6, perc: 0.8, bass: 0.3, pad: 0.26, keys: 0.6, bells: 0.45, lead: 0.5, sfx: 0.62, amb: 0.5 },
