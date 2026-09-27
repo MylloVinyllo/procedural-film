@@ -674,3 +674,24 @@ Exact resume:
 1. query `4e7d1797-f823-4388-ba7b-bb902b07e490`;
 2. if succeeded, record artifact metadata;
 3. then start one master render from the same source commit.
+
+
+### TX-V3-014 preview result
+
+Half-scale preview:
+- job `4e7d1797-f823-4388-ba7b-bb902b07e490` — SUCCEEDED
+- 540×960
+- 720 frames / 30.000 s
+- audio: 48 kHz stereo, peak 0.391
+- artifact: `output/preview.mp4`
+- size: 4,850,269 bytes
+- SHA-256: `3c62dcb62e0b4634ed2fa96777de66831389e51b228b8d66202235271670ea54`
+
+Active master render:
+- job `4ceb2189-1885-409a-899c-077e4f4dc610`
+- source commit `df552f1ded781799f40218d8fec390ab4368d2db`
+
+Exact resume:
+1. query `4ceb2189-1885-409a-899c-077e4f4dc610`;
+2. do not start another master unless this job explicitly fails;
+3. on success record artifact path / size / SHA-256 and mark Deliver COMPLETE.
