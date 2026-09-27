@@ -154,10 +154,10 @@
     line(c,[[505,715],[548,760],[585,710]],sd('collar'),2.2,P.inkSoft,.68);
     line(c,[[462,840],[520,900],[500,1115]],sd('fold1'),2,P.inkSoft,.42);
     line(c,[[690,820],[645,930],[690,1100]],sd('fold2'),2,P.inkSoft,.4);
-    drawHead(c,570,590,1.05,410,0,t);
-    // neck
+    // neck sits behind the head, not pasted on top of the jaw.
     const neck=rectPts(535,645,70,80);
     fill(c,neck,P.skin,.94);fill(c,[[570,645],[605,645],[605,725],[570,710]],P.skinShadow,.38);
+    drawHead(c,570,590,1.05,410,0,t);
   }
 
   function capsule(c,a,b,w,color,seed,alpha=.95){
@@ -254,22 +254,20 @@
       // protagonist base
       drawTorso(c,t);
 
-      // left stabilising arm reaches sleeve
-      const la0=[455,800],la1=[360,875],la2=[300,930];
-      capsule(c,la0,la1,72,P.shirt,sd('armL1'));
-      capsule(c,la1,la2,62,P.skin,sd('armL2'));
-      drawHand(c,295,935,-.2,.72,'edge',sd('handL'));
-
       // sleeve leaves shelf and moves toward the character
       const sx=lerp(210,410,take),sy=lerp(830,890,take),srot=lerp(-.04,.06,take);
       drawSleeve(c,sx,sy,srot,.82,1);
 
-      // right arm follows the record extraction
+      // Hands are target-driven. Shoulder -> elbow -> wrist remains a coherent chain
+      // while the sleeve and record move, instead of each limb segment drifting independently.
+      const leftTarget=[sx-95,sy+55];
+      L.v4ArmIK(c,{shoulder:[455,800],target:leftTarget,l1:130,l2:125,bend:-1,
+        upperWidth:72,foreWidth:58,handScale:.67,handRot:-.18,grip:'edge'});
+
       const shoulder=[680,785];
-      const elbow=[lerp(720,665,pull),lerp(920,975,pull)];
       const hand=[lerp(665,600,pull),lerp(1010,945,pull)];
-      capsule(c,shoulder,elbow,74,P.shirt,sd('armR1'));
-      capsule(c,elbow,hand,60,P.skin,sd('armR2'));
+      L.v4ArmIK(c,{shoulder,target:hand,l1:165,l2:160,bend:1,
+        upperWidth:74,foreWidth:58,handScale:.68,handRot:-.05,grip:'label'});
 
       // record emerges from sleeve. Keep it physically behind the hand but above sleeve.
       const rcx=lerp(sx+170,615,clear);
@@ -283,12 +281,13 @@
       drawRecord(c,rcx,rcy,rr,lerp(.06,-.03,clear),1,true);
       c.restore();
 
-      drawHand(c,hand[0],hand[1],-.05,.72,'label',sd('handR'));
 
       // clear safe grip cue at the end: secondary left fingertips touch the outer rim
       if(clear>.7){
         const p=sstep(.7,1,clear);
-        drawHand(c,390+45*p,1110-75*p,.18,.58,'edge',sd('support-hand'));
+        const support=[390+45*p,1110-75*p];
+        L.v4ArmIK(c,{shoulder:[205,1290],target:support,l1:170,l2:150,bend:-1,
+          upperWidth:68,foreWidth:52,handScale:.56,handRot:.18,grip:'edge',alpha:p});
       }
 
       // face re-drawn last for crisp story priority
