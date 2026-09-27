@@ -23,8 +23,8 @@ Brief → Setup → Product reference / Research → Art Bible delta → Storybo
 | Scenes | COMPLETE | product-first batch 05–09 + accepted V3 story scenes 01–04/10–12 + whole-film sheet + green gate | Music/SFX |
 | Music/SFX | COMPLETE | 36 s score + Myllo process SFX + audio QA + green gate | Critic waves |
 | Critic waves | COMPLETE | whole-film sheet + product transition sheets + green post-audio gate | Deliver |
-| Deliver | IN PROGRESS | preview → master; HTML player skipped | render preview |
-| Human review | PENDING | viewer notes | after master |
+| Deliver | COMPLETE | preview + 1080×1920 master; HTML player skipped | Human review |
+| Human review | IN PROGRESS | `docs/V4_HUMAN_REVIEW_PROTOCOL.md` | viewer blind review |
 
 ## V3 baseline
 
@@ -599,3 +599,49 @@ Exact resume after any stream interruption:
 1. query `a06c9abd-08d4-4e1b-8b31-cdb9dfd56d2a`;
 2. do not queue a second master unless this job explicitly fails;
 3. on success record `output/master.mp4` metadata and close Deliver.
+
+
+### TX-V4-010 final result — Deliver
+
+Preview:
+- job `0d1b81a8-fd10-48fa-8636-91f8e82a3d93` — SUCCEEDED
+- `output/preview.mp4`
+- 540×960
+- 864 frames / 36.000 s
+- size 6,155,971 bytes
+- SHA-256 `0795afe2443abd5348e40c600583629351967227fdc58f026cf446ee57e8d880`
+
+Master:
+- job `a06c9abd-08d4-4e1b-8b31-cdb9dfd56d2a` — SUCCEEDED
+- `output/master.mp4`
+- 1080×1920
+- 864 frames / 36.000 s
+- size 129,815,183 bytes
+- SHA-256 `3ea0ebbfa48691eb5e9c1862d389acf04fb87eeeb62019ad5e2ec06b96d7c709`
+- frame render 138.9 s
+- encode 46.5 s
+- total runtime 193.9 s
+
+Player:
+- intentionally skipped, per user priority.
+
+Deliver: COMPLETE.
+
+## Active transaction
+
+**TX-V4-011 — Human review**
+
+Review protocol:
+- `docs/V4_HUMAN_REVIEW_PROTOCOL.md`
+
+Production source is now frozen for review.
+Do not change V4 before the user watches the master and reports:
+1. what story they understood;
+2. whether the Myllo machine was immediately recognisable;
+3. whether solution / brush / REVERSE / VACUUM were distinguishable;
+4. whether the vacuum action was understandable;
+5. whether BEFORE / AFTER was obvious;
+6. which object still looks most artificial;
+7. what remains furthest behind Butterfly.
+
+After any stream interruption, resume from this human-review transaction. Do not rerender V4.
