@@ -33,4 +33,20 @@
   }
   V.registerAction('place-record',{sample:samplePlace});
   V.registerAction('press-pump',{sample:samplePress});
+
+  const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  V.registerContract('interaction-reach-and-contact',()=>{
+    const failures=[];
+    for(const backendName of ['pure','vector']){
+      const backend=V.character(backendName);
+      for(let i=0;i<=20;i++){
+        const u=i/20,s=samplePlace(u,0),q=backend.audit(s.character);
+        if(Math.max(q.leftOverreach,q.rightOverreach)>.75)failures.push(backendName+' place overreach '+Math.max(q.leftOverreach,q.rightOverreach).toFixed(1)+'px at u='+u.toFixed(2));
+      }
+      const p=samplePress(.62,0),q=backend.audit(p.character),target=washer.anchors(p.machine).pumpButton;
+      if(q.rightOverreach>.75)failures.push(backendName+' press overreach '+q.rightOverreach.toFixed(1)+'px');
+      if(dist(p.character.rightWrist,target)>1)failures.push(backendName+' press contact misses pump anchor');
+    }
+    return failures;
+  });
 })();
