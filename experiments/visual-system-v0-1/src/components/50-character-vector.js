@@ -4,10 +4,22 @@
   const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
   const cache=Object.create(null),path=k=>cache[k]||(cache[k]=new Path2D(A[k]));
 
-  function local(o,p){const r=o.root||[0,0],s=o.scale!=null?o.scale:1;return [(p[0]-r[0])/s,(p[1]-r[1])/s];}
-  function setup(ctx,o,fn){const r=o.root||[0,0],s=o.scale!=null?o.scale:1;ctx.save();ctx.translate(r[0],r[1]);ctx.scale(s,s);fn();ctx.restore();}
+  function poseState(o){return o.pose||V.samplePose('neutral',1);}
+  function local(o,p){
+    const r=o.root||[0,0],s=o.scale!=null?o.scale:1,ps=poseState(o),a=-(ps.bodyRot||0);
+    const dx=p[0]-r[0],dy=p[1]-r[1],cr=Math.cos(a),sr=Math.sin(a);
+    return [(dx*cr-dy*sr)/s,(dx*sr+dy*cr)/s];
+  }
+  function setup(ctx,o,fn){
+    const r=o.root||[0,0],s=o.scale!=null?o.scale:1,ps=poseState(o);
+    ctx.save();ctx.translate(r[0],r[1]);ctx.rotate(ps.bodyRot||0);ctx.scale(s,s);fn();ctx.restore();
+  }
   function rig(o){
-    const shoulders=[[-80,-112],[80,-112]],out={};
+    const ps=poseState(o),base=[[-80,-112],[80,-112]],out={};
+    const shoulders=[
+      [base[0][0]+(ps.leftShoulder?ps.leftShoulder[0]:0),base[0][1]+(ps.leftShoulder?ps.leftShoulder[1]:0)],
+      [base[1][0]+(ps.rightShoulder?ps.rightShoulder[0]:0),base[1][1]+(ps.rightShoulder?ps.rightShoulder[1]:0)]
+    ];
     if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),136,126,-1);
     if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),136,126,1);
     return out;

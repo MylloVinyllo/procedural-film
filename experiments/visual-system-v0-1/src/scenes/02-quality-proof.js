@@ -3,12 +3,12 @@
   'use strict';
   const ID='quality-proof',V=FILM.visual,P=FILM.lib.pal;
   const actor=V.character('vector'),washer=V.product('myllo-rcm'),record=V.prop('vinyl-record');
-  const place=V.action('place-record'),press=V.action('press-pump');
+  const hold=V.action('hold-record'),place=V.action('place-record'),press=V.action('press-pump');
 
   function state(t){
     if(t<2){
       const machine={x:540,y:1240,scale:.78},recState={x:540,y:850,r:108},a=record.anchors(recState);
-      return {phase:'HOLD',machine,record:recState,character:{root:[540,720],scale:.92,leftWrist:a.edge(Math.PI*.92),rightWrist:a.edge(Math.PI*.08),leftHand:'edge',rightHand:'edge'}};
+      const s=hold.sample(1,270);s.phase='HOLD';return s;
     }
     if(t<4.25){const s=place.sample((t-2)/2.25,270);s.phase='PLACE';return s;}
     const s=press.sample((t-4.25)/1.75,270);s.phase='PRESS';return s;

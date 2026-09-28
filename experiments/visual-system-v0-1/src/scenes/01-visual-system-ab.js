@@ -4,7 +4,7 @@
   const ID='visual-system-ab',V=FILM.visual,L=FILM.lib,P=L.pal;
   const chars={left:V.character('pure'),right:V.character('vector')};
   const washer=V.product('myllo-rcm'),record=V.prop('vinyl-record');
-  const place=V.action('place-record'),press=V.action('press-pump');
+  const hold=V.action('hold-record'),place=V.action('place-record'),press=V.action('press-pump');
 
   function panel(ctx,x,label,sub){
     ctx.save();ctx.fillStyle=P.gutter;ctx.fillRect(x+10,210,520,1490);ctx.strokeStyle=P.comicBorder;ctx.lineWidth=4;ctx.strokeRect(x+10,210,520,1490);
@@ -20,10 +20,6 @@
     record.draw(ctx,state.record);
     backend.drawHands(ctx,state.character);
   }
-  function staticHold(panelX){
-    const machine={x:panelX+270,y:1240,scale:.78},recState={x:panelX+270,y:850,r:108},a=record.anchors(recState);
-    return {machine,record:recState,character:{root:[panelX+270,720],scale:.92,leftWrist:a.edge(Math.PI*.92),rightWrist:a.edge(Math.PI*.08),leftHand:'edge',rightHand:'edge'}};
-  }
 
   FILM.scene({id:ID,draw(ctx,tIn,info){
     const t=Math.max(0,Math.min(info.dur,tIn));
@@ -35,7 +31,7 @@
     let left,right,phase;
     if(t<2){
       phase='01  HOLD';
-      left=staticHold(0);right=staticHold(540);
+      left=hold.sample(1,0);right=hold.sample(1,540);
     }else if(t<5){
       phase='02  PLACE';
       const u=(t-2)/3;left=place.sample(u,0);right=place.sample(u,540);
