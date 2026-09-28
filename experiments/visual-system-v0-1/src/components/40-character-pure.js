@@ -35,6 +35,9 @@
     if(type==='press'){
       ctx.moveTo(-12,-20);ctx.bezierCurveTo(8,-32,34,-28,47,-9);ctx.bezierCurveTo(56,5,49,23,34,30);ctx.bezierCurveTo(12,38,-8,27,-14,10);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.beginPath();ctx.roundRect(26,-22,78,15,7);ctx.fill();ctx.stroke();
+    }else if(type==='rest'){
+      ctx.moveTo(-9,-18);ctx.bezierCurveTo(5,-28,22,-28,36,-23);ctx.bezierCurveTo(51,-18,61,-6,62,9);ctx.bezierCurveTo(62,25,48,39,29,42);ctx.bezierCurveTo(11,45,-4,35,-11,21);ctx.bezierCurveTo(-17,8,-15,-8,-9,-18);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.ellipse(53,-3,18,10,-.2,0,Math.PI*2);ctx.fill();ctx.stroke();
     }else{
       ctx.moveTo(-10,-23);ctx.bezierCurveTo(12,-34,37,-29,51,-10);ctx.bezierCurveTo(61,4,55,20,41,28);ctx.bezierCurveTo(21,37,-3,29,-13,12);ctx.closePath();ctx.fill();ctx.stroke();
       for(let i=0;i<3;i++){ctx.beginPath();ctx.roundRect(34,-21+i*16,55,11,5.5);ctx.fill();ctx.stroke();}

@@ -37,7 +37,8 @@
       startButton:world(f,c.START),
       reverseButton:world(f,c.REVERSE),
       pumpButton:world(f,c.PUMP),
-      vacuumButton:world(f,c.VACUUM)
+      vacuumButton:world(f,c.VACUUM),
+      frontLeftRest:world(f,[-174,-31])
     };
   }
 

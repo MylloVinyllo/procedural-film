@@ -12,4 +12,9 @@
     drawScale:.72,
     semantic:'index-finger control press'
   }));
+  V.registerHand('rest',Object.freeze({
+    contact:Object.freeze([47,20]),
+    drawScale:.76,
+    semantic:'palm-rest on machine edge'
+  }));
 })();

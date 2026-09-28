@@ -50,19 +50,22 @@
   function samplePress(t,panelX){
     const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,active:u>.62?'PUMP':null},ma=washer.anchors(machine);
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],r:108};
-    const root=[panelX+205,1255],scale=1.04,ra=rec.anchors(record);
-    const pressRot=Math.PI/2;
-    const restContact=[panelX+340,1115],target=ma.pumpButton;
+    // Character stands slightly left of the cabinet: support palm rests on cabinet edge,
+    // index finger reaches the front PUMP control. The seated record is not used as a hand rest.
+    const root=[panelX+92,1260],scale=1.04;
+    const pressRot=.16;
+    const restFinger=[panelX+390,1190],target=ma.pumpButton;
     const reach=V.sstep(.08,.58,u),release=V.sstep(.76,1,u),k=release>0?1-release:reach;
-    const pressContact=[V.lerp(restContact[0],target[0],k),V.lerp(restContact[1],target[1],k)];
+    const pressContact=[V.lerp(restFinger[0],target[0],k),V.lerp(restFinger[1],target[1],k)];
     const right=V.wristForHandContact('press',pressContact,pressRot,scale);
-    const leftA=Math.PI*.82,leftContact=ra.edge(leftA),leftRot=leftA+Math.PI+.10;
-    const left=V.wristForHandContact('edge',leftContact,leftRot,scale);
+
+    const leftContact=ma.frontLeftRest,leftRot=-.05;
+    const left=V.wristForHandContact('rest',leftContact,leftRot,scale);
     return {
       machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},
       character:{
         root,scale,pose:V.samplePose('press-control',k),
-        leftWrist:left,rightWrist:right,leftHand:'edge',rightHand:'press',
+        leftWrist:left,rightWrist:right,leftHand:'rest',rightHand:'press',
         leftHandRot:leftRot,rightHandRot:pressRot
       }
     };

@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   const ID='character-fixture',V=FILM.visual,P=FILM.lib.pal;
-  const actor=V.character('vector'),record=V.prop('vinyl-record');
+  const actor=V.character('vector'),record=V.prop('vinyl-record'),washer=V.product('myllo-rcm');
   const hold=V.action('hold-record'),place=V.action('place-record'),press=V.action('press-pump');
 
   function chosen(t){
@@ -16,6 +16,7 @@
     ctx.translate(540,920);ctx.scale(1.62,1.62);ctx.translate(-540,-920);
     actor.drawBody(ctx,s.character);
     actor.drawArms(ctx,s.character);
+    if(s.label!=='HOLD RECORD')washer.draw(ctx,s.machine);
     record.draw(ctx,s.record);
     actor.drawHands(ctx,s.character);
     ctx.restore();
@@ -48,7 +49,7 @@
     drawActor(ctx,s);
 
     inset(ctx,115,1450,'EDGE GRIP','edge',-.18);
-    inset(ctx,410,1450,'EDGE GRIP / REVERSE','edge',Math.PI+.18);
+    inset(ctx,410,1450,'PALM REST','rest',-.05);
     inset(ctx,705,1450,'INDEX PRESS','press',Math.PI/2);
   }});
 })();
