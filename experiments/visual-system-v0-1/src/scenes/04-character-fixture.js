@@ -16,8 +16,9 @@
     ctx.translate(540,920);ctx.scale(1.62,1.62);ctx.translate(-540,-920);
     actor.drawBody(ctx,s.character);
     actor.drawArms(ctx,s.character);
-    if(s.label!=='HOLD RECORD')washer.draw(ctx,s.machine);
+    if(s.label!=='HOLD RECORD')washer.drawBase(ctx,s.machine);
     record.draw(ctx,s.record);
+    if(s.label!=='HOLD RECORD')washer.drawOverlay(ctx,s.machine);
     actor.drawHands(ctx,s.character);
     ctx.restore();
   }
@@ -29,7 +30,7 @@
     ctx.fillStyle=P.ink;ctx.font='800 18px system-ui';ctx.textAlign='left';ctx.fillText(title,x+18,y+28);
     ctx.strokeStyle=P.paperDeep;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+18,y+43);ctx.lineTo(x+252,y+43);ctx.stroke();
     actor.drawHandState(ctx,{type,at:[x+105,y+119],rot,scale:2.15});
-    const h=V.hand(type),ds=h.drawScale*2.15,cx=(type==='press'?102:62)*ds,cy=(type==='press'?2:15)*ds;
+    const h=V.hand(type),ds=h.drawScale*2.15,cx=h.contact[0]*ds,cy=h.contact[1]*ds;
     const cr=Math.cos(rot),sr=Math.sin(rot),px=x+105+cx*cr-cy*sr,py=y+119+cx*sr+cy*cr;
     ctx.fillStyle=P.annBlue;ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=P.inkFaint;ctx.font='500 13px system-ui';ctx.fillText('cyan dot = semantic contact',x+18,y+190);

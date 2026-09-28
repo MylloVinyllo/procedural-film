@@ -16,8 +16,9 @@
     // This prevents the old sticker effect where an entire arm or torso randomly covered the prop.
     backend.drawBody(ctx,state.character);
     backend.drawArms(ctx,state.character);
-    washer.draw(ctx,state.machine);
+    washer.drawBase(ctx,state.machine);
     record.draw(ctx,state.record);
+    washer.drawOverlay(ctx,state.machine);
     backend.drawHands(ctx,state.character);
   }
 

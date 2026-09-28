@@ -16,8 +16,9 @@
   function drawState(ctx,s){
     actor.drawBody(ctx,s.character);
     actor.drawArms(ctx,s.character);
-    washer.draw(ctx,s.machine);
+    washer.drawBase(ctx,s.machine);
     record.draw(ctx,s.record);
+    washer.drawOverlay(ctx,s.machine);
     actor.drawHands(ctx,s.character);
   }
 

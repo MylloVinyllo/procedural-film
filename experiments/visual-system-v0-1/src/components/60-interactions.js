@@ -17,8 +17,8 @@
   }
 
   function sampleHold(t,panelX){
-    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78};
-    const record={x:panelX+270,y:850,r:108,rot:0};
+    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:false};
+    const record={x:panelX+270,y:850,rx:108,ry:108,rot:0};
     const scale=1.02,g=gripRecord(record,scale);
     return {
       machine,record,contacts:g.contacts,
@@ -31,11 +31,15 @@
   }
 
   function samplePlace(t,panelX){
-    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78};
+    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:false};
     const ma=washer.anchors(machine);
     const start=[panelX+270,850],end=ma.recordCenter;
     const move=V.sstep(.18,.78,u);
-    const record={x:V.lerp(start[0],end[0],move),y:V.lerp(start[1],end[1],move),r:108,rot:V.lerp(-.06,0,move)};
+    const [endRx,endRy]=ma.recordRadii;
+    const record={
+      x:V.lerp(start[0],end[0],move),y:V.lerp(start[1],end[1],move),
+      rx:V.lerp(108,endRx,move),ry:V.lerp(108,endRy,move),rot:V.lerp(-.06,0,move)
+    };
     const rootY=V.lerp(760,1085,move),scale=V.lerp(1.02,1.06,move),g=gripRecord(record,scale);
     return {
       machine,record,contacts:g.contacts,
@@ -48,8 +52,8 @@
   }
 
   function samplePress(t,panelX){
-    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,active:u>.62?'PUMP':null},ma=washer.anchors(machine);
-    const record={x:ma.recordCenter[0],y:ma.recordCenter[1],r:108};
+    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:true,active:u>.62?'PUMP':null},ma=washer.anchors(machine);
+    const record={x:ma.recordCenter[0],y:ma.recordCenter[1],rx:ma.recordRadii[0],ry:ma.recordRadii[1],rot:0};
     // Character stands slightly left of the cabinet: support palm rests on cabinet edge,
     // index finger reaches the front PUMP control. The seated record is not used as a hand rest.
     const root=[panelX+92,1260],scale=1.04;
