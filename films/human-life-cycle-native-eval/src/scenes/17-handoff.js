@@ -30,11 +30,11 @@ FILM.scene({id:ID,draw(ctx,tIn,info){
   const pass=L.clamp((t-.45)/.55),newP=L.clamp((t-.9)/.45);
   person(ctx,L,P,390,1390,.76,{seed:seed+20,age:'older',fill:P.selfWarm,deep:P.selfDeep,arm:.65*pass,hatch:true,lean:.04});
   person(ctx,L,P,690,1400,.68,{seed:seed+50,age:'child',fill:P.selfPale,deep:P.selfDeep,arm:-.75*pass});
-  const px=510+60*pass;
-  L.glowDot(ctx,px,G4.y,G4.r,{color:P.cycleGold,halo:50,rays:10,alpha:.95});
+  const lift=L.clamp((t-1.15)/.35), gy=G4.y-220*lift, gr=G4.r+132*lift;
+  L.glowDot(ctx,G4.x,gy,Math.min(24,gr),{color:P.cycleGold,halo:50+45*lift,rays:10,alpha:.95});
   L.arcAnnotation(ctx,G4.x,G4.y,90,-2.7,-.45,{p:pass,color:P.cycleGold,width:3,alpha:.9,arrow:10});
   const old=[[210,1320],[330,1200],[420,1080],[500,980]],neu=[[570,980],[660,1100],[760,1220],[860,1320]];
   L.inkPath(ctx,old,{width:3,color:P.selfWarm,alpha:1-newP*.8,seed:seed+80,taper:[0,18]});
   if(newP>0)L.inkPath(ctx,neu.slice(0,Math.max(2,Math.floor(neu.length*newP))),{width:3,color:P.selfWarm,alpha:.95,seed:seed+81,taper:[0,18]});
-  if(t>1.15){const q=L.clamp((t-1.15)/.3);L.arcAnnotation(ctx,G4.x,G4.y,G4.r+132*q,0,Math.PI*2,{color:P.cycleGold,width:4,alpha:.75,endTicks:0});}
+  if(t>1.15){L.arcAnnotation(ctx,G4.x,gy,gr,0,Math.PI*2,{color:P.cycleGold,width:4,alpha:.75,endTicks:0});}
 }});})();
