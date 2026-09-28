@@ -284,6 +284,15 @@ function createServer() {
   );
 
   server.registerTool(
+    "deliver",
+    {
+      description: "Run native Procedural Film delivery: full master, 720x1280 phone transcode, CRF23 preview transcode, self-contained HTML build, and persist shots markdown when present.",
+      inputSchema: baseInput,
+    },
+    async (input) => jsonResult(await submitJob("deliver", input)),
+  );
+
+  server.registerTool(
     "job_status",
     {
       description: "Read current state, logs tail, provenance, and artifact summary for a render job.",
