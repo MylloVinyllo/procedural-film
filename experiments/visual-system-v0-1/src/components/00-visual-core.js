@@ -1,7 +1,7 @@
 // Visual System v0.1 core: registry, transforms, anchors, IK.
 (function(){
   'use strict';
-  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null),contracts:[]};
+  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null),hands:Object.create(null),contracts:[]};
   const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
   const lerp=(a,b,u)=>a+(b-a)*u;
   const sstep=(a,b,x)=>{const u=clamp((x-a)/(b-a));return u*u*(3-2*u);};
@@ -50,6 +50,7 @@
     registerProduct(name,impl){if(registry.products[name])throw new Error('product exists: '+name);registry.products[name]=Object.freeze(impl);},
     registerProp(name,impl){if(registry.props[name])throw new Error('prop exists: '+name);registry.props[name]=Object.freeze(impl);},
     registerAction(name,impl){if(registry.actions[name])throw new Error('action exists: '+name);registry.actions[name]=Object.freeze(impl);},
+    registerHand(name,spec){if(registry.hands[name])throw new Error('hand exists: '+name);registry.hands[name]=Object.freeze(spec);},
     registerContract(name,fn){registry.contracts.push(Object.freeze({name,fn}));},
     runContracts(){
       const failures=[];
@@ -65,7 +66,20 @@
     character(name){const v=registry.characters[name];if(!v)throw new Error('unknown character backend: '+name);return v;},
     product(name){const v=registry.products[name];if(!v)throw new Error('unknown product: '+name);return v;},
     prop(name){const v=registry.props[name];if(!v)throw new Error('unknown prop: '+name);return v;},
-    action(name){const v=registry.actions[name];if(!v)throw new Error('unknown action: '+name);return v;}
+    action(name){const v=registry.actions[name];if(!v)throw new Error('unknown action: '+name);return v;},
+    hand(name){const v=registry.hands[name];if(!v)throw new Error('unknown hand: '+name);return v;},
+    handContactWorld(name,wrist,rot,worldScale=1){
+      const h=registry.hands[name];if(!h)throw new Error('unknown hand: '+name);
+      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale;
+      const cr=Math.cos(rot),sr=Math.sin(rot);
+      return [wrist[0]+cx*cr-cy*sr,wrist[1]+cx*sr+cy*cr];
+    },
+    wristForHandContact(name,contact,rot,worldScale=1){
+      const h=registry.hands[name];if(!h)throw new Error('unknown hand: '+name);
+      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale;
+      const cr=Math.cos(rot),sr=Math.sin(rot);
+      return [contact[0]-(cx*cr-cy*sr),contact[1]-(cx*sr+cy*cr)];
+    }
   };
   Object.defineProperty(FILM,'visual',{value:Object.freeze(api),writable:false,configurable:false,enumerable:true});
 })();
