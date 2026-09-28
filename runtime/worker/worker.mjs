@@ -341,6 +341,51 @@ async function executeJob(job) {
         ],
         { cwd: projectRoot, timeoutMs: 90 * 60_000 },
       );
+    } else if (job.operation === "deliver") {
+      const slug = path.basename(projectRoot);
+      const master = `.mcp-output/${slug}.mp4`;
+      const phone = `.mcp-output/${slug}-phone.mp4`;
+      const preview = `.mcp-output/${slug}-preview.mp4`;
+      await runCommand(
+        job,
+        "deliver-master",
+        "node",
+        [
+          "tools/render.cjs",
+          "--scale", "1",
+          "--workers", "2",
+          "--crf", "16",
+          "--preset", "medium",
+          "--out", master,
+        ],
+        { cwd: projectRoot, timeoutMs: 90 * 60_000 },
+      );
+      await runCommand(
+        job,
+        "deliver-phone",
+        "ffmpeg",
+        ["-y", "-i", master, "-vf", "scale=720:1280", "-c:v", "libx264", "-crf", "23", "-preset", "medium", "-c:a", "aac", "-b:a", "128k", phone],
+        { cwd: projectRoot, timeoutMs: 30 * 60_000 },
+      );
+      await runCommand(
+        job,
+        "deliver-preview",
+        "ffmpeg",
+        ["-y", "-i", master, "-c:v", "libx264", "-crf", "23", "-preset", "medium", "-c:a", "copy", preview],
+        { cwd: projectRoot, timeoutMs: 30 * 60_000 },
+      );
+      await runCommand(job, "deliver-build-player", "node", ["tools/build.cjs"], {
+        cwd: projectRoot,
+        timeoutMs: 10 * 60_000,
+      });
+      await copyPathIfExists(
+        path.join(projectRoot, "dist"),
+        path.join(job.artifactDir, "output", "dist"),
+      );
+      await copyPathIfExists(
+        path.join(projectRoot, "exports", `${slug}-shots.md`),
+        path.join(job.artifactDir, "output", `${slug}-shots.md`),
+      );
     } else {
       throw new Error(`unsupported operation: ${job.operation}`);
     }
@@ -431,6 +476,7 @@ const server = http.createServer(async (req, res) => {
         "build_player",
         "render_preview",
         "render_master",
+        "deliver",
       ].includes(body.operation)) {
         throw new Error("unsupported operation");
       }
