@@ -12,6 +12,9 @@ Canonical experiment path:
 Historical development branch:
 `rd/visual-system-v0.1`
 
+Active continuation branch:
+`rd/visual-system-v0.2-quality`
+
 Historical R&D head:
 `0b5fda122544d9ffa24cecd7047ffd811a34af8c`
 
@@ -87,4 +90,4 @@ Do not promote experimental components into `skills/procedural-film/foundation/`
 
 ## Continuation
 
-After this experiment lands on `main`, create a fresh short-lived branch from `main` for the next quality iteration. Do not continue stacking unrelated history onto the old `rd/visual-system-v0.1` branch.
+The experiment is now on `main`. Active quality work continues on `rd/visual-system-v0.2-quality`, created directly from merged `main`. Do not continue stacking unrelated history onto the old `rd/visual-system-v0.1` branch.
