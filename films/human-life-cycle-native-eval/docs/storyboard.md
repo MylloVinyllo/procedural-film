@@ -94,9 +94,9 @@ Used by 01 → 02 and 17 → 18 → 01 loop. Screen-fixed across each cut.
 | Property | Value |
 |---|---:|
 | centre x | 540 |
-| centre y | 720 |
-| rx | 72 |
-| ry | 92 |
+| centre y | 1027 |
+| rx | 44 |
+| ry | 54 |
 
 Used by 04 → 05 → 06. The outline may change line language, not position.
 
