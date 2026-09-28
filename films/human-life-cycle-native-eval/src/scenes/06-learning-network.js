@@ -3,7 +3,7 @@ Shot 06 · Learning · T 10–11.5
 Layers: blueprint, progress glyph, G2 head match, symbolic network growth and pruning.
 */
 (function(){'use strict';
-  const ID='learning-network',G2={x:540,y:720,rx:72,ry:92};
+  const ID='learning-network',G2={x:540,y:1027,rx:44,ry:54};
   
   function progress(ctx,L,P,current){
     const N=18,cx=900,cy=300,r=76,gap=.025;
@@ -16,7 +16,7 @@ Layers: blueprint, progress glyph, G2 head match, symbolic network growth and pr
     }
   }
 
-  const nodes=[[540,700],[505,665],[575,655],[490,735],[590,735],[520,790],[568,795],[455,610],[625,600],[445,815],[640,825]];
+  const nodes=[[540,1027],[510,995],[570,990],[500,1045],[582,1048],[523,1082],[565,1085],[475,955],[610,950],[468,1115],[620,1118]];
   const links=[[0,1],[0,2],[0,3],[0,4],[3,5],[4,6],[1,7],[2,8],[5,9],[6,10],[1,2],[3,4]];
   FILM.scene({id:ID,draw(ctx,tIn,info){
     const L=info.lib,P=L.pal,t=L.clamp(tIn,0,info.dur),seed=L.hash(ID);
@@ -27,7 +27,7 @@ Layers: blueprint, progress glyph, G2 head match, symbolic network growth and pr
     nodes.forEach((n,i)=>{if(grow*nodes.length>i-.5)L.glowDot(ctx,n[0],n[1],i===0?8:5,{color:i===0?P.schemSelf:P.glow,halo:i===0?34:20,rays:i===0?12:6,alpha:.8});});
     if(t>1.0){
       const q=L.clamp((t-1)/.5);
-      const pts=[[590,735],[680,760],[760,700],[855,650]];
+      const pts=[[582,1048],[670,1010],[760,930],[855,860]];
       L.inkPath(ctx,pts,{width:2.5,color:P.magenta,alpha:.85,seed:seed+99,taper:[0,20]});
       L.arcAnnotation(ctx,855,650,32,-.8,.8,{p:q,color:P.magenta,width:3,alpha:.9});
     }
