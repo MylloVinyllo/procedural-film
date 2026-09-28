@@ -13,12 +13,14 @@
 
   function drawActor(ctx,s){
     ctx.save();
-    ctx.translate(540,920);ctx.scale(1.62,1.62);ctx.translate(-540,-920);
+    const sc=s.label==='HOLD RECORD'?1.62:1.34,cy=s.label==='HOLD RECORD'?920:850;
+    ctx.translate(540,cy);ctx.scale(sc,sc);ctx.translate(-540,-cy);
     actor.drawBody(ctx,s.character);
-    actor.drawArms(ctx,s.character);
+    actor.drawArms(ctx,s.character,'back');
     if(s.label!=='HOLD RECORD')washer.drawBase(ctx,s.machine);
     record.draw(ctx,s.record);
     if(s.label!=='HOLD RECORD')washer.drawOverlay(ctx,s.machine);
+    actor.drawArms(ctx,s.character,'front');
     actor.drawHands(ctx,s.character);
     ctx.restore();
   }

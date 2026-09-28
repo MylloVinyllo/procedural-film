@@ -24,7 +24,7 @@
       machine,record,contacts:g.contacts,
       character:{
         root:[panelX+270,760],scale,pose:V.samplePose('hold-record',u),
-        leftWrist:g.leftWrist,rightWrist:g.rightWrist,
+        leftWrist:g.leftWrist,rightWrist:g.rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot
       }
     };
@@ -45,7 +45,7 @@
       machine,record,contacts:g.contacts,
       character:{
         root:[panelX+270,rootY],scale,pose:V.samplePose('place-record',move),
-        leftWrist:g.leftWrist,rightWrist:g.rightWrist,
+        leftWrist:g.leftWrist,rightWrist:g.rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot
       }
     };
@@ -69,7 +69,7 @@
       machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},
       character:{
         root,scale,pose:V.samplePose('press-control',k),
-        leftWrist:left,rightWrist:right,leftHand:'rest',rightHand:'press',
+        leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',leftHand:'rest',rightHand:'press',
         leftHandRot:leftRot,rightHandRot:pressRot
       }
     };

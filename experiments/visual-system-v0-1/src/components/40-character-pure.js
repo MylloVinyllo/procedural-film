@@ -55,10 +55,12 @@
       ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(-9,-218);ctx.quadraticCurveTo(2,-212,14,-218);ctx.stroke();
     });
   }
-  function drawArms(ctx,o){
+  function drawArms(ctx,o,layer='all'){
     const R=rig(o);setup(ctx,o,()=>{
       for(const side of ['left','right']){
         const q=R[side];if(!q)continue;
+        const armLayer=o[side+'ArmLayer']||'back';
+        if(layer!=='all'&&armLayer!==layer)continue;
         limb(ctx,q.shoulder,q.elbow,58,43,C.shirt);limb(ctx,q.elbow,q.wrist,42,25,C.skin);
       }
     });

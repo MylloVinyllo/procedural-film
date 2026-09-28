@@ -69,10 +69,12 @@
       ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(-12,-208);ctx.quadraticCurveTo(2,-201,16,-210);ctx.stroke();
     });
   }
-  function drawArms(ctx,o){
+  function drawArms(ctx,o,layer='all'){
     const R=rig(o);setup(ctx,o,()=>{
       for(const side of ['left','right']){
         const q=R[side];if(!q)continue;
+        const armLayer=o[side+'ArmLayer']||'back';
+        if(layer!=='all'&&armLayer!==layer)continue;
         // Continuous silhouette, no circular "joint balls". The old elbow disk was
         // visually indistinguishable from a third hand in medium shots.
         bonePart(ctx,'upperArm',q.shoulder,q.elbow,C.shirt);

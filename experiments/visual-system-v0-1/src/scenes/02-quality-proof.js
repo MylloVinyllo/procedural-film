@@ -15,10 +15,11 @@
   }
   function drawState(ctx,s){
     actor.drawBody(ctx,s.character);
-    actor.drawArms(ctx,s.character);
+    actor.drawArms(ctx,s.character,'back');
     washer.drawBase(ctx,s.machine);
     record.draw(ctx,s.record);
     washer.drawOverlay(ctx,s.machine);
+    actor.drawArms(ctx,s.character,'front');
     actor.drawHands(ctx,s.character);
   }
 

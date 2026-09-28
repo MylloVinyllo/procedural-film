@@ -15,10 +15,11 @@
     // Canonical occlusion stack: body -> limbs -> product -> manipulated object -> hands.
     // This prevents the old sticker effect where an entire arm or torso randomly covered the prop.
     backend.drawBody(ctx,state.character);
-    backend.drawArms(ctx,state.character);
+    backend.drawArms(ctx,state.character,'back');
     washer.drawBase(ctx,state.machine);
     record.draw(ctx,state.record);
     washer.drawOverlay(ctx,state.machine);
+    backend.drawArms(ctx,state.character,'front');
     backend.drawHands(ctx,state.character);
   }
 

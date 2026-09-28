@@ -43,3 +43,8 @@ Every candidate records PASS/FAIL with evidence, not a numeric beauty score.
 human defect -> failure class -> reusable rule -> component/interaction fix -> golden example -> regression fixture
 
 A local scene patch that cannot be generalized does not count as system learning.
+
+
+### Q-OCCLUSION-01 Wrong limb depth
+Symptom: a hand is correctly located but its forearm disappears behind a product, so the hand reads as detached.
+Rule: interaction states declare each arm as front/back geometry. Scenes render body -> back arms -> product/prop -> front arms -> hands. A single global arm depth is not a valid character system.
