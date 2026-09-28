@@ -38,6 +38,8 @@
     }else if(type==='rest'){
       ctx.moveTo(-9,-18);ctx.bezierCurveTo(5,-28,22,-28,36,-23);ctx.bezierCurveTo(51,-18,61,-6,62,9);ctx.bezierCurveTo(62,25,48,39,29,42);ctx.bezierCurveTo(11,45,-4,35,-11,21);ctx.bezierCurveTo(-17,8,-15,-8,-9,-18);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.beginPath();ctx.ellipse(53,-3,18,10,-.2,0,Math.PI*2);ctx.fill();ctx.stroke();
+    }else if(type==='open'){
+      ctx.moveTo(-9,-20);ctx.bezierCurveTo(4,-30,20,-31,32,-26);ctx.bezierCurveTo(45,-21,51,-11,49,0);ctx.bezierCurveTo(60,-10,69,-8,72,-1);ctx.bezierCurveTo(75,7,69,15,58,20);ctx.bezierCurveTo(65,25,64,34,58,39);ctx.bezierCurveTo(50,46,39,42,32,38);ctx.bezierCurveTo(24,48,11,51,1,45);ctx.bezierCurveTo(-12,38,-17,24,-15,11);ctx.bezierCurveTo(-14,-2,-13,-12,-9,-20);ctx.closePath();ctx.fill();ctx.stroke();
     }else{
       ctx.moveTo(-10,-23);ctx.bezierCurveTo(12,-34,37,-29,51,-10);ctx.bezierCurveTo(61,4,55,20,41,28);ctx.bezierCurveTo(21,37,-3,29,-13,12);ctx.closePath();ctx.fill();ctx.stroke();
       for(let i=0;i<3;i++){ctx.beginPath();ctx.roundRect(34,-21+i*16,55,11,5.5);ctx.fill();ctx.stroke();}

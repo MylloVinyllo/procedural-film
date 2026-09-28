@@ -38,7 +38,7 @@
   }
   function hand(ctx,p,rot,type){
     const hs=V.hand(type);ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale);
-    const key=type==='press'?'handPress':type==='rest'?'handRest':'handEdge';
+    const key=type==='press'?'handPress':type==='rest'?'handRest':type==='open'?'handOpen':'handEdge';
     part(ctx,key,C.skin,C.ink,1.7);
     ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.25;ctx.globalAlpha=.58;ctx.lineCap='round';
     if(type==='press'){
@@ -47,6 +47,9 @@
     }else if(type==='rest'){
       ctx.beginPath();ctx.moveTo(17,4);ctx.quadraticCurveTo(28,10,42,8);ctx.stroke();
       ctx.beginPath();ctx.moveTo(12,19);ctx.quadraticCurveTo(26,26,41,23);ctx.stroke();
+    }else if(type==='open'){
+      ctx.beginPath();ctx.moveTo(18,3);ctx.quadraticCurveTo(30,10,43,8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(15,20);ctx.quadraticCurveTo(28,27,40,24);ctx.stroke();
     }else{
       ctx.beginPath();ctx.moveTo(34,4);ctx.quadraticCurveTo(44,10,57,9);ctx.stroke();
       ctx.beginPath();ctx.moveTo(31,18);ctx.quadraticCurveTo(41,24,53,22);ctx.stroke();

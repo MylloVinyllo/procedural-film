@@ -17,4 +17,9 @@
     drawScale:.76,
     semantic:'palm-rest on machine edge'
   }));
+  V.registerHand('open',Object.freeze({
+    contact:Object.freeze([0,0]),
+    drawScale:.74,
+    semantic:'released open hand'
+  }));
 })();
