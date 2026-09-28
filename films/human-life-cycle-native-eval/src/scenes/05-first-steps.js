@@ -3,7 +3,7 @@ Shot 05 · A path · T 8–10
 Layers: paper/sky stripes, trajectory, child, step arcs, G2 settle.
 */
 (function(){'use strict';
-  const ID='first-steps',G2={x:540,y:720,rx:72,ry:92};
+  const ID='first-steps',G2={x:540,y:1027,rx:44,ry:54};
   
   function person(ctx,L,P,x,y,s,o={}){
     const seed=o.seed||1, fill=o.fill||P.selfWarm, deep=o.deep||P.selfDeep;
@@ -39,10 +39,10 @@ Layers: paper/sky stripes, trajectory, child, step arcs, G2 settle.
   FILM.scene({id:ID,draw(ctx,tIn,info){
     const L=info.lib,P=L.pal,E=L.ease,t=L.clamp(tIn,0,info.dur),tw=L.onTwos(t),seed=L.hash(ID);
     L.paper(ctx);L.stripes(ctx,{colors:[P.stripeCream,P.stripeSky],offset:info.T*11,seed:seed+1});
-    const p=L.clamp(t/1.65),x=300+240*E.inOutCubic(p),step=t<.5?-.35:t<1?.35:t<1.5?-.18:0;
+    const p=L.clamp(t/1.65),x=300+240*E.inOutCubic(p),y=1370-146*E.inOutCubic(p),step=t<.5?-.35:t<1?.35:t<1.5?-.18:0;
     const pts=[];for(let i=0;i<=36;i++){const u=i/36;if(u>p)break;pts.push([220+620*u,1320-420*u+75*Math.sin(u*Math.PI)]);}
     if(pts.length>1)L.inkPath(ctx,pts,{width:3,color:P.selfWarm,seed:seed+20,taper:[0,24]});
-    person(ctx,L,P,x,1370,.72,{seed:seed+40,age:'child',fill:P.selfWarm,deep:P.selfDeep,step,arm:-step*.7,lean:step*.035,hatch:true});
+    person(ctx,L,P,x,y,.72,{seed:seed+40,age:'child',fill:P.selfWarm,deep:P.selfDeep,step,arm:-step*.7,lean:step*.035,hatch:true});
     [0.5,1.0].forEach((a,i)=>{const q=L.clamp((t-a)/.32);if(q>0&&q<1)L.arcAnnotation(ctx,x+(i?20:-20),1340,80+55*q,Math.PI*.1,Math.PI*.9,{color:P.annBlue,width:3,alpha:1-q,endTicks:0});});
     const bal=L.clamp((t-1.5)/.35);if(bal>0)L.arcAnnotation(ctx,x,850,145,-.9,.9,{p:bal,color:P.annYellow,width:3,alpha:.85});
     if(t>1.72){const q=L.clamp((t-1.72)/.28);L.arcAnnotation(ctx,G2.x,G2.y,G2.ry,0,Math.PI*2,{p:q,color:P.annYellow,width:2.5,alpha:.5,endTicks:0});}
