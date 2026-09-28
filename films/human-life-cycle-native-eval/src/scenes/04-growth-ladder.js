@@ -3,7 +3,7 @@ Shot 04 · Growth · T 5.5–8
 Layers: blueprint, progress glyph, scale spine, four stage silhouettes, G2 head anchor.
 */
 (function(){'use strict';
-  const ID='growth-ladder',G2={x:540,y:720,rx:72,ry:92};
+  const ID='growth-ladder',G2={x:540,y:1027,rx:44,ry:54};
   
   function progress(ctx,L,P,current){
     const N=18,cx=900,cy=300,r=76,gap=.025;
@@ -32,7 +32,7 @@ Layers: blueprint, progress glyph, scale spine, four stage silhouettes, G2 head 
     L.blueprint(ctx);progress(ctx,L,P,3);
     L.ticks(ctx,170,470,{kind:'linear',length:870,n:20,angle:Math.PI/2,color:P.lineWhite,alpha:.38,len:10,major:5,majorLen:24});
     const stages=[
-      {at:0,x:300,h:250},{at:.5,x:455,h:390},{at:1,x:620,h:560},{at:1.5,x:790,h:710}
+      {at:0,x:270,h:250},{at:.5,x:540,h:390},{at:1,x:700,h:560},{at:1.5,x:850,h:710}
     ];
     stages.forEach((g,i)=>{if(t>=g.at)glyph(ctx,L,P,g.x,1370,g.h,seed+30*i,1,i===Math.min(3,Math.floor(t/.5)));});
     if(t>2.0){const q=L.clamp((t-2.0)/.5);L.guideCircle(ctx,G2.x,G2.y,Math.max(G2.rx,G2.ry),{color:P.schemSelf,alpha:.18+.5*q});L.arcAnnotation(ctx,G2.x,G2.y,G2.ry,0,Math.PI*2,{p:q,color:P.schemSelf,width:3,endTicks:0});}
