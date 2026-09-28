@@ -44,7 +44,10 @@
     }
 
     const rootY=V.lerp(760,1085,m.travel),scale=V.lerp(1.02,1.06,m.travel),g=gripRecord(record,scale);
-    const restL=[panelX+164,rootY+18],restR=[panelX+376,rootY+18];
+    // After seating, hands must peel away from the record and clear its silhouette.
+    // Targets are intentionally outside the disc bounds so release reads as release,
+    // not as a crossed-arm freeze over the product.
+    const restL=[panelX+88,rootY+112],restR=[panelX+452,rootY+112];
     const leftWrist=[V.lerp(g.leftWrist[0],restL[0],m.retract),V.lerp(g.leftWrist[1],restL[1],m.retract)];
     const rightWrist=[V.lerp(g.rightWrist[0],restR[0],m.retract),V.lerp(g.rightWrist[1],restR[1],m.retract)];
     const open=m.release>.52;
@@ -54,8 +57,9 @@
       character:{
         root:[panelX+270,rootY],scale,pose:V.samplePose('place-record',m.travel),
         leftWrist,rightWrist,leftArmLayer:'front',rightArmLayer:'front',
+        leftBend:open?1:-1,rightBend:open?-1:1,
         leftHand:open?'open':'edge',rightHand:open?'open':'edge',
-        leftHandRot:open?-.55:g.leftRot,rightHandRot:open?Math.PI+.55:g.rightRot
+        leftHandRot:open?-.25:g.leftRot,rightHandRot:open?Math.PI+.25:g.rightRot
       }
     };
   }
@@ -128,10 +132,13 @@
   });
 
   V.registerContract('place-release-physics',()=>{
-    const failures=[],near=samplePlace(.74,0),end=samplePlace(1,0);
+    const failures=[],near=samplePlace(.74,0),end=samplePlace(1,0),a=rec.anchors(end.record);
     if(!near.contactActive)failures.push('place grip released before seating');
     if(end.contactActive)failures.push('place grip remained active after retract');
     if(end.character.leftHand!=='open'||end.character.rightHand!=='open')failures.push('place release did not enter open-hand state');
+    if(end.character.leftWrist[0]>=end.record.x-end.record.rx*.72)failures.push('released left wrist did not clear record silhouette');
+    if(end.character.rightWrist[0]<=end.record.x+end.record.rx*.72)failures.push('released right wrist did not clear record silhouette');
+    if(end.character.leftWrist[0]>=end.character.rightWrist[0])failures.push('released wrists crossed');
     return failures;
   });
 })();
