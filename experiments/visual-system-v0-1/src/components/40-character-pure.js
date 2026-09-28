@@ -1,0 +1,86 @@
+(function(){
+  'use strict';
+  const V=FILM.visual,P=FILM.lib.pal;
+  const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
+
+  function poseState(o){return o.pose||V.samplePose('neutral',1);}
+  function local(o,p){
+    const r=o.root||[0,0],s=o.scale!=null?o.scale:1,ps=poseState(o),a=-(ps.bodyRot||0);
+    const dx=p[0]-r[0],dy=p[1]-r[1],cr=Math.cos(a),sr=Math.sin(a);
+    return [(dx*cr-dy*sr)/s,(dx*sr+dy*cr)/s];
+  }
+  function setup(ctx,o,fn){
+    const r=o.root||[0,0],s=o.scale!=null?o.scale:1,ps=poseState(o);
+    ctx.save();ctx.translate(r[0],r[1]);ctx.rotate(ps.bodyRot||0);ctx.scale(s,s);fn();ctx.restore();
+  }
+  function rig(o){
+    const ps=poseState(o),base=[[-78,-113],[78,-113]],out={};
+    const shoulders=[
+      [base[0][0]+(ps.leftShoulder?ps.leftShoulder[0]:0),base[0][1]+(ps.leftShoulder?ps.leftShoulder[1]:0)],
+      [base[1][0]+(ps.rightShoulder?ps.rightShoulder[0]:0),base[1][1]+(ps.rightShoulder?ps.rightShoulder[1]:0)]
+    ];
+    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),132,122,o.leftBend!=null?o.leftBend:-1);
+    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),132,122,o.rightBend!=null?o.rightBend:1);
+    return out;
+  }
+  function limb(ctx,a,b,w0,w1,fill){
+    const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.max(1,Math.hypot(dx,dy)),nx=-dy/len,ny=dx/len;
+    const p0=[a[0]+nx*w0/2,a[1]+ny*w0/2],p1=[b[0]+nx*w1/2,b[1]+ny*w1/2],p2=[b[0]-nx*w1/2,b[1]-ny*w1/2],p3=[a[0]-nx*w0/2,a[1]-ny*w0/2];
+    ctx.beginPath();ctx.moveTo(...p0);ctx.quadraticCurveTo((p0[0]+p1[0])/2+nx*4,(p0[1]+p1[1])/2+ny*4,...p1);ctx.quadraticCurveTo(b[0]+dx/len*3,b[1]+dy/len*3,...p2);ctx.quadraticCurveTo((p2[0]+p3[0])/2-nx*3,(p2[1]+p3[1])/2-ny*3,...p3);ctx.closePath();
+    ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=2.2;ctx.stroke();
+  }
+  function hand(ctx,p,rot,type){
+    const hs=V.hand(type);ctx.save();ctx.translate(...p);ctx.rotate(rot||0);ctx.scale(hs.drawScale,hs.drawScale);ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;
+    ctx.beginPath();
+    if(type==='press'){
+      ctx.moveTo(-12,-20);ctx.bezierCurveTo(8,-32,34,-28,47,-9);ctx.bezierCurveTo(56,5,49,23,34,30);ctx.bezierCurveTo(12,38,-8,27,-14,10);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.roundRect(26,-22,78,15,7);ctx.fill();ctx.stroke();
+    }else if(type==='rest'){
+      ctx.moveTo(-9,-18);ctx.bezierCurveTo(5,-28,22,-28,36,-23);ctx.bezierCurveTo(51,-18,61,-6,62,9);ctx.bezierCurveTo(62,25,48,39,29,42);ctx.bezierCurveTo(11,45,-4,35,-11,21);ctx.bezierCurveTo(-17,8,-15,-8,-9,-18);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.ellipse(53,-3,18,10,-.2,0,Math.PI*2);ctx.fill();ctx.stroke();
+    }else if(type==='open'){
+      ctx.moveTo(-9,-20);ctx.bezierCurveTo(4,-30,20,-31,32,-26);ctx.bezierCurveTo(45,-21,51,-11,49,0);ctx.bezierCurveTo(60,-10,69,-8,72,-1);ctx.bezierCurveTo(75,7,69,15,58,20);ctx.bezierCurveTo(65,25,64,34,58,39);ctx.bezierCurveTo(50,46,39,42,32,38);ctx.bezierCurveTo(24,48,11,51,1,45);ctx.bezierCurveTo(-12,38,-17,24,-15,11);ctx.bezierCurveTo(-14,-2,-13,-12,-9,-20);ctx.closePath();ctx.fill();ctx.stroke();
+    }else{
+      ctx.moveTo(-10,-23);ctx.bezierCurveTo(12,-34,37,-29,51,-10);ctx.bezierCurveTo(61,4,55,20,41,28);ctx.bezierCurveTo(21,37,-3,29,-13,12);ctx.closePath();ctx.fill();ctx.stroke();
+      for(let i=0;i<3;i++){ctx.beginPath();ctx.roundRect(34,-21+i*16,55,11,5.5);ctx.fill();ctx.stroke();}
+    }
+    ctx.restore();
+  }
+  function drawBody(ctx,o){
+    setup(ctx,o,()=>{
+      ctx.fillStyle=C.shirt;ctx.strokeStyle=C.ink;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-90,-130);ctx.bezierCurveTo(-55,-165,55,-165,92,-130);ctx.bezierCurveTo(118,-54,108,100,82,160);ctx.lineTo(-82,160);ctx.bezierCurveTo(-110,82,-115,-58,-90,-130);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle=C.shirtDeep;ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(20,-148);ctx.lineTo(92,-130);ctx.bezierCurveTo(118,-54,108,100,82,160);ctx.lineTo(30,160);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=C.tee;ctx.beginPath();ctx.roundRect(-44,-149,88,86,22);ctx.fill();
+      ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,-258,61,83,-.06,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle=C.hair;ctx.beginPath();ctx.arc(-4,-295,62,Math.PI,Math.PI*2);ctx.bezierCurveTo(48,-302,31,-281,14,-293);ctx.bezierCurveTo(-6,-278,-29,-294,-56,-278);ctx.closePath();ctx.fill();
+      ctx.fillStyle=C.ink;ctx.beginPath();ctx.arc(-20,-257,4,0,Math.PI*2);ctx.arc(22,-258,4,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(-9,-218);ctx.quadraticCurveTo(2,-212,14,-218);ctx.stroke();
+    });
+  }
+  function drawArms(ctx,o,layer='all'){
+    const R=rig(o);setup(ctx,o,()=>{
+      for(const side of ['left','right']){
+        const q=R[side];if(!q)continue;
+        const armLayer=o[side+'ArmLayer']||'back';
+        if(layer!=='all'&&armLayer!==layer)continue;
+        limb(ctx,q.shoulder,q.elbow,58,43,C.shirt);limb(ctx,q.elbow,q.wrist,42,25,C.skin);
+      }
+    });
+  }
+  function drawHands(ctx,o){
+    const R=rig(o);setup(ctx,o,()=>{
+      if(R.left)hand(ctx,R.left.wrist,o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]),o.leftHand||'edge');
+      if(R.right)hand(ctx,R.right.wrist,o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]),o.rightHand||'edge');
+    });
+  }
+  function audit(o){
+    const R=rig(o);
+    return {leftOverreach:R.left?R.left.overreach:0,rightOverreach:R.right?R.right.overreach:0};
+  }
+  function drawHandState(ctx,o={}){
+    const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type);ctx.restore();
+  }
+  function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
+  V.registerCharacter('pure',{draw,drawBody,drawArms,drawHands,drawHandState,audit});
+})();

@@ -19,6 +19,12 @@ Look first: `reference/example-contact-sheet.jpg` (the whole example film, 24 la
 
 `node tools/check.cjs` is the gate: six checks (media scan, determinism, source scan, timeline, draw, frame cost), and exit 0 means green. From the stub pass onward, no step is done while the gate is red. On real scenes it takes under a minute — let it finish.
 
+### Fork R&D: reusable visual system
+
+This fork also contains an experimental reusable visual-quality layer at `../../experiments/visual-system-v0-1/`. When a task involves reusable character/product assets, hand-object interaction, pose systems, motion grammar, or visual-quality regression, read `reference/visual-system-rd.md` before authoring scene-local geometry.
+
+The experiment is discoverable from `main`, but it is **not** canonical foundation. Do not silently copy its APIs into ordinary films unless the task explicitly opts into the R&D extension or the experiment has been promoted after human visual approval.
+
 ## Worked example
 
 `butterfly-life` is a finished film from this pipeline, at `../../examples/butterfly-life/` from this skill folder, or online at https://github.com/kuhnhomeuk-cell/procedural-film/tree/main/examples/butterfly-life when that folder is absent. When a template leaves the shape of a filled document unclear, read its counterpart there: `docs/art-bible.md`, `docs/storyboard.md`, `src/timeline.js`, `src/scenes/`, `src/music.js`. Take its structure; the subject comes from step 2's research.

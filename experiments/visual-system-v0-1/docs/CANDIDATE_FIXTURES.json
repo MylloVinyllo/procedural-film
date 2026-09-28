@@ -1,0 +1,36 @@
+{
+  "version": "0.1",
+  "status": "candidate-not-golden",
+  "ownerApprovalRequired": true,
+  "fixtures": [
+    {
+      "id": "myllo-rcm01-product",
+      "shot": "product-fixture",
+      "purpose": "large-scale product geometry/material reference",
+      "sourceEvidence": [
+        "Google Drive catalog 2025.pdf",
+        "Google Drive велика мийка.mov"
+      ]
+    },
+    {
+      "id": "protagonist-character",
+      "shot": "character-fixture",
+      "purpose": "large-scale pose, hand silhouette and contact inspection",
+      "states": [
+        "hold-record",
+        "place-record",
+        "press-control"
+      ]
+    },
+    {
+      "id": "interaction-quality",
+      "shot": "quality-proof",
+      "purpose": "medium-scale semantic interaction continuity",
+      "actions": [
+        "hold-record",
+        "place-record",
+        "press-pump"
+      ]
+    }
+  ]
+}

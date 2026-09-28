@@ -17,6 +17,7 @@ The reference film is `examples/butterfly-life`, the life cycle of a monarch but
 |---|---|
 | `skills/procedural-film/` | The skill. `SKILL.md` is the pipeline, `foundation/` is the engine and tools copied into each new film, `templates/` holds the four planning documents, `reference/` holds the shot-type index, scene and music guides, and frames from the example as the visual target. |
 | `examples/butterfly-life/` | The butterfly film as the skill produces it: planning docs, source, tools, the HTML player and the phone MP4. |
+| `experiments/visual-system-v0-1/` | Fork-specific R&D for reusable 2D visual quality: character/product components, interaction anchors, motion grammar and visual contracts. Experimental, not yet canonical foundation. |
 
 ## Requirements
 
@@ -45,6 +46,12 @@ For another agent, link it into that agent's skills folder.
 Ask your agent for a procedural film about a subject, for example "make a procedural film about the life of a honeybee".
 `skills/procedural-film/SKILL.md` holds the full pipeline.
 Expect a long run: one agent per shot writes a scene file of 1000+ lines, then critic waves review every shot, so a film spends a large share of a usage plan.
+
+## Fork R&D: visual-system v0.1
+
+This fork carries an active visual-quality R&D track in [`experiments/visual-system-v0-1/`](experiments/visual-system-v0-1/). It explores reusable character rigs, authored/compiled vector assets, stable product geometry, semantic hand/object contact, pose libraries, motion grammar and visual QA contracts.
+
+The experiment is intentionally part of `main` so repository-aware agents can discover it, but it is **not** part of the canonical `skills/procedural-film/foundation/` runtime yet. Promotion requires owner visual approval plus golden-fixture regression evidence. See [`skills/procedural-film/reference/visual-system-rd.md`](skills/procedural-film/reference/visual-system-rd.md).
 
 ## Rebuild the butterfly film
 
