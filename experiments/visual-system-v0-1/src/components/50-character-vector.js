@@ -86,6 +86,10 @@
     const R=rig(o);
     return {leftOverreach:R.left?R.left.overreach:0,rightOverreach:R.right?R.right.overreach:0};
   }
+  function drawHandState(ctx,o={}){
+    const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type);ctx.restore();
+  }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHands,audit});
+  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHands,drawHandState,audit});
 })();
