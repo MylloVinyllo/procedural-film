@@ -1401,7 +1401,7 @@
     for(let t=14.5;t<18;t+=.25){ if(t%0.5===0) kick(t,.22,t===16?'full':'felt'); else shaker(t,.035,(Math.round(t*4)%2?-.2:.2)); }
     sub(15.0,15.5,'F2',.20,{});
     pluck(15.5,'B4',.16,{dec:.5});
-    revSwell(15.55,.325,.13,{fTop:2800,hall:.16});
+    revSwell(15.55,.325,.13,{fTop:2800,hall:.16}); tock(15.875, 0.13, 1450, { bus:'sfx', dec:0.035 });
     kick(16.0,.48,'full'); subDrop(16.0,82,43,.5,.22); gong(16.0,hz('C3'),.15,{dec:1.8,hall:.25});
     [16.5,16.55,16.60].forEach((t,i)=>glass(t,hz(['F5','A5','C6'][i]),.055,{dec:.55,pan:-.25+i*.25}));
     fmSafe(17.0, 'D5', .10);
@@ -1418,7 +1418,7 @@
     glass(23.5,hz('D5'),.11,{dec:1.8,hall:.3});
 
     // Memory and ageing, deliberately sparse.
-    glass(24.0,hz('D4'),.045,{dec:1.8,hall:.32});
+    glass(24.0,hz('D4'),.045,{dec:1.8,hall:.32}); tock(24.0, 0.12, 760, { bus:'sfx', dec:0.04 });
     kalimba(24.25,hz('D5'),.055,{dec:.9,hall:.25});
     glass(24.5,hz('A5'),.045,{dec:.8,hall:.28});
     glass(25.0,hz('F4'),.04,{dec:1.0,hall:.3});
