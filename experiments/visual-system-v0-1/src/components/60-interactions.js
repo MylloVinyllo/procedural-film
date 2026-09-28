@@ -100,4 +100,14 @@
     }
     return failures;
   });
+
+  V.registerContract('record-seat-projection',()=>{
+    const failures=[],end=samplePlace(1,0),ma=washer.anchors(end.machine);
+    if(dist([end.record.x,end.record.y],ma.recordCenter)>1)failures.push('placed record center misses washer spindle');
+    if(Math.abs(end.record.rx-ma.recordRadii[0])>1||Math.abs(end.record.ry-ma.recordRadii[1])>1)failures.push('placed record projection does not match washer plane');
+    const p=samplePress(.62,0),pm=washer.anchors(p.machine);
+    if(dist([p.record.x,p.record.y],pm.recordCenter)>1)failures.push('press state moved seated record off spindle');
+    if(Math.abs(p.record.rx-pm.recordRadii[0])>1||Math.abs(p.record.ry-pm.recordRadii[1])>1)failures.push('press state record projection drift');
+    return failures;
+  });
 })();

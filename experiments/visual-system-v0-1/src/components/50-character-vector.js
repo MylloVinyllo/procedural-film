@@ -73,10 +73,22 @@
     const R=rig(o);setup(ctx,o,()=>{
       for(const side of ['left','right']){
         const q=R[side];if(!q)continue;
-        joint(ctx,q.shoulder,27,C.shirt,C.ink,1.8);
+        // Continuous silhouette, no circular "joint balls". The old elbow disk was
+        // visually indistinguishable from a third hand in medium shots.
         bonePart(ctx,'upperArm',q.shoulder,q.elbow,C.shirt);
-        joint(ctx,q.elbow,20,C.skin,C.ink,1.4);
         bonePart(ctx,'foreArm',q.elbow,q.wrist,C.skin);
+
+        // restrained sleeve cuff at the anatomical transition
+        const dx=q.elbow[0]-q.shoulder[0],dy=q.elbow[1]-q.shoulder[1],a=Math.atan2(dy,dx);
+        ctx.save();ctx.translate(q.elbow[0],q.elbow[1]);ctx.rotate(a);
+        ctx.strokeStyle=C.shirtDeep;ctx.lineWidth=3;ctx.globalAlpha=.72;
+        ctx.beginPath();ctx.moveTo(-2,-18);ctx.quadraticCurveTo(5,0,-2,18);ctx.stroke();ctx.restore();
+
+        // one short forearm crease, enough to articulate direction without adding a fake joint
+        const fx=q.wrist[0]-q.elbow[0],fy=q.wrist[1]-q.elbow[1],fl=Math.max(1,Math.hypot(fx,fy)),nx=-fy/fl,ny=fx/fl;
+        const cx=q.elbow[0]+fx*.18,cy=q.elbow[1]+fy*.18;
+        ctx.save();ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.2;ctx.globalAlpha=.48;
+        ctx.beginPath();ctx.moveTo(cx-nx*8,cy-ny*8);ctx.quadraticCurveTo(cx+fx/fl*3,cy+fy/fl*3,cx+nx*8,cy+ny*8);ctx.stroke();ctx.restore();
       }
     });
   }
