@@ -56,7 +56,7 @@
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],rx:ma.recordRadii[0],ry:ma.recordRadii[1],rot:0};
     // Character stands slightly left of the cabinet: support palm rests on cabinet edge,
     // index finger reaches the front PUMP control. The seated record is not used as a hand rest.
-    const root=[panelX+92,1260],scale=1.04;
+    const root=[panelX+10,1260],scale=1.04;
     const pressRot=.16;
     const restFinger=[panelX+390,1190],target=ma.pumpButton;
     const reach=V.sstep(.08,.58,u),release=V.sstep(.76,1,u),k=release>0?1-release:reach;
