@@ -564,7 +564,7 @@ Schematic progress glyph:
 Shared geometry:
 
 - G1 cycle / founding-cell halo: centre (540,700), radius 150, outer guide radius 184;
-- G2 child/head continuity: centre (540,720), rx 72, ry 92, but the visible head contour adds jaw/neck around the invariant ellipse;
+- G2 child/head continuity: centre (540,1027), rx 72, ry 92, but the visible head contour adds jaw/neck around the invariant ellipse;
 - G3 primary social node: centre (540,820), radius 48;
 - G4 transfer point: centre (540,920), radius 18.
 
