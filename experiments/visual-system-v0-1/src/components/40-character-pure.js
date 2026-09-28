@@ -19,8 +19,8 @@
       [base[0][0]+(ps.leftShoulder?ps.leftShoulder[0]:0),base[0][1]+(ps.leftShoulder?ps.leftShoulder[1]:0)],
       [base[1][0]+(ps.rightShoulder?ps.rightShoulder[0]:0),base[1][1]+(ps.rightShoulder?ps.rightShoulder[1]:0)]
     ];
-    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),132,122,-1);
-    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),132,122,1);
+    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),132,122,o.leftBend!=null?o.leftBend:-1);
+    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),132,122,o.rightBend!=null?o.rightBend:1);
     return out;
   }
   function limb(ctx,a,b,w0,w1,fill){

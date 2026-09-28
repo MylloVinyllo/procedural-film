@@ -69,8 +69,9 @@
       machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},
       character:{
         root,scale,pose:V.samplePose('press-control',k),
-        leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',leftHand:'rest',rightHand:'press',
-        leftHandRot:leftRot,rightHandRot:pressRot
+        leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',
+        leftBend:1,rightBend:-1,
+        leftHand:'rest',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot
       }
     };
   }
