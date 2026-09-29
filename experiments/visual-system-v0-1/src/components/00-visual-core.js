@@ -72,15 +72,15 @@
     hand(name){const v=registry.hands[name];if(!v)throw new Error('unknown hand: '+name);return v;},
     samplePose(name,t=1){const v=registry.poses[name];if(!v)throw new Error('unknown pose: '+name);return Object.freeze(typeof v==='function'?v(clamp(t)):v);},
     sampleMotion(name,t=1){const v=registry.motions[name];if(!v)throw new Error('unknown motion: '+name);return Object.freeze(v(clamp(t)));},
-    handContactWorld(name,wrist,rot,worldScale=1){
+    handContactWorld(name,wrist,rot,worldScale=1,mirrorY=false){
       const h=registry.hands[name];if(!h)throw new Error('unknown hand: '+name);
-      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale;
+      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale*(mirrorY?-1:1);
       const cr=Math.cos(rot),sr=Math.sin(rot);
       return [wrist[0]+cx*cr-cy*sr,wrist[1]+cx*sr+cy*cr];
     },
-    wristForHandContact(name,contact,rot,worldScale=1){
+    wristForHandContact(name,contact,rot,worldScale=1,mirrorY=false){
       const h=registry.hands[name];if(!h)throw new Error('unknown hand: '+name);
-      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale;
+      const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale*(mirrorY?-1:1);
       const cr=Math.cos(rot),sr=Math.sin(rot);
       return [contact[0]-(cx*cr-cy*sr),contact[1]-(cx*sr+cy*cr)];
     }
