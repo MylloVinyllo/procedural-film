@@ -12,18 +12,16 @@
   }
 
   function drawActor(ctx,s){
-    ctx.save();
-    const sc=s.label==='HOLD RECORD'?1.72:s.label==='PLACE RECORD'?1.46:1.42;
-    const cy=s.label==='HOLD RECORD'?930:s.label==='PLACE RECORD'?875:870;
-    ctx.translate(540,cy);ctx.scale(sc,sc);ctx.translate(-540,-cy);
-    actor.drawBody(ctx,s.character);
-    actor.drawArms(ctx,s.character,'back');
-    if(s.label!=='HOLD RECORD')washer.drawBase(ctx,s.machine);
-    record.draw(ctx,s.record);
-    if(s.label!=='HOLD RECORD')washer.drawOverlay(ctx,s.machine);
-    actor.drawArms(ctx,s.character,'front');
-    actor.drawHands(ctx,s.character);
-    ctx.restore();
+    const comp=s.label==='HOLD RECORD'?'fixture-hold':s.label==='PLACE RECORD'?'fixture-place':'fixture-press';
+    V.withComposition(ctx,comp,()=>{
+      actor.drawBody(ctx,s.character);
+      actor.drawArms(ctx,s.character,'back');
+      if(s.label!=='HOLD RECORD')washer.drawBase(ctx,s.machine);
+      record.draw(ctx,s.record);
+      if(s.label!=='HOLD RECORD')washer.drawOverlay(ctx,s.machine);
+      actor.drawArms(ctx,s.character,'front');
+      actor.drawHands(ctx,s.character);
+    });
   }
 
   FILM.scene({id:ID,draw(ctx,tIn,info){

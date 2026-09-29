@@ -1,7 +1,7 @@
 // Visual System v0.1 core: registry, transforms, anchors, IK.
 (function(){
   'use strict';
-  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null),hands:Object.create(null),poses:Object.create(null),motions:Object.create(null),contracts:[]};
+  const registry={characters:Object.create(null),products:Object.create(null),props:Object.create(null),actions:Object.create(null),hands:Object.create(null),poses:Object.create(null),motions:Object.create(null),compositions:Object.create(null),contracts:[]};
   const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
   const lerp=(a,b,u)=>a+(b-a)*u;
   const sstep=(a,b,x)=>{const u=clamp((x-a)/(b-a));return u*u*(3-2*u);};
@@ -53,6 +53,7 @@
     registerHand(name,spec){if(registry.hands[name])throw new Error('hand exists: '+name);registry.hands[name]=Object.freeze(spec);},
     registerPose(name,sampler){if(registry.poses[name])throw new Error('pose exists: '+name);registry.poses[name]=sampler;},
     registerMotion(name,sampler){if(registry.motions[name])throw new Error('motion exists: '+name);registry.motions[name]=sampler;},
+    registerComposition(name,spec){if(registry.compositions[name])throw new Error('composition exists: '+name);registry.compositions[name]=Object.freeze(spec);},
     registerContract(name,fn){registry.contracts.push(Object.freeze({name,fn}));},
     runContracts(){
       const failures=[];
@@ -72,6 +73,8 @@
     hand(name){const v=registry.hands[name];if(!v)throw new Error('unknown hand: '+name);return v;},
     samplePose(name,t=1){const v=registry.poses[name];if(!v)throw new Error('unknown pose: '+name);return Object.freeze(typeof v==='function'?v(clamp(t)):v);},
     sampleMotion(name,t=1){const v=registry.motions[name];if(!v)throw new Error('unknown motion: '+name);return Object.freeze(v(clamp(t)));},
+    composition(name){const v=registry.compositions[name];if(!v)throw new Error('unknown composition: '+name);return v;},
+    withComposition(ctx,name,fn){const c=registry.compositions[name];if(!c)throw new Error('unknown composition: '+name);ctx.save();ctx.translate(c.center[0],c.center[1]);ctx.scale(c.scale,c.scale);ctx.translate(-c.center[0],-c.center[1]);fn(c);ctx.restore();},
     handContactWorld(name,wrist,rot,worldScale=1,mirrorY=false){
       const h=registry.hands[name];if(!h)throw new Error('unknown hand: '+name);
       const ds=h.drawScale!=null?h.drawScale:1,cx=h.contact[0]*ds*worldScale,cy=h.contact[1]*ds*worldScale*(mirrorY?-1:1);
