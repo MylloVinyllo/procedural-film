@@ -43,7 +43,7 @@
       record.rx=V.lerp(record.rx,endRx,m.seat);record.ry=V.lerp(record.ry,endRy,m.seat);
     }
 
-    const rootY=V.lerp(760,850,m.travel),scale=V.lerp(1.02,1.05,m.travel),g=gripRecord(record,scale);
+    const rootY=V.lerp(760,854,m.travel),scale=V.lerp(1.02,1.05,m.travel),g=gripRecord(record,scale);
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
@@ -70,8 +70,8 @@
     const machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:true,active:m.contactActive?'PUMP':null},ma=washer.anchors(machine);
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],rx:ma.recordRadii[0],ry:ma.recordRadii[1],rot:0};
 
-    const root=[panelX+10,1120],scale=1.04,pressRot=.16;
-    const rest=[panelX+392,1184],pre=[panelX+374,1165],target=ma.pumpButton;
+    const root=[panelX+25,1120],scale=1.04,pressRot=.16;
+    const rest=[panelX+330,1142],pre=[panelX+308,1148],target=ma.pumpButton;
     const approachStart=[
       V.lerp(rest[0],pre[0],m.anticipation),
       V.lerp(rest[1],pre[1],m.anticipation)
