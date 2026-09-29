@@ -9,10 +9,11 @@
     actor.drawBody(ctx,s.character);
     actor.drawArms(ctx,s.character,'back');
     if(showMachine)washer.drawBase(ctx,s.machine);
+    actor.drawHandBacks(ctx,s.character);
     record.draw(ctx,s.record);
     if(showMachine)washer.drawOverlay(ctx,s.machine);
     actor.drawArms(ctx,s.character,'front');
-    actor.drawHands(ctx,s.character);
+    actor.drawHandFronts(ctx,s.character);
   }
 
   function background(ctx){
