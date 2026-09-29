@@ -16,7 +16,7 @@
   }
 
   function sampleHold(t,panelX){
-    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:false};
+    const u=V.sstep(0,1,t),machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:false};
     const record={x:panelX+270,y:870,rx:96,ry:96,rot:0},scale=1.02,g=gripRecord(record,scale,Math.PI*.98,Math.PI*.02);
     return {
       machine,record,contacts:g.contacts,contactActive:true,
@@ -29,8 +29,8 @@
   }
 
   function samplePlace(t,panelX){
-    const u=V.clamp(t),m=V.sampleMotion('place-object',u),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:false};
-    const ma=washer.anchors(machine),start=[panelX+270,850],end=ma.recordCenter,[endRx,endRy]=ma.recordRadii;
+    const u=V.clamp(t),m=V.sampleMotion('place-object',u),machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:false};
+    const ma=washer.anchors(machine),start=[panelX+270,830],end=ma.recordCenter,[endRx,endRy]=ma.recordRadii;
 
     const record={
       x:V.lerp(start[0],end[0],m.travel),
@@ -43,7 +43,7 @@
       record.rx=V.lerp(record.rx,endRx,m.seat);record.ry=V.lerp(record.ry,endRy,m.seat);
     }
 
-    const rootY=V.lerp(763,1085,m.travel),scale=V.lerp(1.02,1.06,m.travel),g=gripRecord(record,scale);
+    const rootY=V.lerp(760,850,m.travel),scale=V.lerp(1.02,1.05,m.travel),g=gripRecord(record,scale);
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
@@ -67,10 +67,10 @@
 
   function samplePress(t,panelX){
     const u=V.clamp(t),m=V.sampleMotion('press-control',u);
-    const machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:true,active:m.contactActive?'PUMP':null},ma=washer.anchors(machine);
+    const machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:true,active:m.contactActive?'PUMP':null},ma=washer.anchors(machine);
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],rx:ma.recordRadii[0],ry:ma.recordRadii[1],rot:0};
 
-    const root=[panelX+10,1260],scale=1.04,pressRot=.16;
+    const root=[panelX+10,1120],scale=1.04,pressRot=.16;
     const rest=[panelX+392,1184],pre=[panelX+374,1165],target=ma.pumpButton;
     const approachStart=[
       V.lerp(rest[0],pre[0],m.anticipation),
