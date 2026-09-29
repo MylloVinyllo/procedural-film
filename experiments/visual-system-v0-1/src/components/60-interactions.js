@@ -17,11 +17,11 @@
 
   function sampleHold(t,panelX){
     const u=V.sstep(0,1,t),machine={x:panelX+270,y:1240,scale:.78,showRecord:false,clampVisible:false};
-    const record={x:panelX+270,y:850,rx:108,ry:108,rot:0},scale=1.02,g=gripRecord(record,scale);
+    const record={x:panelX+270,y:870,rx:96,ry:96,rot:0},scale=1.02,g=gripRecord(record,scale,Math.PI*.98,Math.PI*.02);
     return {
       machine,record,contacts:g.contacts,contactActive:true,
       character:{
-        root:[panelX+270,760],scale,pose:V.samplePose('hold-record',u),
+        root:[panelX+270,770],scale,pose:V.samplePose('hold-record',u),
         leftWrist:g.leftWrist,rightWrist:g.rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot,leftHandFlip:g.leftFlip,rightHandFlip:g.rightFlip
       }
