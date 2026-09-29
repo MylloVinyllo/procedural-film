@@ -1,5 +1,5 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "status": "candidate-not-golden",
   "ownerApprovalRequired": true,
   "fixtures": [
@@ -30,6 +30,26 @@
         "hold-record",
         "place-record",
         "press-pump"
+      ]
+    },
+    {
+      "id": "authored-hand-library",
+      "shot": "hand-fixture",
+      "purpose": "large-scale hand silhouette, chirality and semantic contact inspection",
+      "states": [
+        "edge",
+        "press",
+        "rest",
+        "open"
+      ]
+    },
+    {
+      "id": "motion-grammar",
+      "shot": "motion-fixture",
+      "purpose": "normal-speed PLACE/PRESS timing and release review",
+      "motions": [
+        "place-object",
+        "press-control"
       ]
     }
   ]

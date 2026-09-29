@@ -1,0 +1,74 @@
+name: visual-system-rd
+
+on:
+  pull_request:
+    paths:
+      - "experiments/visual-system-v0-1/**"
+      - ".github/workflows/visual-system-rd.yml"
+  push:
+    branches: [main]
+    paths:
+      - "experiments/visual-system-v0-1/**"
+      - ".github/workflows/visual-system-rd.yml"
+
+concurrency:
+  group: visual-system-rd-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: experiments/visual-system-v0-1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: experiments/visual-system-v0-1/tools/package-lock.json
+
+      - name: Install tool dependencies
+        run: npm ci --prefix tools
+
+      - name: Install Chromium
+        run: npx --prefix tools playwright install --with-deps chromium
+
+      - name: Run visual-system gate
+        run: node tools/check.cjs
+
+      - name: Render review contact sheets
+        run: |
+          mkdir -p .tmp/ci
+          node tools/snap.cjs --shot character-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/character
+          node tools/snap.cjs --shot product-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/product
+          node tools/snap.cjs --shot motion-fixture --samples 12 --sheet --scale 0.35 --out .tmp/ci/motion
+          node tools/snap.cjs --shot hand-fixture --samples 4 --sheet --scale 0.5 --out .tmp/ci/hands
+          node tools/snap.cjs --shot editorial-proof --samples 9 --sheet --scale 0.35 --out .tmp/ci/editorial
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+
+      - name: Render normal-speed motion proof
+        run: |
+          node tools/render.cjs --from 24 --to 32 --scale 0.5 --silent --crf 20 --preset veryfast --out .tmp/ci/motion-proof.mp4
+          node tools/render.cjs --from 36 --to 44 --scale 0.5 --silent --crf 20 --preset veryfast --out .tmp/ci/editorial-proof.mp4
+
+      - name: Upload visual review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-system-review-evidence
+          path: experiments/visual-system-v0-1/.tmp/ci/**
+          if-no-files-found: error
+          retention-days: 7

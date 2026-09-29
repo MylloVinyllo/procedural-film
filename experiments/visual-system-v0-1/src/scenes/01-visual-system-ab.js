@@ -17,10 +17,11 @@
     backend.drawBody(ctx,state.character);
     backend.drawArms(ctx,state.character,'back');
     washer.drawBase(ctx,state.machine);
+    backend.drawHandBacks(ctx,state.character);
     record.draw(ctx,state.record);
     washer.drawOverlay(ctx,state.machine);
     backend.drawArms(ctx,state.character,'front');
-    backend.drawHands(ctx,state.character);
+    backend.drawHandFronts(ctx,state.character);
   }
 
   FILM.scene({id:ID,draw(ctx,tIn,info){

@@ -29,8 +29,8 @@
     ctx.beginPath();ctx.moveTo(...p0);ctx.quadraticCurveTo((p0[0]+p1[0])/2+nx*4,(p0[1]+p1[1])/2+ny*4,...p1);ctx.quadraticCurveTo(b[0]+dx/len*3,b[1]+dy/len*3,...p2);ctx.quadraticCurveTo((p2[0]+p3[0])/2-nx*3,(p2[1]+p3[1])/2-ny*3,...p3);ctx.closePath();
     ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=2.2;ctx.stroke();
   }
-  function hand(ctx,p,rot,type){
-    const hs=V.hand(type);ctx.save();ctx.translate(...p);ctx.rotate(rot||0);ctx.scale(hs.drawScale,hs.drawScale);ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;
+  function hand(ctx,p,rot,type,flipY=false){
+    const hs=V.hand(type);ctx.save();ctx.translate(...p);ctx.rotate(rot||0);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;
     ctx.beginPath();
     if(type==='press'){
       ctx.moveTo(-12,-20);ctx.bezierCurveTo(8,-32,34,-28,47,-9);ctx.bezierCurveTo(56,5,49,23,34,30);ctx.bezierCurveTo(12,38,-8,27,-14,10);ctx.closePath();ctx.fill();ctx.stroke();
@@ -67,20 +67,40 @@
       }
     });
   }
-  function drawHands(ctx,o){
+  function edgeThumb(ctx,p,rot,flipY=false){
+    const hs=V.hand('edge');
+    ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
+    ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.roundRect(30,-8,48,14,7);ctx.fill();ctx.stroke();
+    ctx.restore();
+  }
+  function drawHandBacks(ctx,o){
     const R=rig(o);setup(ctx,o,()=>{
-      if(R.left)hand(ctx,R.left.wrist,o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]),o.leftHand||'edge');
-      if(R.right)hand(ctx,R.right.wrist,o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]),o.rightHand||'edge');
+      if(R.left&&(o.leftHand||'edge')==='edge')hand(ctx,R.left.wrist,o.leftHandRot||0,'edge',!!o.leftHandFlip);
+      if(R.right&&(o.rightHand||'edge')==='edge')hand(ctx,R.right.wrist,o.rightHandRot||0,'edge',!!o.rightHandFlip);
     });
   }
+  function drawHandFronts(ctx,o){
+    const R=rig(o);setup(ctx,o,()=>{
+      if(R.left){
+        const type=o.leftHand||'edge',rot=o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]);
+        if(type==='edge')edgeThumb(ctx,R.left.wrist,rot,!!o.leftHandFlip);else hand(ctx,R.left.wrist,rot,type,!!o.leftHandFlip);
+      }
+      if(R.right){
+        const type=o.rightHand||'edge',rot=o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]);
+        if(type==='edge')edgeThumb(ctx,R.right.wrist,rot,!!o.rightHandFlip);else hand(ctx,R.right.wrist,rot,type,!!o.rightHandFlip);
+      }
+    });
+  }
+  function drawHands(ctx,o){drawHandBacks(ctx,o);drawHandFronts(ctx,o);} 
   function audit(o){
     const R=rig(o);
     return {leftOverreach:R.left?R.left.overreach:0,rightOverreach:R.right?R.right.overreach:0};
   }
   function drawHandState(ctx,o={}){
     const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
-    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type);ctx.restore();
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY);ctx.restore();
   }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('pure',{draw,drawBody,drawArms,drawHands,drawHandState,audit});
+  V.registerCharacter('pure',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,audit});
 })();

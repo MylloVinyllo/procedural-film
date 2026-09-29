@@ -12,6 +12,9 @@ Canonical experiment path:
 Historical development branch:
 `rd/visual-system-v0.1`
 
+Active continuation branch:
+`rd/visual-system-v0.2-quality`
+
 Historical R&D head:
 `0b5fda122544d9ffa24cecd7047ffd811a34af8c`
 
@@ -63,6 +66,35 @@ Result:
 - 5 shots / 32 s;
 - max swept frame cost 42 ms.
 
+## v0.2 current checkpoint — 2026-09-29
+
+Active head before this status update:
+`fe5c7e55ce95de0eb9915da690b6743fa40ec4ba`
+
+What changed in the current quality slice:
+- replaced the old blob-like edge/press hand construction with a reusable authored finger-rig geometry layer;
+- added explicit left/right chirality support to hand contact transforms;
+- added a dedicated `hand-fixture` for large-scale EDGE / PRESS / REST / OPEN review;
+- kept semantic contact anchors and reach contracts as hard constraints while changing the drawing backend;
+- refined MV-RCM01 working-head/material detail;
+- added a normal-speed motion proof and contact-sheet evidence to CI;
+- added CI concurrency so stale PR runs are cancelled;
+- added an authored asset specification for hand/pose/interaction contracts;
+- tested a more asymmetric pose language, then restored proven interaction staging where the reach gate rejected it.
+
+Latest verified CI run:
+- workflow run `36539324982`;
+- **PASS**;
+- 6 shots / 36 s;
+- technical gate PASS;
+- visual contracts PASS;
+- contact sheets PASS;
+- normal-speed motion proof PASS;
+- review artifact uploaded.
+
+Important lesson from this slice:
+visual authorship may change aggressively, but semantic contact/reach geometry is not allowed to drift. If an aesthetic pose breaks reach, the pose must be redesigned rather than weakening the contract.
+
 ## Visual status
 
 Architecture and reusable interaction mechanics are proven enough to keep developing.
@@ -87,4 +119,4 @@ Do not promote experimental components into `skills/procedural-film/foundation/`
 
 ## Continuation
 
-After this experiment lands on `main`, create a fresh short-lived branch from `main` for the next quality iteration. Do not continue stacking unrelated history onto the old `rd/visual-system-v0.1` branch.
+The experiment is now on `main`. Active quality work continues on `rd/visual-system-v0.2-quality`, created directly from merged `main`. Do not continue stacking unrelated history onto the old `rd/visual-system-v0.1` branch.

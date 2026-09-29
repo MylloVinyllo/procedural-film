@@ -2,6 +2,14 @@
   'use strict';
   const V=FILM.visual,A=FILM.vectorAssets.protagonist,P=FILM.lib.pal;
   const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
+  const SPEC=Object.freeze({
+    shoulders:Object.freeze([Object.freeze([-80,-112]),Object.freeze([80,-112])]),
+    upperArm:136,
+    foreArm:126,
+    headBox:Object.freeze({width:137,height:179}),
+    torsoBox:Object.freeze({width:224,height:330}),
+    lowerBodyDepth:147
+  });
   const cache=Object.create(null),path=k=>cache[k]||(cache[k]=new Path2D(A[k]));
 
   function poseState(o){return o.pose||V.samplePose('neutral',1);}
@@ -15,102 +23,256 @@
     ctx.save();ctx.translate(r[0],r[1]);ctx.rotate(ps.bodyRot||0);ctx.scale(s,s);fn();ctx.restore();
   }
   function rig(o){
-    const ps=poseState(o),base=[[-80,-112],[80,-112]],out={};
+    const ps=poseState(o),base=SPEC.shoulders,out={};
     const shoulders=[
       [base[0][0]+(ps.leftShoulder?ps.leftShoulder[0]:0),base[0][1]+(ps.leftShoulder?ps.leftShoulder[1]:0)],
       [base[1][0]+(ps.rightShoulder?ps.rightShoulder[0]:0),base[1][1]+(ps.rightShoulder?ps.rightShoulder[1]:0)]
     ];
-    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),136,126,o.leftBend!=null?o.leftBend:-1);
-    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),136,126,o.rightBend!=null?o.rightBend:1);
+    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),SPEC.upperArm,SPEC.foreArm,o.leftBend!=null?o.leftBend:-1);
+    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),SPEC.upperArm,SPEC.foreArm,o.rightBend!=null?o.rightBend:1);
     return out;
   }
   function part(ctx,k,fill,stroke=C.ink,w=2){
     ctx.fillStyle=fill;ctx.fill(path(k));
     if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke(path(k));}
   }
-  function joint(ctx,p,r,fill,stroke=C.ink,w=1.6){
-    ctx.fillStyle=fill;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();
-    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke();}
-  }
   function bonePart(ctx,k,a,b,fill){
-    const dx=b[0]-a[0],dy=b[1]-a[1],ang=Math.atan2(dy,dx),len=Math.hypot(dx,dy),nominal=k==='upperArm'?136:129;
+    const dx=b[0]-a[0],dy=b[1]-a[1],ang=Math.atan2(dy,dx),len=Math.hypot(dx,dy),nominal=k==='upperArm'?SPEC.upperArm:SPEC.foreArm;
     ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(ang);ctx.scale(len/nominal,1);part(ctx,k,fill,C.ink,1.8);ctx.restore();
   }
-  function hand(ctx,p,rot,type){
-    const hs=V.hand(type);ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale);
-    const key=type==='press'?'handPress':type==='rest'?'handRest':type==='open'?'handOpen':'handEdge';
-    part(ctx,key,C.skin,C.ink,1.7);
-    ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.25;ctx.globalAlpha=.58;ctx.lineCap='round';
-    if(type==='press'){
-      ctx.beginPath();ctx.moveTo(14,-2);ctx.quadraticCurveTo(22,7,33,8);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(29,20);ctx.quadraticCurveTo(37,25,43,23);ctx.stroke();
-    }else if(type==='rest'){
-      ctx.beginPath();ctx.moveTo(17,4);ctx.quadraticCurveTo(28,10,42,8);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(12,19);ctx.quadraticCurveTo(26,26,41,23);ctx.stroke();
-    }else if(type==='open'){
-      ctx.beginPath();ctx.moveTo(18,3);ctx.quadraticCurveTo(30,10,43,8);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(15,20);ctx.quadraticCurveTo(28,27,40,24);ctx.stroke();
-    }else{
-      ctx.beginPath();ctx.moveTo(34,4);ctx.quadraticCurveTo(44,10,57,9);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(31,18);ctx.quadraticCurveTo(41,24,53,22);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(26,31);ctx.quadraticCurveTo(36,37,44,34);ctx.stroke();
+  function strokeFinger(ctx,seg){
+    const pts=seg.points,w0=seg.width,w1=seg.tipWidth!=null?seg.tipWidth:Math.max(4.8,w0*.62);
+    const left=[],right=[];
+    for(let i=0;i<pts.length;i++){
+      const prev=pts[Math.max(0,i-1)],next=pts[Math.min(pts.length-1,i+1)];
+      const dx=next[0]-prev[0],dy=next[1]-prev[1],len=Math.max(1,Math.hypot(dx,dy));
+      const nx=-dy/len,ny=dx/len,t=pts.length===1?1:i/(pts.length-1),hw=V.lerp(w0,w1,t)/2;
+      left.push([pts[i][0]+nx*hw,pts[i][1]+ny*hw]);
+      right.push([pts[i][0]-nx*hw,pts[i][1]-ny*hw]);
+    }
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+    const traceSmooth=(pts)=>{
+      ctx.moveTo(pts[0][0],pts[0][1]);
+      for(let i=1;i<pts.length-1;i++){
+        const mx=(pts[i][0]+pts[i+1][0])/2,my=(pts[i][1]+pts[i+1][1])/2;
+        ctx.quadraticCurveTo(pts[i][0],pts[i][1],mx,my);
+      }
+      if(pts.length>1)ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]);
+    };
+    ctx.beginPath();
+    traceSmooth(left);
+    const rev=right.slice().reverse();
+    for(let i=0;i<rev.length;i++)ctx.lineTo(rev[i][0],rev[i][1]);
+    ctx.closePath();ctx.fillStyle=C.skin;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.45;ctx.stroke();
+
+    // one restrained knuckle crease on longer digits
+    if(pts.length>=4){
+      const j=pts[Math.max(1,pts.length-2)],prev=pts[Math.max(0,pts.length-3)],next=pts[pts.length-1];
+      const dx=next[0]-prev[0],dy=next[1]-prev[1],len=Math.max(1,Math.hypot(dx,dy)),nx=-dy/len,ny=dx/len;
+      ctx.strokeStyle=C.skinShadow;ctx.lineWidth=.8;ctx.globalAlpha=.42;
+      ctx.beginPath();ctx.moveTo(j[0]-nx*w1*.28,j[1]-ny*w1*.28);ctx.lineTo(j[0]+nx*w1*.28,j[1]+ny*w1*.28);ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+
+    const tip=pts[pts.length-1];
+    if(seg.nail!==false){
+      const prev=pts[Math.max(0,pts.length-2)],a=Math.atan2(tip[1]-prev[1],tip[0]-prev[0]);
+      ctx.save();ctx.translate(tip[0],tip[1]);ctx.rotate(a);ctx.globalAlpha=.42;
+      ctx.fillStyle=P.white;ctx.strokeStyle=C.skinShadow;ctx.lineWidth=.65;
+      ctx.beginPath();ctx.ellipse(-w1*.18,0,w1*.28,w1*.19,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();
     }
     ctx.restore();
   }
+
+  function palmPath(ctx,d){
+    const p=new Path2D(d);ctx.fillStyle=C.skin;ctx.fill(p);ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;ctx.lineJoin='round';ctx.stroke(p);
+  }
+
+  function hand(ctx,p,rot,type,flipY=false,detail='medium'){
+    const hs=V.hand(type),rig=FILM.handVectorRig[type]||FILM.handVectorRig.edge;
+    ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
+
+    ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
+    ctx.beginPath();ctx.roundRect(-14,-10,24,20,10);ctx.fill();ctx.stroke();
+
+    for(const seg of rig.behind)strokeFinger(ctx,seg);
+    palmPath(ctx,rig.palm);
+    for(const seg of rig.front)strokeFinger(ctx,seg);
+
+    ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.05;ctx.globalAlpha=.48;ctx.lineCap='round';
+    for(const c of rig.crease){
+      ctx.beginPath();ctx.moveTo(c[0][0],c[0][1]);ctx.quadraticCurveTo(c[1][0],c[1][1],c[2][0],c[2][1]);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    ctx.restore();
+  }
+  function drawHead(ctx,ps){
+    const off=ps.headOffset||[0,0],g=ps.gaze||[0,0],hr=ps.headRot||0;
+    ctx.save();ctx.translate(off[0],-184+off[1]);ctx.rotate(hr);ctx.translate(0,184);
+
+    // neck follows the head slightly, which removes the pasted-on oval read.
+    ctx.fillStyle=C.skin;ctx.beginPath();ctx.roundRect(-22,-193,44,44,13);ctx.fill();
+
+    // ears sit behind the face contour.
+    ctx.fillStyle=C.skin;ctx.beginPath();ctx.ellipse(-57,-263,10,16,-.08,0,Math.PI*2);ctx.ellipse(74,-264,10,16,.08,0,Math.PI*2);ctx.fill();
+
+    part(ctx,'head',C.skin,C.ink,2.8);
+    part(ctx,'hair',C.hair,null,0);
+
+    // brows establish direction before tiny eye detail.
+    ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.lineCap='round';ctx.globalAlpha=.72;
+    ctx.beginPath();ctx.moveTo(-31,-280);ctx.quadraticCurveTo(-20,-285,-10,-281);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(17,-282);ctx.quadraticCurveTo(29,-286,39,-281);ctx.stroke();
+    ctx.globalAlpha=1;
+
+    ctx.fillStyle=C.ink;ctx.beginPath();
+    ctx.ellipse(-20+g[0],-260+g[1],3.4,4.1,0,0,Math.PI*2);
+    ctx.ellipse(24+g[0],-261+g[1],3.4,4.1,0,0,Math.PI*2);ctx.fill();
+
+    ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(3,-251);ctx.quadraticCurveTo(-2,-234,5,-228);ctx.stroke();
+
+    ctx.strokeStyle=C.ink;ctx.lineWidth=1.55;
+    ctx.beginPath();ctx.moveTo(-12,-210);ctx.quadraticCurveTo(2,-204,17,-212);ctx.stroke();
+
+    ctx.restore();
+  }
+
   function drawBody(ctx,o){
     setup(ctx,o,()=>{
-      // neck is behind head but belongs to the body mass.
-      ctx.fillStyle=C.skin;ctx.beginPath();ctx.roundRect(-23,-190,46,42,13);ctx.fill();
-      part(ctx,'torso',C.shirt,C.ink,3);
-      ctx.fillStyle=C.shirtDeep;ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(12,-173);ctx.bezierCurveTo(63,-171,92,-150,100,-112);ctx.lineTo(86,151);ctx.bezierCurveTo(56,159,34,161,16,160);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+      const ps=poseState(o);
+      part(ctx,'hips',C.shirtDeep,C.ink,2.5);
+      // waist break + trouser center seam prevent the lower body reading as a skirt-shaped block.
+      ctx.save();ctx.strokeStyle=C.ink;ctx.globalAlpha=.42;ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(-72,153);ctx.quadraticCurveTo(0,166,72,153);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,245);ctx.lineTo(0,276);ctx.stroke();ctx.restore();
+      part(ctx,'torso',C.shirt,C.ink,2.8);
+
+      // directional jacket shadow, quieter than the old half-body block.
+      ctx.fillStyle=C.shirtDeep;ctx.globalAlpha=.22;ctx.beginPath();
+      ctx.moveTo(20,-167);ctx.bezierCurveTo(63,-164,91,-145,99,-112);
+      ctx.lineTo(88,139);ctx.bezierCurveTo(61,151,38,155,17,154);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+
       part(ctx,'tee',C.tee,null,0);
-      ctx.strokeStyle=C.shirtDeep;ctx.lineWidth=2;ctx.globalAlpha=.65;ctx.beginPath();ctx.moveTo(-72,-119);ctx.quadraticCurveTo(0,-94,73,-119);ctx.stroke();ctx.globalAlpha=1;
-      part(ctx,'head',C.skin,C.ink,3);
-      part(ctx,'hair',C.hair,null,0);
-      ctx.fillStyle=C.ink;ctx.beginPath();ctx.ellipse(-19,-258,3.6,4.3,0,0,Math.PI*2);ctx.ellipse(23,-259,3.6,4.3,0,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(3,-248);ctx.quadraticCurveTo(-2,-232,5,-226);ctx.stroke();
-      ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(-12,-208);ctx.quadraticCurveTo(2,-201,16,-210);ctx.stroke();
+
+      ctx.strokeStyle=C.shirtDeep;ctx.lineWidth=1.8;ctx.globalAlpha=.58;
+      ctx.beginPath();ctx.moveTo(-73,-120);ctx.quadraticCurveTo(0,-96,74,-120);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-36,53);ctx.quadraticCurveTo(-12,60,7,56);ctx.stroke();
+      ctx.globalAlpha=1;
+
+      drawHead(ctx,ps);
     });
   }
+
   function drawArms(ctx,o,layer='all'){
     const R=rig(o);setup(ctx,o,()=>{
       for(const side of ['left','right']){
         const q=R[side];if(!q)continue;
         const armLayer=o[side+'ArmLayer']||'back';
         if(layer!=='all'&&armLayer!==layer)continue;
-        // Continuous silhouette, no circular "joint balls". The old elbow disk was
-        // visually indistinguishable from a third hand in medium shots.
+
         bonePart(ctx,'upperArm',q.shoulder,q.elbow,C.shirt);
         bonePart(ctx,'foreArm',q.elbow,q.wrist,C.skin);
 
-        // restrained sleeve cuff at the anatomical transition
         const dx=q.elbow[0]-q.shoulder[0],dy=q.elbow[1]-q.shoulder[1],a=Math.atan2(dy,dx);
         ctx.save();ctx.translate(q.elbow[0],q.elbow[1]);ctx.rotate(a);
-        ctx.strokeStyle=C.shirtDeep;ctx.lineWidth=3;ctx.globalAlpha=.72;
-        ctx.beginPath();ctx.moveTo(-2,-18);ctx.quadraticCurveTo(5,0,-2,18);ctx.stroke();ctx.restore();
+        ctx.strokeStyle=C.shirtDeep;ctx.lineWidth=2.6;ctx.globalAlpha=.66;
+        ctx.beginPath();ctx.moveTo(-1,-17);ctx.quadraticCurveTo(4,0,-1,17);ctx.stroke();ctx.restore();
 
-        // one short forearm crease, enough to articulate direction without adding a fake joint
         const fx=q.wrist[0]-q.elbow[0],fy=q.wrist[1]-q.elbow[1],fl=Math.max(1,Math.hypot(fx,fy)),nx=-fy/fl,ny=fx/fl;
-        const cx=q.elbow[0]+fx*.18,cy=q.elbow[1]+fy*.18;
-        ctx.save();ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.2;ctx.globalAlpha=.48;
-        ctx.beginPath();ctx.moveTo(cx-nx*8,cy-ny*8);ctx.quadraticCurveTo(cx+fx/fl*3,cy+fy/fl*3,cx+nx*8,cy+ny*8);ctx.stroke();ctx.restore();
+        const cx=q.elbow[0]+fx*.19,cy=q.elbow[1]+fy*.19;
+        ctx.save();ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.05;ctx.globalAlpha=.42;
+        ctx.beginPath();ctx.moveTo(cx-nx*7,cy-ny*7);ctx.quadraticCurveTo(cx+fx/fl*3,cy+fy/fl*3,cx+nx*7,cy+ny*7);ctx.stroke();ctx.restore();
       }
     });
   }
-  function drawHands(ctx,o){
+
+  function edgeHandLayer(ctx,p,rot,flipY,layer){
+    const hs=V.hand('edge'),rig=FILM.handVectorRig.edge;
+    ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
+    if(layer==='back'){
+      ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
+      ctx.beginPath();ctx.roundRect(-17,-13,28,26,12);ctx.fill();ctx.stroke();
+      for(const seg of rig.behind)strokeFinger(ctx,seg);
+      palmPath(ctx,rig.palm);
+    }else{
+      for(const seg of rig.front)strokeFinger(ctx,seg);
+    }
+    ctx.restore();
+  }
+
+  function drawHandBacks(ctx,o){
     const R=rig(o);setup(ctx,o,()=>{
-      if(R.left)hand(ctx,R.left.wrist,o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]),o.leftHand||'edge');
-      if(R.right)hand(ctx,R.right.wrist,o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]),o.rightHand||'edge');
+      if(R.left&&(o.leftHand||'edge')==='edge'){
+        const rot=o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]);
+        edgeHandLayer(ctx,R.left.wrist,rot,!!o.leftHandFlip,'back');
+      }
+      if(R.right&&(o.rightHand||'edge')==='edge'){
+        const rot=o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]);
+        edgeHandLayer(ctx,R.right.wrist,rot,!!o.rightHandFlip,'back');
+      }
     });
   }
+
+  function drawHandFronts(ctx,o){
+    const R=rig(o);setup(ctx,o,()=>{
+      if(R.left){
+        const type=o.leftHand||'edge',rot=o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]);
+        if(type==='edge')edgeHandLayer(ctx,R.left.wrist,rot,!!o.leftHandFlip,'front');
+        else hand(ctx,R.left.wrist,rot,type,!!o.leftHandFlip,o.handDetail||'medium');
+      }
+      if(R.right){
+        const type=o.rightHand||'edge',rot=o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]);
+        if(type==='edge')edgeHandLayer(ctx,R.right.wrist,rot,!!o.rightHandFlip,'front');
+        else hand(ctx,R.right.wrist,rot,type,!!o.rightHandFlip,o.handDetail||'medium');
+      }
+    });
+  }
+
+  function drawHands(ctx,o){
+    drawHandBacks(ctx,o);
+    drawHandFronts(ctx,o);
+  }
+
   function audit(o){
     const R=rig(o);
     return {leftOverreach:R.left?R.left.overreach:0,rightOverreach:R.right?R.right.overreach:0};
   }
   function drawHandState(ctx,o={}){
     const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
-    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type);ctx.restore();
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY,o.detail||'close');ctx.restore();
+  }
+  function drawHandStateLayer(ctx,o={},layer='all'){
+    const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1,flip=!!o.flipY;
+    if(type!=='edge'||layer==='all')return drawHandState(ctx,o);
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);edgeHandLayer(ctx,[0,0],rot,flip,layer);ctx.restore();
   }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHands,drawHandState,audit});
+  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,drawHandStateLayer,audit,spec:SPEC});
+  V.registerContract('hand-rig-authorship',()=>{
+    const failures=[],R=FILM.handVectorRig;
+    if(R.edge.behind.length<4||R.edge.front.length!==1)failures.push('edge grip must keep four back digits plus front thumb');
+    if(R.press.front.filter(x=>x.name==='index').length!==1)failures.push('press must have one authored contact index');
+    if(R.open.behind.length<4||R.open.front.length<1)failures.push('open hand must expose five distinct digits');
+    for(const name of ['edge','press','rest','open']){
+      const all=[...R[name].behind,...R[name].front];
+      if(all.some(x=>x.tipWidth>=x.width))failures.push(name+' finger taper invalid');
+    }
+    return failures;
+  });
+
+  V.registerContract('character-proportions',()=>{
+    const failures=[];
+    const shoulderSpan=SPEC.shoulders[1][0]-SPEC.shoulders[0][0];
+    const shoulderToHead=SPEC.torsoBox.width/SPEC.headBox.width;
+    const armRatio=SPEC.upperArm/SPEC.foreArm;
+    if(!(shoulderSpan>=150&&shoulderSpan<=175))failures.push('shoulder span left authored range');
+    if(!(shoulderToHead>=1.45&&shoulderToHead<=1.8))failures.push('torso/head width ratio left authored range');
+    if(!(armRatio>=.95&&armRatio<=1.15))failures.push('upper/forearm ratio left authored range');
+    for(const name of ['edge','press','rest','open']){
+      const ds=V.hand(name).drawScale;
+      if(!(ds>=.55&&ds<=.8))failures.push(name+' hand scale left authored range');
+    }
+    return failures;
+  });
 })();
