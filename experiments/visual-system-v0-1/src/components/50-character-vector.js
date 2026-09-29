@@ -124,7 +124,7 @@
       // waist break + trouser center seam prevent the lower body reading as a skirt-shaped block.
       ctx.save();ctx.strokeStyle=C.ink;ctx.globalAlpha=.42;ctx.lineWidth=1.2;
       ctx.beginPath();ctx.moveTo(-72,153);ctx.quadraticCurveTo(0,166,72,153);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(0,224);ctx.lineTo(1,306);ctx.stroke();ctx.restore();
+      ctx.beginPath();ctx.moveTo(0,245);ctx.lineTo(0,276);ctx.stroke();ctx.restore();
       part(ctx,'torso',C.shirt,C.ink,2.8);
 
       // directional jacket shadow, quieter than the old half-body block.
