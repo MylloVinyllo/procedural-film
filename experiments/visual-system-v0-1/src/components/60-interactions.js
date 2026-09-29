@@ -43,7 +43,11 @@
       record.rx=V.lerp(record.rx,endRx,m.seat);record.ry=V.lerp(record.ry,endRy,m.seat);
     }
 
-    const rootY=V.lerp(760,854,m.travel),scale=V.lerp(1.02,1.05,m.travel),g=gripRecord(record,scale);
+    // The actor follows the object with a small body-weight shift. Geometry stays subtle;
+    // contact is still solved from authored anchors, not from this staging offset.
+    const rootY=V.lerp(760,854,m.travel)+m.anticipation*3-m.seat*2;
+    const rootX=panelX+270-V.lerp(0,5,m.travel)+V.lerp(0,3,m.retract);
+    const scale=V.lerp(1.02,1.05,m.travel),g=gripRecord(record,scale);
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
@@ -55,7 +59,7 @@
     return {
       machine,record,contacts:g.contacts,contactActive:m.contactActive,motion:m,
       character:{
-        root:[panelX+270,rootY],scale,pose:V.samplePose('place-record',m.travel),
+        root:[rootX,rootY],scale,pose:V.samplePose('place-record',m.travel),
         leftWrist,rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftBend:open?1:-1,rightBend:open?-1:1,
         leftHand:open?'open':'edge',rightHand:open?'open':'edge',
@@ -70,7 +74,10 @@
     const machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:true,active:m.contactActive?'PUMP':null},ma=washer.anchors(machine);
     const record={x:ma.recordCenter[0],y:ma.recordCenter[1],rx:ma.recordRadii[0],ry:ma.recordRadii[1],rot:0};
 
-    const root=[panelX+25,1120],scale=1.04,pressRot=.16;
+    // Body follows the control reach and settles back on release. This prevents the arm
+    // from doing all motion while the torso stays frozen like a mannequin.
+    const poseAmount=m.release>0?1-m.release:m.reach;
+    const root=[panelX+25+V.lerp(0,8,m.reach)-V.lerp(0,5,m.release),1120+V.lerp(0,3,m.depress)],scale=1.04,pressRot=.16;
     const rest=[panelX+330,1142],pre=[panelX+308,1148],target=ma.pumpButton;
     const approachStart=[
       V.lerp(rest[0],pre[0],m.anticipation),
@@ -90,7 +97,7 @@
     return {
       machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},contactActive:m.contactActive,motion:m,
       character:{
-        root,scale,pose:V.samplePose('press-control',Math.max(m.reach,1-m.release)),
+        root,scale,pose:V.samplePose('press-control',poseAmount),
         leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',leftBend:1,rightBend:1,
         leftHand:'rest',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot,leftHandFlip:true,rightHandFlip:false
       }
@@ -129,6 +136,15 @@
     if(Math.abs(end.record.rx-ma.recordRadii[0])>1||Math.abs(end.record.ry-ma.recordRadii[1])>1)failures.push('placed record projection does not match washer plane');
     const p=samplePress(.62,0),pm=washer.anchors(p.machine);
     if(dist([p.record.x,p.record.y],pm.recordCenter)>1)failures.push('press state moved seated record off spindle');
+    return failures;
+  });
+
+  V.registerContract('press-pose-phasing',()=>{
+    const failures=[],start=samplePress(0,0),peak=samplePress(.64,0),end=samplePress(1,0);
+    const a=Math.abs(start.character.pose.bodyRot),b=Math.abs(peak.character.pose.bodyRot),c=Math.abs(end.character.pose.bodyRot);
+    if(!(b>a+.01))failures.push('press pose did not increase during reach');
+    if(!(c<b-.01))failures.push('press pose did not relax after release');
+    if(Math.abs(end.character.root[0]-start.character.root[0])>6)failures.push('press body failed to settle near start x');
     return failures;
   });
 
