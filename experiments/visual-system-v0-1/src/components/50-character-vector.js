@@ -51,10 +51,19 @@
       right.push([pts[i][0]-nx*hw,pts[i][1]-ny*hw]);
     }
     ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
-    for(let i=1;i<left.length;i++)ctx.lineTo(left[i][0],left[i][1]);
-    for(let i=right.length-1;i>=0;i--)ctx.lineTo(right[i][0],right[i][1]);
-    ctx.closePath();ctx.fillStyle=C.skin;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.55;ctx.stroke();
+    const traceSmooth=(pts)=>{
+      ctx.moveTo(pts[0][0],pts[0][1]);
+      for(let i=1;i<pts.length-1;i++){
+        const mx=(pts[i][0]+pts[i+1][0])/2,my=(pts[i][1]+pts[i+1][1])/2;
+        ctx.quadraticCurveTo(pts[i][0],pts[i][1],mx,my);
+      }
+      if(pts.length>1)ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]);
+    };
+    ctx.beginPath();
+    traceSmooth(left);
+    const rev=right.slice().reverse();
+    for(let i=0;i<rev.length;i++)ctx.lineTo(rev[i][0],rev[i][1]);
+    ctx.closePath();ctx.fillStyle=C.skin;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.45;ctx.stroke();
 
     // one restrained knuckle crease on longer digits
     if(pts.length>=4){
