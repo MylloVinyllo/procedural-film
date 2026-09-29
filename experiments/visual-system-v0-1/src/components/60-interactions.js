@@ -9,9 +9,9 @@
     const leftRot=leftA+Math.PI+.16,rightRot=rightA+Math.PI-.16;
     return {
       contacts:{left:leftContact,right:rightContact},
-      leftWrist:V.wristForHandContact('edge',leftContact,leftRot,characterScale),
-      rightWrist:V.wristForHandContact('edge',rightContact,rightRot,characterScale),
-      leftRot,rightRot
+      leftWrist:V.wristForHandContact('edge',leftContact,leftRot,characterScale,true),
+      rightWrist:V.wristForHandContact('edge',rightContact,rightRot,characterScale,false),
+      leftRot,rightRot,leftFlip:true,rightFlip:false
     };
   }
 
@@ -23,7 +23,7 @@
       character:{
         root:[panelX+270,760],scale,pose:V.samplePose('hold-record',u),
         leftWrist:g.leftWrist,rightWrist:g.rightWrist,leftArmLayer:'front',rightArmLayer:'front',
-        leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot
+        leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot,leftHandFlip:g.leftFlip,rightHandFlip:g.rightFlip
       }
     };
   }
@@ -59,7 +59,8 @@
         leftWrist,rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftBend:open?1:-1,rightBend:open?-1:1,
         leftHand:open?'open':'edge',rightHand:open?'open':'edge',
-        leftHandRot:open?-.25:g.leftRot,rightHandRot:open?Math.PI+.25:g.rightRot
+        leftHandRot:open?-.25:g.leftRot,rightHandRot:open?Math.PI+.25:g.rightRot,
+        leftHandFlip:true,rightHandFlip:false
       }
     };
   }
@@ -85,13 +86,13 @@
     ];
     const right=V.wristForHandContact('press',pressContact,pressRot,scale);
 
-    const leftContact=ma.frontLeftRest,leftRot=-.05,left=V.wristForHandContact('rest',leftContact,leftRot,scale);
+    const leftContact=ma.frontLeftRest,leftRot=-.05,left=V.wristForHandContact('rest',leftContact,leftRot,scale,true);
     return {
       machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},contactActive:m.contactActive,motion:m,
       character:{
         root,scale,pose:V.samplePose('press-control',Math.max(m.reach,1-m.release)),
         leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',leftBend:1,rightBend:-1,
-        leftHand:'rest',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot
+        leftHand:'rest',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot,leftHandFlip:true,rightHandFlip:false
       }
     };
   }
@@ -104,8 +105,8 @@
     const backend=V.character(backendName),q=backend.audit(s.character);
     if(Math.max(q.leftOverreach,q.rightOverreach)>.75)failures.push(backendName+' '+label+' overreach '+Math.max(q.leftOverreach,q.rightOverreach).toFixed(1)+'px');
     if(!s.contactActive)return;
-    const lc=V.handContactWorld(s.character.leftHand,s.character.leftWrist,s.character.leftHandRot,s.character.scale);
-    const rc=V.handContactWorld(s.character.rightHand,s.character.rightWrist,s.character.rightHandRot,s.character.scale);
+    const lc=V.handContactWorld(s.character.leftHand,s.character.leftWrist,s.character.leftHandRot,s.character.scale,!!s.character.leftHandFlip);
+    const rc=V.handContactWorld(s.character.rightHand,s.character.rightWrist,s.character.rightHandRot,s.character.scale,!!s.character.rightHandFlip);
     if(dist(lc,s.contacts.left)>1)failures.push(backendName+' '+label+' left contact drift');
     if(dist(rc,s.contacts.right)>1)failures.push(backendName+' '+label+' right contact drift');
   }
