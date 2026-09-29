@@ -1,25 +1,29 @@
-// Canonical hand states. Contact coordinates are part of the motion contract.
+// Canonical authored hand states. Contact coordinates are part of the motion contract.
 (function(){
   'use strict';
   const V=FILM.visual;
   V.registerHand('edge',Object.freeze({
-    contact:Object.freeze([62,15]),
-    drawScale:.72,
-    semantic:'record-edge grip'
+    contact:Object.freeze([68,8]),
+    drawScale:.74,
+    semantic:'record-edge grip',
+    silhouette:'thumb-index pinch with grouped trailing fingers'
   }));
   V.registerHand('press',Object.freeze({
-    contact:Object.freeze([102,2]),
-    drawScale:.72,
-    semantic:'index-finger control press'
+    contact:Object.freeze([123,0]),
+    drawScale:.68,
+    semantic:'index-finger control press',
+    silhouette:'extended index with compact curled finger mass'
   }));
   V.registerHand('rest',Object.freeze({
-    contact:Object.freeze([47,20]),
+    contact:Object.freeze([48,24]),
     drawScale:.76,
-    semantic:'palm-rest on machine edge'
+    semantic:'palm-rest on machine edge',
+    silhouette:'low palm with folded thumb'
   }));
   V.registerHand('open',Object.freeze({
     contact:Object.freeze([0,0]),
     drawScale:.74,
-    semantic:'released open hand'
+    semantic:'released open hand',
+    silhouette:'relaxed open release'
   }));
 })();
