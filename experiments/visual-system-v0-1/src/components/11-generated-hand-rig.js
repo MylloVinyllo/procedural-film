@@ -1,9 +1,9 @@
 // GENERATED VECTOR HAND RIG — authored geometry, deterministic runtime payload.
 (function(){
   'use strict';
-  const palm='M -9 -18 C 2 -25 17 -27 30 -21 C 41 -16 47 -6 46 5 C 45 17 37 25 25 28 C 12 31 0 25 -7 16 C -12 8 -13 -8 -9 -18 Z';
-  const openPalm='M -9 -17 C 2 -24 17 -26 29 -21 C 39 -16 45 -7 44 4 C 43 15 36 24 25 27 C 13 30 1 25 -6 17 C -11 9 -12 -8 -9 -17 Z';
-  const restPalm='M -9 -17 C 2 -24 17 -26 30 -20 C 40 -15 46 -6 45 4 C 44 15 37 23 25 26 C 13 29 0 24 -7 15 C -12 7 -12 -8 -9 -17 Z';
+  const palm='M -6 -13 C 2 -19 14 -21 25 -17 C 34 -13 39 -5 38 4 C 37 13 31 19 22 22 C 12 25 2 21 -4 14 C -9 8 -9 -6 -6 -13 Z';
+  const openPalm='M -6 -14 C 2 -20 15 -22 26 -18 C 35 -14 40 -6 39 4 C 38 14 31 21 22 24 C 12 27 1 22 -5 15 C -10 8 -10 -7 -6 -14 Z';
+  const restPalm='M -6 -12 C 2 -18 14 -20 25 -16 C 34 -12 39 -5 38 4 C 37 12 31 18 22 21 C 12 24 2 20 -4 13 C -9 7 -9 -6 -6 -12 Z';
   const freeze=o=>Object.freeze(o);
   const seg=(points,width,tipWidth=Math.max(6,width*.68))=>freeze({points:Object.freeze(points.map(p=>Object.freeze(p))),width,tipWidth});
   const state=(palmPath,behind,front,crease)=>freeze({
