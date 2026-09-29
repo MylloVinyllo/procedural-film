@@ -79,7 +79,7 @@
     // Body follows the control reach and settles back on release. This prevents the arm
     // from doing all motion while the torso stays frozen like a mannequin.
     const poseAmount=m.release>0?1-m.release:m.reach;
-    const root=[panelX+25+V.lerp(0,8,m.reach)-V.lerp(0,5,m.release),1120+V.lerp(0,3,m.depress)],scale=1.04,pressRot=.16;
+    const root=[panelX+75+V.lerp(0,7,m.reach)-V.lerp(0,4,m.release),1120+V.lerp(0,3,m.depress)],scale=1.04,pressRot=.16;
     const rest=[panelX+330,1142],pre=[panelX+308,1148],target=ma.pumpButton;
     const approachStart=[
       V.lerp(rest[0],pre[0],m.anticipation),
@@ -97,7 +97,7 @@
 
     // The free hand stays relaxed beside the torso. Forcing it onto the cabinet created a crossed,
     // over-explained pose. Only the pressing hand participates in the semantic contact.
-    const left=[root[0]-26,root[1]+118],leftRot=1.46;
+    const left=[root[0]-30,root[1]+118],leftRot=1.46;
     return {
       machine,record,contacts:{left:null,right:pressContact,rightTarget:target},contactActive:m.contactActive,motion:m,
       character:{
