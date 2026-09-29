@@ -92,17 +92,6 @@
     const hs=V.hand(type),rig=FILM.handVectorRig[type]||FILM.handVectorRig.edge;
     ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
 
-    // At medium shot scale, individual finger construction becomes noisy. Use a compact authored
-    // silhouette for non-grip states and reserve the full five-digit rig for close inspection.
-    if(detail==='medium'&&type!=='edge'){
-      ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;
-      ctx.beginPath();ctx.roundRect(-13,-9,22,18,9);ctx.fill();ctx.stroke();
-      const key=type==='press'?'handPress':type==='rest'?'handRest':'handOpen';
-      part(ctx,key,C.skin,C.ink,1.55);
-      ctx.restore();
-      return;
-    }
-
     ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
     ctx.beginPath();ctx.roundRect(-14,-10,24,20,10);ctx.fill();ctx.stroke();
 
