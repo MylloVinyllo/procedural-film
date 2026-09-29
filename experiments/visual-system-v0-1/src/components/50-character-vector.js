@@ -72,7 +72,7 @@
     // Wrist bridge first, then finger groups, then palm. This hides mechanical seams and keeps
     // finger roots embedded in one hand mass without collapsing the silhouette into a blob.
     ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
-    ctx.beginPath();ctx.roundRect(-17,-13,28,26,12);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.roundRect(-14,-10,24,20,10);ctx.fill();ctx.stroke();
 
     for(const seg of rig.behind)strokeFinger(ctx,seg);
     palmPath(ctx,rig.palm);
