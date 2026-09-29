@@ -40,3 +40,24 @@ Remaining defects for exactly one bounded correction pass:
 Do not open another architecture loop.
 
 Allowed continuation: one bounded correction pass → freeze RC2 → owner review → golden fixtures if approved → finish PR #3 → merge v0.2 → return to V5 production.
+
+
+## Owner review outcome — REJECTED
+
+RC1 was reviewed by the owner on 2026-09-29 and rejected as a visual direction.
+
+Reason: the output is still visibly schematic and amateurish at the level that matters most: character anatomy, hand construction, pose mechanics, and the integrated editorial frame. The washer component is more recognizable, but that does not rescue the overall result.
+
+This rejection invalidates the planned "one bounded correction pass" route. Do not polish RC1 into RC2.
+
+Preserve the reusable technical lessons only:
+- semantic interaction states;
+- contact / reach / seating contracts;
+- motion grammar;
+- component registry;
+- product anchoring;
+- deterministic rendering and CI evidence.
+
+Do not preserve the current character drawing language or hand construction as a target visual system.
+
+Next direction: replace procedural anatomy authoring with authored visual assets / compiled vector geometry, and use procedural-film primarily for rigging, timing, transforms, contact, occlusion and deterministic rendering.
