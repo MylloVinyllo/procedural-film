@@ -10,11 +10,11 @@
 
   reg('editorial-hold',[540,900],1.58,1215);
   reg('editorial-place',[540,945],1.30,1450);
-  reg('editorial-press',[540,960],1.18,1450);
+  reg('editorial-press',[500,935],1.34,1430);
 
   reg('fixture-hold',[540,930],1.72,1515);
   reg('fixture-place',[540,875],1.46,1515);
-  reg('fixture-press',[540,870],1.42,1515);
+  reg('fixture-press',[510,860],1.46,1515);
 
   V.registerContract('composition-safe-frame',()=>{
     const failures=[];
