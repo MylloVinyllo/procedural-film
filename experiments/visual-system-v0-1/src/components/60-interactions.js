@@ -17,7 +17,7 @@
 
   function sampleHold(t,panelX){
     const u=V.sstep(0,1,t),machine={x:panelX+270,y:1050,scale:.78,showRecord:false,clampVisible:false};
-    const record={x:panelX+270,y:870,rx:96,ry:96,rot:0},scale=1.02,g=gripRecord(record,scale,Math.PI*.98,Math.PI*.02);
+    const record={x:panelX+270,y:870,rx:96,ry:96,rot:0},scale=1.02,g=gripRecord(record,scale,Math.PI*.90,Math.PI*.10);
     return {
       machine,record,contacts:g.contacts,contactActive:true,
       character:{
