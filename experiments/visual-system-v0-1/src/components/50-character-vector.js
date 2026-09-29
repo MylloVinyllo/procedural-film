@@ -2,6 +2,14 @@
   'use strict';
   const V=FILM.visual,A=FILM.vectorAssets.protagonist,P=FILM.lib.pal;
   const C={skin:P.skin,skinShadow:P.skinShadow,shirt:P.machineDeep,shirtDeep:P.nightSky,ink:P.ink,hair:P.hair,tee:P.tee};
+  const SPEC=Object.freeze({
+    shoulders:Object.freeze([Object.freeze([-80,-112]),Object.freeze([80,-112])]),
+    upperArm:136,
+    foreArm:126,
+    headBox:Object.freeze({width:137,height:179}),
+    torsoBox:Object.freeze({width:224,height:330}),
+    lowerBodyDepth:147
+  });
   const cache=Object.create(null),path=k=>cache[k]||(cache[k]=new Path2D(A[k]));
 
   function poseState(o){return o.pose||V.samplePose('neutral',1);}
@@ -15,13 +23,13 @@
     ctx.save();ctx.translate(r[0],r[1]);ctx.rotate(ps.bodyRot||0);ctx.scale(s,s);fn();ctx.restore();
   }
   function rig(o){
-    const ps=poseState(o),base=[[-80,-112],[80,-112]],out={};
+    const ps=poseState(o),base=SPEC.shoulders,out={};
     const shoulders=[
       [base[0][0]+(ps.leftShoulder?ps.leftShoulder[0]:0),base[0][1]+(ps.leftShoulder?ps.leftShoulder[1]:0)],
       [base[1][0]+(ps.rightShoulder?ps.rightShoulder[0]:0),base[1][1]+(ps.rightShoulder?ps.rightShoulder[1]:0)]
     ];
-    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),136,126,o.leftBend!=null?o.leftBend:-1);
-    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),136,126,o.rightBend!=null?o.rightBend:1);
+    if(o.leftWrist)out.left=V.solve2Bone(shoulders[0],local(o,o.leftWrist),SPEC.upperArm,SPEC.foreArm,o.leftBend!=null?o.leftBend:-1);
+    if(o.rightWrist)out.right=V.solve2Bone(shoulders[1],local(o,o.rightWrist),SPEC.upperArm,SPEC.foreArm,o.rightBend!=null?o.rightBend:1);
     return out;
   }
   function part(ctx,k,fill,stroke=C.ink,w=2){
@@ -29,7 +37,7 @@
     if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke(path(k));}
   }
   function bonePart(ctx,k,a,b,fill){
-    const dx=b[0]-a[0],dy=b[1]-a[1],ang=Math.atan2(dy,dx),len=Math.hypot(dx,dy),nominal=k==='upperArm'?136:129;
+    const dx=b[0]-a[0],dy=b[1]-a[1],ang=Math.atan2(dy,dx),len=Math.hypot(dx,dy),nominal=k==='upperArm'?SPEC.upperArm:SPEC.foreArm;
     ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(ang);ctx.scale(len/nominal,1);part(ctx,k,fill,C.ink,1.8);ctx.restore();
   }
   function strokeFinger(ctx,seg){
@@ -222,5 +230,19 @@
     ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY);ctx.restore();
   }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,audit});
+  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,audit,spec:SPEC});
+  V.registerContract('character-proportions',()=>{
+    const failures=[];
+    const shoulderSpan=SPEC.shoulders[1][0]-SPEC.shoulders[0][0];
+    const shoulderToHead=SPEC.torsoBox.width/SPEC.headBox.width;
+    const armRatio=SPEC.upperArm/SPEC.foreArm;
+    if(!(shoulderSpan>=150&&shoulderSpan<=175))failures.push('shoulder span left authored range');
+    if(!(shoulderToHead>=1.45&&shoulderToHead<=1.8))failures.push('torso/head width ratio left authored range');
+    if(!(armRatio>=.95&&armRatio<=1.15))failures.push('upper/forearm ratio left authored range');
+    for(const name of ['edge','press','rest','open']){
+      const ds=V.hand(name).drawScale;
+      if(!(ds>=.55&&ds<=.8))failures.push(name+' hand scale left authored range');
+    }
+    return failures;
+  });
 })();
