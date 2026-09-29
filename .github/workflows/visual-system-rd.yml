@@ -52,6 +52,10 @@ jobs:
           node tools/snap.cjs --shot product-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/product
           node tools/snap.cjs --shot motion-fixture --samples 12 --sheet --scale 0.35 --out .tmp/ci/motion
 
+      - name: Render normal-speed motion proof
+        run: |
+          node tools/render.cjs --from 24 --to 32 --scale 0.5 --silent --crf 20 --preset veryfast --out .tmp/ci/motion-proof.mp4
+
       - name: Upload visual review evidence
         uses: actions/upload-artifact@v4
         with:
