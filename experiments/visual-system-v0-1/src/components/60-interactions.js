@@ -95,13 +95,15 @@
     ];
     const right=V.wristForHandContact('press',pressContact,pressRot,scale);
 
-    const leftContact=ma.frontLeftRest,leftRot=-.05,left=V.wristForHandContact('rest',leftContact,leftRot,scale,true);
+    // The free hand stays relaxed beside the torso. Forcing it onto the cabinet created a crossed,
+    // over-explained pose. Only the pressing hand participates in the semantic contact.
+    const left=[root[0]-26,root[1]+118],leftRot=1.46;
     return {
-      machine,record,contacts:{left:leftContact,right:pressContact,rightTarget:target},contactActive:m.contactActive,motion:m,
+      machine,record,contacts:{left:null,right:pressContact,rightTarget:target},contactActive:m.contactActive,motion:m,
       character:{
         root,scale,pose:V.samplePose('press-control',poseAmount),
-        leftWrist:left,rightWrist:right,leftArmLayer:'front',rightArmLayer:'front',leftBend:1,rightBend:1,
-        leftHand:'rest',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot,leftHandFlip:true,rightHandFlip:false
+        leftWrist:left,rightWrist:right,leftArmLayer:'back',rightArmLayer:'front',leftBend:-1,rightBend:1,
+        leftHand:'open',rightHand:'press',leftHandRot:leftRot,rightHandRot:pressRot,leftHandFlip:true,rightHandFlip:false
       }
     };
   }
@@ -114,10 +116,14 @@
     const backend=V.character(backendName),q=backend.audit(s.character);
     if(Math.max(q.leftOverreach,q.rightOverreach)>.75)failures.push(backendName+' '+label+' overreach '+Math.max(q.leftOverreach,q.rightOverreach).toFixed(1)+'px');
     if(!s.contactActive)return;
-    const lc=V.handContactWorld(s.character.leftHand,s.character.leftWrist,s.character.leftHandRot,s.character.scale,!!s.character.leftHandFlip);
-    const rc=V.handContactWorld(s.character.rightHand,s.character.rightWrist,s.character.rightHandRot,s.character.scale,!!s.character.rightHandFlip);
-    if(dist(lc,s.contacts.left)>1)failures.push(backendName+' '+label+' left contact drift');
-    if(dist(rc,s.contacts.right)>1)failures.push(backendName+' '+label+' right contact drift');
+    if(s.contacts.left){
+      const lc=V.handContactWorld(s.character.leftHand,s.character.leftWrist,s.character.leftHandRot,s.character.scale,!!s.character.leftHandFlip);
+      if(dist(lc,s.contacts.left)>1)failures.push(backendName+' '+label+' left contact drift');
+    }
+    if(s.contacts.right){
+      const rc=V.handContactWorld(s.character.rightHand,s.character.rightWrist,s.character.rightHandRot,s.character.scale,!!s.character.rightHandFlip);
+      if(dist(rc,s.contacts.right)>1)failures.push(backendName+' '+label+' right contact drift');
+    }
   }
 
   V.registerContract('interaction-reach-and-contact',()=>{
