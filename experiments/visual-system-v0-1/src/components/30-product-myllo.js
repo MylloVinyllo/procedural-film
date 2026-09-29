@@ -9,8 +9,8 @@
   const GEO=Object.freeze({
     record:[-4,-104],recordR:[172,63],
     brushPivot:[-170,-142],vacuumPivot:[158,-142],
-    panel:[20,111,76],
-    controls:Object.freeze({START:[-25,77],REVERSE:[64,77],PUMP:[-25,146],VACUUM:[64,146]})
+    panel:[0,112,72],
+    controls:Object.freeze({START:[-46,82],REVERSE:[46,82],PUMP:[-46,148],VACUUM:[46,148]})
   });
 
   function frame(o){return {x:o.x||0,y:o.y||0,s:o.scale!=null?o.scale:1};}
@@ -121,12 +121,16 @@
 
   function drawBase(ctx,o={}){
     applyFrame(ctx,o,()=>{
-      const top=[[-246,-166],[174,-166],[248,-39],[-254,-39]],front=[[-254,-39],[248,-39],[226,246],[-231,246]],side=[[174,-166],[248,-39],[226,246],[171,118]];
+      // Reference-matched cabinet: broad square top, nearly rectangular front and only a narrow
+      // right-side reveal. The previous exaggerated trapezoid made the unit read as a generic box.
+      const top=[[-242,-154],[182,-154],[242,-57],[-242,-57]];
+      const front=[[-242,-57],[242,-57],[242,242],[-242,242]];
+      const side=[[242,-57],[258,-36],[258,222],[242,242]];
       ctx.save();ctx.globalAlpha=.17;ctx.fillStyle=P.ink;ctx.beginPath();ctx.ellipse(-4,253,236,30,0,0,Math.PI*2);ctx.fill();ctx.restore();
-      poly(ctx,front,cabinetGradient(ctx));poly(ctx,side,P.mylloEdge,P.inkSoft,2.2);poly(ctx,top,P.mylloTop,P.mylloEdge,3.2);
+      poly(ctx,front,cabinetGradient(ctx));poly(ctx,side,P.mylloEdge,P.inkSoft,2.0);poly(ctx,top,P.mylloTop,P.mylloEdge,3.0);
       ctx.save();ctx.globalAlpha=.18;ctx.strokeStyle=P.white;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-228,-151);ctx.lineTo(162,-151);ctx.stroke();
       ctx.globalAlpha=.45;ctx.strokeStyle=P.machineDeep;ctx.beginPath();ctx.moveTo(-238,-28);ctx.lineTo(229,-28);ctx.stroke();ctx.restore();
-      ctx.fillStyle=P.mylloEdge;ctx.beginPath();ctx.roundRect(-185,233,55,21,7);ctx.roundRect(114,233,55,21,7);ctx.fill();
+      ctx.fillStyle=P.mylloEdge;ctx.beginPath();ctx.roundRect(-190,229,52,20,6);ctx.roundRect(138,229,52,20,6);ctx.fill();
 
       // top hardware and tiny fasteners keep the cabinet from reading as a generic black box.
       ellipse(ctx,-91,-56,17,10,P.nightSky,P.mylloEdge,1.5);
@@ -155,7 +159,7 @@
       ellipse(ctx,pcx-8,218,5,5,P.mylloBlueLed);ellipse(ctx,pcx+7,218,5,5,P.mylloBlueLed);
       ctx.save();ctx.globalAlpha=.18;ctx.fillStyle=P.mylloBlueLed;ctx.beginPath();ctx.arc(pcx+1,218,15,0,Math.PI*2);ctx.fill();ctx.restore();
       ctx.save();ctx.globalAlpha=.32;ctx.strokeStyle=P.machineDeep;ctx.lineWidth=2;
-      for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(192,53+i*34);ctx.lineTo(221,67+i*31);ctx.stroke();}ctx.restore();
+      for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(247,32+i*38);ctx.lineTo(255,37+i*37);ctx.stroke();}ctx.restore();
     });
   }
 
