@@ -43,7 +43,7 @@
       record.rx=V.lerp(record.rx,endRx,m.seat);record.ry=V.lerp(record.ry,endRy,m.seat);
     }
 
-    const rootY=V.lerp(760,1085,m.travel),scale=V.lerp(1.02,1.06,m.travel),g=gripRecord(record,scale);
+    const rootY=V.lerp(763,1085,m.travel),scale=V.lerp(1.02,1.06,m.travel),g=gripRecord(record,scale);
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
