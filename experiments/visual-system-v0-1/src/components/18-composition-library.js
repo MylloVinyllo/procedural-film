@@ -8,7 +8,7 @@
     shadow:Object.freeze({x:540,y:shadowY,rx:310,ry:34})
   }));
 
-  reg('editorial-hold',[540,900],1.58,1370);
+  reg('editorial-hold',[540,900],1.58,1215);
   reg('editorial-place',[540,945],1.30,1450);
   reg('editorial-press',[540,960],1.18,1450);
 

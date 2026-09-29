@@ -33,12 +33,32 @@
     ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(ang);ctx.scale(len/nominal,1);part(ctx,k,fill,C.ink,1.8);ctx.restore();
   }
   function strokeFinger(ctx,seg){
-    const pts=seg.points,w=seg.width;
-    ctx.lineCap='round';ctx.lineJoin='round';
-    ctx.strokeStyle=C.ink;ctx.lineWidth=w+3.2;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
-    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
-    ctx.strokeStyle=C.skin;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
-    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
+    const pts=seg.points,w0=seg.width,w1=seg.tipWidth!=null?seg.tipWidth:Math.max(6,w0*.68);
+    const left=[],right=[];
+    for(let i=0;i<pts.length;i++){
+      const prev=pts[Math.max(0,i-1)],next=pts[Math.min(pts.length-1,i+1)];
+      const dx=next[0]-prev[0],dy=next[1]-prev[1],len=Math.max(1,Math.hypot(dx,dy));
+      const nx=-dy/len,ny=dx/len,t=pts.length===1?1:i/(pts.length-1),hw=V.lerp(w0,w1,t)/2;
+      left.push([pts[i][0]+nx*hw,pts[i][1]+ny*hw]);
+      right.push([pts[i][0]-nx*hw,pts[i][1]-ny*hw]);
+    }
+    const drawPoly=(inflate,fill)=>{
+      ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
+      for(let i=1;i<left.length;i++)ctx.lineTo(left[i][0],left[i][1]);
+      for(let i=right.length-1;i>=0;i--)ctx.lineTo(right[i][0],right[i][1]);
+      ctx.closePath();ctx.fillStyle=fill;ctx.fill();
+    };
+    // outline first, then skin. This preserves the graphic language but gives fingers a human taper.
+    ctx.save();ctx.strokeStyle=C.ink;ctx.lineWidth=3;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
+    drawPoly(0,C.skin);
+    ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
+    for(let i=1;i<left.length;i++)ctx.lineTo(left[i][0],left[i][1]);
+    for(let i=right.length-1;i>=0;i--)ctx.lineTo(right[i][0],right[i][1]);
+    ctx.closePath();ctx.stroke();
+    const tip=pts[pts.length-1];
+    ctx.fillStyle=C.skin;ctx.beginPath();ctx.arc(tip[0],tip[1],w1/2,0,Math.PI*2);ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.restore();
   }
 
   function palmPath(ctx,d){
@@ -100,6 +120,10 @@
   function drawBody(ctx,o){
     setup(ctx,o,()=>{
       const ps=poseState(o);
+      part(ctx,'hips',C.shirtDeep,C.ink,2.5);
+      ctx.save();ctx.strokeStyle=C.ink;ctx.globalAlpha=.45;ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(-53,171);ctx.quadraticCurveTo(-28,184,-7,181);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(53,171);ctx.quadraticCurveTo(28,184,7,181);ctx.stroke();ctx.restore();
       part(ctx,'torso',C.shirt,C.ink,2.8);
 
       // directional jacket shadow, quieter than the old half-body block.

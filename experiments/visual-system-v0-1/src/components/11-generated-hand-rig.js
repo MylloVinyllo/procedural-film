@@ -5,7 +5,7 @@
   const openPalm='M -9 -17 C 2 -24 17 -26 29 -21 C 39 -16 45 -7 44 4 C 43 15 36 24 25 27 C 13 30 1 25 -6 17 C -11 9 -12 -8 -9 -17 Z';
   const restPalm='M -9 -17 C 2 -24 17 -26 30 -20 C 40 -15 46 -6 45 4 C 44 15 37 23 25 26 C 13 29 0 24 -7 15 C -12 7 -12 -8 -9 -17 Z';
   const freeze=o=>Object.freeze(o);
-  const seg=(points,width)=>freeze({points:Object.freeze(points.map(p=>Object.freeze(p))),width});
+  const seg=(points,width,tipWidth=Math.max(6,width*.68))=>freeze({points:Object.freeze(points.map(p=>Object.freeze(p))),width,tipWidth});
   const state=(palmPath,behind,front,crease)=>freeze({
     palm:palmPath,
     behind:Object.freeze(behind),
