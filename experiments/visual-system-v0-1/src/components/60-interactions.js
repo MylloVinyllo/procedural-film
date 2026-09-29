@@ -51,7 +51,7 @@
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
-    const restL=[panelX+105,rootY+48],restR=[panelX+435,rootY+48];
+    const restL=[panelX+145,rootY+150],restR=[panelX+395,rootY+150];
     const leftWrist=[V.lerp(g.leftWrist[0],restL[0],m.retract),V.lerp(g.leftWrist[1],restL[1],m.retract)];
     const rightWrist=[V.lerp(g.rightWrist[0],restR[0],m.retract),V.lerp(g.rightWrist[1],restR[1],m.retract)];
     const open=m.release>.52;
@@ -65,7 +65,7 @@
         leftWrist,rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftBend:open?1:-1,rightBend:open?-1:1,
         leftHand:open?'open':'edge',rightHand:open?'open':'edge',
-        leftHandRot:open?-.45:g.leftRot,rightHandRot:open?Math.PI+.45:g.rightRot,
+        leftHandRot:open?1.85:g.leftRot,rightHandRot:open?1.29:g.rightRot,
         leftHandFlip:true,rightHandFlip:false
       }
     };
@@ -164,7 +164,7 @@
     if(end.character.leftWrist[0]>=end.record.x-end.record.rx*.72)failures.push('released left wrist did not clear record silhouette');
     if(end.character.rightWrist[0]<=end.record.x+end.record.rx*.72)failures.push('released right wrist did not clear record silhouette');
     if(end.character.leftWrist[0]>=end.character.rightWrist[0])failures.push('released wrists crossed');
-    if(end.character.leftWrist[1]>end.record.y+35||end.character.rightWrist[1]>end.record.y+35)failures.push('released wrists sagged back onto machine plane');
+    if(end.character.leftWrist[1]<=end.record.y+end.record.ry*.45||end.character.rightWrist[1]<=end.record.y+end.record.ry*.45)failures.push('released wrists did not drop below record plane');
     return failures;
   });
 })();
