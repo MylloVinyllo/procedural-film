@@ -52,6 +52,7 @@ jobs:
           node tools/snap.cjs --shot product-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/product
           node tools/snap.cjs --shot motion-fixture --samples 12 --sheet --scale 0.35 --out .tmp/ci/motion
           node tools/snap.cjs --shot hand-fixture --samples 1 --sheet --scale 0.5 --out .tmp/ci/hands
+          node tools/snap.cjs --shot editorial-proof --samples 9 --sheet --scale 0.35 --out .tmp/ci/editorial
 
       - name: Install ffmpeg
         run: |
@@ -61,6 +62,7 @@ jobs:
       - name: Render normal-speed motion proof
         run: |
           node tools/render.cjs --from 24 --to 32 --scale 0.5 --silent --crf 20 --preset veryfast --out .tmp/ci/motion-proof.mp4
+          node tools/render.cjs --from 36 --to 42.5 --scale 0.5 --silent --crf 20 --preset veryfast --out .tmp/ci/editorial-proof.mp4
 
       - name: Upload visual review evidence
         if: always()
