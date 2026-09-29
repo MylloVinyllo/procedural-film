@@ -32,44 +32,37 @@
     const dx=b[0]-a[0],dy=b[1]-a[1],ang=Math.atan2(dy,dx),len=Math.hypot(dx,dy),nominal=k==='upperArm'?136:129;
     ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(ang);ctx.scale(len/nominal,1);part(ctx,k,fill,C.ink,1.8);ctx.restore();
   }
+  function strokeFinger(ctx,seg){
+    const pts=seg.points,w=seg.width;
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=C.ink;ctx.lineWidth=w+3.2;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
+    ctx.strokeStyle=C.skin;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
+  }
+
+  function palmPath(ctx,d){
+    const p=new Path2D(d);ctx.fillStyle=C.skin;ctx.fill(p);ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;ctx.lineJoin='round';ctx.stroke(p);
+  }
+
   function hand(ctx,p,rot,type,flipY=false){
-    const hs=V.hand(type);
+    const hs=V.hand(type),rig=FILM.handVectorRig[type]||FILM.handVectorRig.edge;
     ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
 
-    // skin bridge hides the mechanical wrist seam without adding a visible joint ball.
-    ctx.fillStyle=C.skin;ctx.beginPath();ctx.roundRect(-13,-14,27,28,12);ctx.fill();
+    // Wrist bridge first, then finger groups, then palm. This hides mechanical seams and keeps
+    // finger roots embedded in one hand mass without collapsing the silhouette into a blob.
+    ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
+    ctx.beginPath();ctx.roundRect(-17,-13,28,26,12);ctx.fill();ctx.stroke();
 
-    if(type==='edge'){
-      // Fingers are authored as separate silhouettes. Their roots overlap under the palm,
-      // so the outer contour reads as a hand rather than a paw-shaped single blob.
-      part(ctx,'handEdgePalm',C.skin,C.ink,1.65);
-      part(ctx,'handEdgeThumb',C.skin,C.ink,1.5);
-      part(ctx,'handEdgeIndex',C.skin,C.ink,1.5);
-      part(ctx,'handEdgeFingers',C.skin,C.ink,1.5);
-    }else if(type==='press'){
-      part(ctx,'handPressPalm',C.skin,C.ink,1.65);
-      part(ctx,'handPressThumb',C.skin,C.ink,1.5);
-      part(ctx,'handPressCurl',C.skin,C.ink,1.5);
-      part(ctx,'handPressIndex',C.skin,C.ink,1.5);
-    }else{
-      const key=type==='rest'?'handRest':type==='open'?'handOpen':'handEdge';
-      part(ctx,key,C.skin,C.ink,1.65);
-    }
+    for(const seg of rig.behind)strokeFinger(ctx,seg);
+    palmPath(ctx,rig.palm);
+    for(const seg of rig.front)strokeFinger(ctx,seg);
 
-    ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.05;ctx.globalAlpha=.46;ctx.lineCap='round';
-    if(type==='press'){
-      ctx.beginPath();ctx.moveTo(17,3);ctx.quadraticCurveTo(27,8,39,7);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(25,24);ctx.quadraticCurveTo(36,30,47,26);ctx.stroke();
-    }else if(type==='rest'){
-      ctx.beginPath();ctx.moveTo(15,3);ctx.quadraticCurveTo(27,10,40,8);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(11,20);ctx.quadraticCurveTo(23,27,36,24);ctx.stroke();
-    }else if(type==='open'){
-      ctx.beginPath();ctx.moveTo(15,4);ctx.quadraticCurveTo(27,10,39,8);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(12,20);ctx.quadraticCurveTo(24,27,36,24);ctx.stroke();
-    }else{
-      ctx.beginPath();ctx.moveTo(21,4);ctx.quadraticCurveTo(30,10,40,9);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(18,20);ctx.quadraticCurveTo(28,27,38,24);ctx.stroke();
+    ctx.strokeStyle=C.skinShadow;ctx.lineWidth=1.05;ctx.globalAlpha=.48;ctx.lineCap='round';
+    for(const c of rig.crease){
+      ctx.beginPath();ctx.moveTo(c[0][0],c[0][1]);ctx.quadraticCurveTo(c[1][0],c[1][1],c[2][0],c[2][1]);ctx.stroke();
     }
+    ctx.globalAlpha=1;
     ctx.restore();
   }
   function drawHead(ctx,ps){
