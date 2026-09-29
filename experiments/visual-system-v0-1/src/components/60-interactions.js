@@ -51,7 +51,7 @@
     // After seating, hands must peel away from the record and clear its silhouette.
     // Targets are intentionally outside the disc bounds so release reads as release,
     // not as a crossed-arm freeze over the product.
-    const restL=[panelX+145,rootY+150],restR=[panelX+395,rootY+150];
+    const restL=[panelX+150,rootY+142],restR=[panelX+390,rootY+142];
     const leftWrist=[V.lerp(g.leftWrist[0],restL[0],m.retract),V.lerp(g.leftWrist[1],restL[1],m.retract)];
     const rightWrist=[V.lerp(g.rightWrist[0],restR[0],m.retract),V.lerp(g.rightWrist[1],restR[1],m.retract)];
     const open=m.release>.52;
