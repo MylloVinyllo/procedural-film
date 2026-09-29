@@ -4,7 +4,7 @@
   const rec=V.prop('vinyl-record'),washer=V.product('myllo-rcm');
   const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 
-  function gripRecord(record,characterScale,leftA=Math.PI*.92,rightA=Math.PI*.08){
+  function gripRecord(record,characterScale,leftA=Math.PI*.84,rightA=Math.PI*.16){
     const ra=rec.anchors(record),leftContact=ra.edge(leftA),rightContact=ra.edge(rightA);
     const leftRot=leftA+Math.PI+.16,rightRot=rightA+Math.PI-.16;
     return {
@@ -21,7 +21,7 @@
     return {
       machine,record,contacts:g.contacts,contactActive:true,
       character:{
-        root:[panelX+270,760],scale,pose:V.samplePose('hold-record',u),
+        root:[panelX+258,762],scale,pose:V.samplePose('hold-record',u),
         leftWrist:g.leftWrist,rightWrist:g.rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftHand:'edge',rightHand:'edge',leftHandRot:g.leftRot,rightHandRot:g.rightRot,leftHandFlip:g.leftFlip,rightHandFlip:g.rightFlip
       }
@@ -55,7 +55,7 @@
     return {
       machine,record,contacts:g.contacts,contactActive:m.contactActive,motion:m,
       character:{
-        root:[panelX+270,rootY],scale,pose:V.samplePose('place-record',m.travel),
+        root:[panelX+252,rootY],scale,pose:V.samplePose('place-record',m.travel),
         leftWrist,rightWrist,leftArmLayer:'front',rightArmLayer:'front',
         leftBend:open?1:-1,rightBend:open?-1:1,
         leftHand:open?'open':'edge',rightHand:open?'open':'edge',

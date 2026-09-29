@@ -14,30 +14,33 @@
 
   V.registerPose('neutral',()=>pose({}));
 
+  // HOLD is deliberately asymmetric. Perfect bilateral symmetry made the actor read as a mannequin.
   V.registerPose('hold-record',t=>pose({
-    bodyRot:mix(0,.012,t),
-    leftShoulder:[mix(0,-3,t),mix(0,4,t)],
-    rightShoulder:[mix(0,3,t),mix(0,4,t)],
-    headRot:mix(0,.035,t),
-    headOffset:[mix(0,1,t),mix(0,2,t)],
-    gaze:[mix(0,1.4,t),mix(0,2.0,t)]
+    bodyRot:mix(0,-.018,t),
+    leftShoulder:[mix(0,-5,t),mix(0,7,t)],
+    rightShoulder:[mix(0,4,t),mix(0,1,t)],
+    headRot:mix(0,.045,t),
+    headOffset:[mix(0,2,t),mix(0,2,t)],
+    gaze:[mix(0,1.2,t),mix(0,1.6,t)]
   }));
 
+  // PLACE leans the torso toward the spindle and advances the near shoulder.
   V.registerPose('place-record',t=>pose({
-    bodyRot:mix(.012,-.035,t),
-    leftShoulder:[mix(-2,-8,t),mix(3,10,t)],
-    rightShoulder:[mix(2,6,t),mix(3,8,t)],
-    headRot:mix(.025,.075,t),
-    headOffset:[mix(0,2,t),mix(2,4,t)],
-    gaze:[mix(1,2.2,t),mix(2,3.2,t)]
+    bodyRot:mix(-.018,-.046,t),
+    leftShoulder:[mix(-5,-10,t),mix(7,12,t)],
+    rightShoulder:[mix(4,8,t),mix(1,5,t)],
+    headRot:mix(.035,.082,t),
+    headOffset:[mix(1,4,t),mix(2,5,t)],
+    gaze:[mix(1.2,2.5,t),mix(1.6,3.3,t)]
   }));
 
+  // PRESS is a side-working pose rather than a front-facing puppet stance.
   V.registerPose('press-control',t=>pose({
-    bodyRot:mix(-.01,-.06,t),
-    leftShoulder:[mix(0,-4,t),mix(2,7,t)],
-    rightShoulder:[mix(0,10,t),mix(0,-7,t)],
-    headRot:mix(.01,.09,t),
-    headOffset:[mix(0,3,t),mix(0,4,t)],
-    gaze:[mix(1,2.8,t),mix(1,3.2,t)]
+    bodyRot:mix(-.018,-.072,t),
+    leftShoulder:[mix(-2,-7,t),mix(3,9,t)],
+    rightShoulder:[mix(3,12,t),mix(0,-8,t)],
+    headRot:mix(.025,.105,t),
+    headOffset:[mix(0,4,t),mix(1,4,t)],
+    gaze:[mix(1,3.0,t),mix(1,3.4,t)]
   }));
 })();
