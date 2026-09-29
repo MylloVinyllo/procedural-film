@@ -51,35 +51,71 @@
     ctx.beginPath();ctx.moveTo(x0+12,-h*.18);ctx.lineTo(x0+len-12,-h*.18);ctx.stroke();ctx.restore();
   }
   function pivot(ctx,x,y){
-    ctx.fillStyle=metalGradient(ctx,x-15,y-60,x+15,y+5);ctx.strokeStyle=P.mylloButton;ctx.lineWidth=2.2;
-    ctx.beginPath();ctx.roundRect(x-15,y-57,30,61,8);ctx.fill();ctx.stroke();
-    ellipse(ctx,x,y-57,15,5,metalGradient(ctx,x-15,y-62,x+15,y-52),P.mylloButton,1.3);
-    ellipse(ctx,x,y-3,14,4,P.machineDeep);
+    // stacked collars + turned aluminium post. The layered ellipses keep it cylindrical at preview scale.
+    ellipse(ctx,x,y+1,22,7,P.machineDeep,P.mylloButton,1.4);
+    ellipse(ctx,x,y-4,18,6,metalGradient(ctx,x-18,y-9,x+18,y+1),P.mylloButton,1.2);
+    ctx.fillStyle=metalGradient(ctx,x-15,y-63,x+15,y+6);ctx.strokeStyle=P.mylloButton;ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(x-15,y-59,30,59,7);ctx.fill();ctx.stroke();
+    ctx.save();ctx.globalAlpha=.45;ctx.strokeStyle=P.white;ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(x-7,y-53);ctx.lineTo(x-7,y-8);ctx.stroke();ctx.restore();
+    ellipse(ctx,x,y-59,15,5.5,metalGradient(ctx,x-15,y-65,x+15,y-53),P.mylloButton,1.2);
+    ellipse(ctx,x,y-4,13,4,P.machineDeep,null,0);
   }
   function brushNode(ctx,x,y,engage){
-    const a=V.lerp(-.12,.16,V.sstep(0,1,engage||0));pivot(ctx,x,y);roundedBar(ctx,x,y-49,190,26,a,'left');
-    ctx.save();ctx.translate(x,y-49);ctx.rotate(a);ctx.fillStyle=P.vinylEdge;ctx.beginPath();ctx.roundRect(29,11,130,14,5);ctx.fill();
-    for(const row of [0,1]){ctx.strokeStyle=row===0?P.mylloBristle:P.mylloBristleWet;ctx.lineWidth=1.7;ctx.lineCap='round';
-      for(let i=35;i<157;i+=7){ctx.beginPath();ctx.moveTo(i,22+row*5);ctx.lineTo(i+1.5,36+row*5);ctx.stroke();}}
+    const a=V.lerp(-.12,.16,V.sstep(0,1,engage||0));pivot(ctx,x,y);roundedBar(ctx,x,y-49,190,24,a,'left');
+    ctx.save();ctx.translate(x,y-49);ctx.rotate(a);
+
+    // Real unit uses a dual brush. Keep the two carriers visually distinct, not merely two hair colours.
+    for(const row of [0,1]){
+      const yy=11+row*10;
+      ctx.fillStyle=P.vinylEdge;ctx.strokeStyle=P.mylloButton;ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.roundRect(28,yy,132,8,3.5);ctx.fill();ctx.stroke();
+      ctx.strokeStyle=row===0?P.mylloBristle:P.mylloBristleWet;ctx.lineWidth=1.45;ctx.lineCap='round';
+      for(let i=34;i<157;i+=6){
+        const lean=row===0?1.5:-1.0;
+        ctx.beginPath();ctx.moveTo(i,yy+7);ctx.lineTo(i+lean,yy+22);ctx.stroke();
+      }
+    }
+
+    // compact end cap at the brush tip
+    ctx.fillStyle=P.machineDeep;ctx.beginPath();ctx.roundRect(155,8,13,24,5);ctx.fill();
     ctx.restore();
   }
   function vacuumNode(ctx,x,y,engage){
-    const a=V.lerp(.12,-.18,V.sstep(0,1,engage||0));pivot(ctx,x,y);roundedBar(ctx,x,y-49,186,29,a,'right');
-    ctx.save();ctx.translate(x,y-49);ctx.rotate(a);ctx.strokeStyle=P.vinyl;ctx.lineWidth=8;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(-168,17);ctx.lineTo(-27,17);ctx.stroke();ctx.strokeStyle=P.machineDeep;ctx.lineWidth=2;ctx.globalAlpha=.6;
-    ctx.beginPath();ctx.moveTo(-162,12);ctx.lineTo(-31,12);ctx.stroke();ctx.restore();
+    const a=V.lerp(.12,-.18,V.sstep(0,1,engage||0));pivot(ctx,x,y);roundedBar(ctx,x,y-49,186,28,a,'right');
+    ctx.save();ctx.translate(x,y-49);ctx.rotate(a);
+
+    // black collection shoe under the aluminium arm, with a narrow velvet contact strip.
+    ctx.fillStyle=P.vinylEdge;ctx.strokeStyle=P.mylloButton;ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.roundRect(-171,10,148,14,5);ctx.fill();ctx.stroke();
+    ctx.strokeStyle=P.vinyl;ctx.lineWidth=5.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-163,22);ctx.lineTo(-31,22);ctx.stroke();
+    ctx.strokeStyle=P.machineDeep;ctx.lineWidth=1.5;ctx.globalAlpha=.5;
+    ctx.beginPath();ctx.moveTo(-158,15);ctx.lineTo(-36,15);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.restore();
   }
   function clamp(ctx,cx,cy){
-    ellipse(ctx,cx,cy,72,22,metalGradient(ctx,cx-75,cy-18,cx+75,cy+24),P.mylloButton,2);
-    poly(ctx,[[cx-61,cy-4],[cx+61,cy-4],[cx+30,cy-34],[cx-30,cy-34]],metalGradient(ctx,cx-55,cy-16,cx+55,cy-34),P.mylloButton,1.7);
-    ctx.beginPath();ctx.roundRect(cx-24,cy-63,48,31,8);ctx.fillStyle=metalGradient(ctx,cx-24,cy-60,cx+24,cy-34);ctx.fill();
-    ctx.strokeStyle=P.mylloButton;ctx.lineWidth=1.7;ctx.stroke();ctx.save();ctx.strokeStyle=P.machineDeep;ctx.lineWidth=.8;ctx.globalAlpha=.55;
-    for(let x=cx-20;x<=cx+20;x+=4){ctx.beginPath();ctx.moveTo(x,cy-59);ctx.lineTo(x,cy-36);ctx.stroke();}ctx.restore();
-    ellipse(ctx,cx,cy-62,23,6,metalGradient(ctx,cx-23,cy-66,cx+23,cy-57),P.mylloButton,1);
+    // wide lower disc, conical shoulder, then knurled grip.
+    ellipse(ctx,cx,cy+2,75,23,metalGradient(ctx,cx-78,cy-18,cx+78,cy+26),P.mylloButton,2);
+    ellipse(ctx,cx,cy-2,67,18,null,P.white,1);
+    poly(ctx,[[cx-62,cy-4],[cx+62,cy-4],[cx+31,cy-35],[cx-31,cy-35]],metalGradient(ctx,cx-58,cy-17,cx+58,cy-36),P.mylloButton,1.6);
+
+    ctx.beginPath();ctx.roundRect(cx-24,cy-64,48,31,7);
+    ctx.fillStyle=metalGradient(ctx,cx-24,cy-61,cx+24,cy-34);ctx.fill();
+    ctx.strokeStyle=P.mylloButton;ctx.lineWidth=1.6;ctx.stroke();
+
+    ctx.save();ctx.strokeStyle=P.machineDeep;ctx.lineWidth=.75;ctx.globalAlpha=.62;
+    for(let x=cx-20;x<=cx+20;x+=4){ctx.beginPath();ctx.moveTo(x,cy-60);ctx.lineTo(x,cy-37);ctx.stroke();}
+    ctx.restore();
+    ellipse(ctx,cx,cy-63,23,6,metalGradient(ctx,cx-23,cy-68,cx+23,cy-57),P.mylloButton,1);
   }
   function controlKnob(ctx,x,y,name,active){
     if(active===name){ctx.save();ctx.globalAlpha=.35;ctx.strokeStyle=P.mylloRingActive;ctx.lineWidth=7;ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);ctx.stroke();ctx.restore();}
-    ellipse(ctx,x,y,14,14,P.mylloRing,P.mylloPanelInk,2);ellipse(ctx,x,y,8,8,metalGradient(ctx,x-8,y-8,x+8,y+8),P.mylloButton,1.2);
+    ellipse(ctx,x,y,14,14,P.mylloRing,P.mylloPanelInk,1.8);
+    ellipse(ctx,x,y,8.5,8.5,metalGradient(ctx,x-8,y-8,x+8,y+8),P.mylloButton,1.1);
+    ctx.save();ctx.translate(x,y);ctx.rotate(-.65);ctx.strokeStyle=P.white;ctx.globalAlpha=.7;ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(0,-9);ctx.stroke();ctx.restore();
   }
   function applyFrame(ctx,o,fn){const f=frame(o);ctx.save();ctx.translate(f.x,f.y);ctx.scale(f.s,f.s);fn();ctx.restore();}
 
@@ -91,14 +127,24 @@
       ctx.save();ctx.globalAlpha=.18;ctx.strokeStyle=P.white;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-228,-151);ctx.lineTo(162,-151);ctx.stroke();
       ctx.globalAlpha=.45;ctx.strokeStyle=P.machineDeep;ctx.beginPath();ctx.moveTo(-238,-28);ctx.lineTo(229,-28);ctx.stroke();ctx.restore();
       ctx.fillStyle=P.mylloEdge;ctx.beginPath();ctx.roundRect(-185,233,55,21,7);ctx.roundRect(114,233,55,21,7);ctx.fill();
+
+      // top hardware and tiny fasteners keep the cabinet from reading as a generic black box.
       ellipse(ctx,-91,-56,17,10,P.nightSky,P.mylloEdge,1.5);
+      ctx.save();ctx.globalAlpha=.55;
+      for(const p of [[-218,-143],[145,-143],[-225,-54],[211,-54]]){
+        ellipse(ctx,p[0],p[1],3.3,1.8,P.metal,P.mylloButton,.8);
+      }
+      ctx.restore();
 
       // platter support only. The record itself is a separate stateful prop.
       ellipse(ctx,GEO.record[0],GEO.record[1],179,67,P.mylloButton,P.groove,2.2);
       ellipse(ctx,GEO.record[0],GEO.record[1],162,57,P.vinylEdge,P.mylloEdge,1.2);
 
       const [pcx,pcy,pr]=GEO.panel,c=GEO.controls;
+      ctx.save();ctx.globalAlpha=.22;ellipse(ctx,pcx+4,pcy+5,pr+4,pr*.94+4,P.ink,null,0);ctx.restore();
       ellipse(ctx,pcx,pcy,pr,pr*.94,P.mylloPanel,P.mylloPanelInk,2.3);
+      ctx.save();ctx.globalAlpha=.42;ctx.strokeStyle=P.white;ctx.lineWidth=1.1;
+      ctx.beginPath();ctx.arc(pcx-10,pcy-7,53,3.55,5.65);ctx.stroke();ctx.restore();
       controlKnob(ctx,c.START[0],c.START[1],'START',o.active);
       controlKnob(ctx,c.REVERSE[0],c.REVERSE[1],'REVERSE',o.active);
       controlKnob(ctx,c.PUMP[0],c.PUMP[1],'PUMP',o.active);
