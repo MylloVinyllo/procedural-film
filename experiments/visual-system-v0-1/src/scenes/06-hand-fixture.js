@@ -35,7 +35,7 @@
     for(const c of cards)card(ctx,c[0],c[1],W,H,c[2],c[3]);
 
     // EDGE: show right and mirrored left as an explicit chirality pair.
-    const eR=[175,545],eL=[393,545],es=3.25,er=-.08;
+    const eR=[145,548],eL=[418,548],es=2.35,er=-.08;
     actor.drawHandState(ctx,{type:'edge',at:eR,rot:er,scale:es});
     actor.drawHandState(ctx,{type:'edge',at:eL,rot:Math.PI-er,scale:es,flipY:true});
     const epR=contactDot(ctx,'edge',eR,er,es,false,'contact');
@@ -43,10 +43,10 @@
     ctx.strokeStyle=P.vinylEdge;ctx.lineWidth=7;ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(epR[0],epR[1]-92);ctx.lineTo(epR[0],epR[1]+92);ctx.stroke();
     ctx.beginPath();ctx.moveTo(epL[0],epL[1]-92);ctx.lineTo(epL[0],epL[1]+92);ctx.stroke();
-    ctx.fillStyle=P.inkFaint;ctx.font='700 14px system-ui';ctx.fillText('RIGHT',128,825);ctx.fillText('LEFT / MIRRORED',315,825);
+    ctx.fillStyle=P.inkFaint;ctx.font='700 14px system-ui';ctx.fillText('RIGHT',104,825);ctx.fillText('LEFT / MIRRORED',338,825);
 
     // PRESS: fingertip contact must be visually obvious.
-    const pW=[660,545],ps=3.05,pr=.03;
+    const pW=[652,548],ps=2.55,pr=.03;
     actor.drawHandState(ctx,{type:'press',at:pW,rot:pr,scale:ps});
     const pp=contactDot(ctx,'press',pW,pr,ps,false,'fingertip');
     ctx.fillStyle=P.mylloPanel;ctx.strokeStyle=P.mylloPanelInk;ctx.lineWidth=3;
@@ -54,13 +54,13 @@
     ctx.fillStyle=P.inkFaint;ctx.font='600 14px system-ui';ctx.fillText('button plane',783,825);
 
     // REST: palm contact lands on a cabinet edge, not on a floating point.
-    const rW=[180,1238],rs=3.3,rr=-.08;
+    const rW=[166,1240],rs=2.7,rr=-.08;
     actor.drawHandState(ctx,{type:'rest',at:rW,rot:rr,scale:rs,flipY:true});
     const rp=contactDot(ctx,'rest',rW,rr,rs,true,'palm contact');
     ctx.strokeStyle=P.mylloEdge;ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(100,rp[1]+10);ctx.lineTo(450,rp[1]+10);ctx.stroke();
 
     // OPEN: explicitly no contact, wrist origin remains visible as a guide.
-    const oW=[690,1240],os=3.45,or=-.18;
+    const oW=[680,1240],os=2.85,or=-.18;
     actor.drawHandState(ctx,{type:'open',at:oW,rot:or,scale:os});
     ctx.strokeStyle=P.annMagenta;ctx.lineWidth=2;ctx.globalAlpha=.55;
     ctx.beginPath();ctx.moveTo(oW[0]-12,oW[1]);ctx.lineTo(oW[0]+12,oW[1]);ctx.moveTo(oW[0],oW[1]-12);ctx.lineTo(oW[0],oW[1]+12);ctx.stroke();ctx.globalAlpha=1;
