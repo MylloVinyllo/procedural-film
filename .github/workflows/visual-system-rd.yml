@@ -11,6 +11,10 @@ on:
       - "experiments/visual-system-v0-1/**"
       - ".github/workflows/visual-system-rd.yml"
 
+concurrency:
+  group: visual-system-rd-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
