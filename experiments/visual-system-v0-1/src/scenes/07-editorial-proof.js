@@ -32,7 +32,7 @@
   FILM.scene({id:ID,draw(ctx,tIn,info){
     const t=Math.max(0,Math.min(info.dur,tIn));background(ctx);
 
-    if(t<2){
+    if(t<2.2){
       const s=hold.sample(1,270);
       stage(ctx,'hold');
       ctx.save();ctx.translate(540,900);ctx.scale(1.58,1.58);ctx.translate(-540,-900);
@@ -43,8 +43,8 @@
       return;
     }
 
-    if(t<4.6){
-      const u=(t-2)/2.6,s=place.sample(u,270);
+    if(t<5.4){
+      const u=(t-2.2)/3.2,s=place.sample(u,270);
       stage(ctx,'machine');
       ctx.save();ctx.translate(540,945);ctx.scale(1.30,1.30);ctx.translate(-540,-945);
       layered(ctx,s,true);ctx.restore();
@@ -54,7 +54,7 @@
       return;
     }
 
-    const u=(t-4.6)/1.9,s=press.sample(u,270);
+    const u=(t-5.4)/2.6,s=press.sample(u,270);
     stage(ctx,'machine');
     ctx.save();ctx.translate(540,960);ctx.scale(1.18,1.18);ctx.translate(-540,-960);
     layered(ctx,s,true);ctx.restore();
