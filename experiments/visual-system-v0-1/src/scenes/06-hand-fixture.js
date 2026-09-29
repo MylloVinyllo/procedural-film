@@ -42,13 +42,15 @@
       header(ctx,'EDGE GRIP','thumb in front · finger group behind record edge · mirrored chirality',1);
       const scale=4.35,rot=-.06;
       const left=[300,880],right=[780,880];
-      actor.drawHandState(ctx,{type:'edge',at:left,rot,scale});
-      actor.drawHandState(ctx,{type:'edge',at:right,rot:Math.PI-rot,scale,flipY:true});
+      actor.drawHandStateLayer(ctx,{type:'edge',at:left,rot,scale},'back');
+      actor.drawHandStateLayer(ctx,{type:'edge',at:right,rot:Math.PI-rot,scale,flipY:true},'back');
       const lp=contactDot(ctx,'edge',left,rot,scale,false,'contact');
       const rp=contactDot(ctx,'edge',right,Math.PI-rot,scale,true,'contact');
       ctx.strokeStyle=P.vinylEdge;ctx.lineWidth=11;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(lp[0],lp[1]-170);ctx.lineTo(lp[0],lp[1]+170);ctx.stroke();
       ctx.beginPath();ctx.moveTo(rp[0],rp[1]-170);ctx.lineTo(rp[0],rp[1]+170);ctx.stroke();
+      actor.drawHandStateLayer(ctx,{type:'edge',at:left,rot,scale},'front');
+      actor.drawHandStateLayer(ctx,{type:'edge',at:right,rot:Math.PI-rot,scale,flipY:true},'front');
       ctx.fillStyle=P.ink;ctx.font='800 17px system-ui';ctx.textAlign='center';ctx.fillText('RIGHT',300,1330);ctx.fillText('LEFT / MIRRORED',780,1330);
       footer(ctx,'Check: compact palm, readable thumb, grouped fingers, no mitten silhouette.');
       return;

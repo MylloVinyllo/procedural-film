@@ -41,7 +41,7 @@
     ctx.save();ctx.translate(a[0],a[1]);ctx.rotate(ang);ctx.scale(len/nominal,1);part(ctx,k,fill,C.ink,1.8);ctx.restore();
   }
   function strokeFinger(ctx,seg){
-    const pts=seg.points,w0=seg.width,w1=seg.tipWidth!=null?seg.tipWidth:Math.max(6,w0*.68);
+    const pts=seg.points,w0=seg.width,w1=seg.tipWidth!=null?seg.tipWidth:Math.max(4.8,w0*.62);
     const left=[],right=[];
     for(let i=0;i<pts.length;i++){
       const prev=pts[Math.max(0,i-1)],next=pts[Math.min(pts.length-1,i+1)];
@@ -50,22 +50,28 @@
       left.push([pts[i][0]+nx*hw,pts[i][1]+ny*hw]);
       right.push([pts[i][0]-nx*hw,pts[i][1]-ny*hw]);
     }
-    const drawPoly=(inflate,fill)=>{
-      ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
-      for(let i=1;i<left.length;i++)ctx.lineTo(left[i][0],left[i][1]);
-      for(let i=right.length-1;i>=0;i--)ctx.lineTo(right[i][0],right[i][1]);
-      ctx.closePath();ctx.fillStyle=fill;ctx.fill();
-    };
-    // outline first, then skin. This preserves the graphic language but gives fingers a human taper.
-    ctx.save();ctx.strokeStyle=C.ink;ctx.lineWidth=3;ctx.lineJoin='round';ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
-    drawPoly(0,C.skin);
-    ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(left[0][0],left[0][1]);
     for(let i=1;i<left.length;i++)ctx.lineTo(left[i][0],left[i][1]);
     for(let i=right.length-1;i>=0;i--)ctx.lineTo(right[i][0],right[i][1]);
-    ctx.closePath();ctx.stroke();
+    ctx.closePath();ctx.fillStyle=C.skin;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.55;ctx.stroke();
+
+    // one restrained knuckle crease on longer digits
+    if(pts.length>=4){
+      const j=pts[Math.max(1,pts.length-2)],prev=pts[Math.max(0,pts.length-3)],next=pts[pts.length-1];
+      const dx=next[0]-prev[0],dy=next[1]-prev[1],len=Math.max(1,Math.hypot(dx,dy)),nx=-dy/len,ny=dx/len;
+      ctx.strokeStyle=C.skinShadow;ctx.lineWidth=.8;ctx.globalAlpha=.42;
+      ctx.beginPath();ctx.moveTo(j[0]-nx*w1*.28,j[1]-ny*w1*.28);ctx.lineTo(j[0]+nx*w1*.28,j[1]+ny*w1*.28);ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+
     const tip=pts[pts.length-1];
-    ctx.fillStyle=C.skin;ctx.beginPath();ctx.arc(tip[0],tip[1],w1/2,0,Math.PI*2);ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.stroke();
+    if(seg.nail!==false){
+      const prev=pts[Math.max(0,pts.length-2)],a=Math.atan2(tip[1]-prev[1],tip[0]-prev[0]);
+      ctx.save();ctx.translate(tip[0],tip[1]);ctx.rotate(a);ctx.globalAlpha=.42;
+      ctx.fillStyle=P.white;ctx.strokeStyle=C.skinShadow;ctx.lineWidth=.65;
+      ctx.beginPath();ctx.ellipse(-w1*.18,0,w1*.28,w1*.19,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -229,8 +235,25 @@
     const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
     ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY);ctx.restore();
   }
+  function drawHandStateLayer(ctx,o={},layer='all'){
+    const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1,flip=!!o.flipY;
+    if(type!=='edge'||layer==='all')return drawHandState(ctx,o);
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);edgeHandLayer(ctx,[0,0],rot,flip,layer);ctx.restore();
+  }
   function draw(ctx,o){drawBody(ctx,o);drawArms(ctx,o);drawHands(ctx,o);}
-  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,audit,spec:SPEC});
+  V.registerCharacter('vector',{draw,drawBody,drawArms,drawHandBacks,drawHandFronts,drawHands,drawHandState,drawHandStateLayer,audit,spec:SPEC});
+  V.registerContract('hand-rig-authorship',()=>{
+    const failures=[],R=FILM.handVectorRig;
+    if(R.edge.behind.length<4||R.edge.front.length!==1)failures.push('edge grip must keep four back digits plus front thumb');
+    if(R.press.front.filter(x=>x.name==='index').length!==1)failures.push('press must have one authored contact index');
+    if(R.open.behind.length<4||R.open.front.length<1)failures.push('open hand must expose five distinct digits');
+    for(const name of ['edge','press','rest','open']){
+      const all=[...R[name].behind,...R[name].front];
+      if(all.some(x=>x.tipWidth>=x.width))failures.push(name+' finger taper invalid');
+    }
+    return failures;
+  });
+
   V.registerContract('character-proportions',()=>{
     const failures=[];
     const shoulderSpan=SPEC.shoulders[1][0]-SPEC.shoulders[0][0];
