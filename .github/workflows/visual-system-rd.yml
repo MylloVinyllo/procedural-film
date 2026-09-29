@@ -40,3 +40,18 @@ jobs:
 
       - name: Run visual-system gate
         run: node tools/check.cjs
+
+      - name: Render review contact sheets
+        run: |
+          mkdir -p .tmp/ci
+          node tools/snap.cjs --shot character-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/character
+          node tools/snap.cjs --shot product-fixture --samples 6 --sheet --scale 0.35 --out .tmp/ci/product
+          node tools/snap.cjs --shot motion-fixture --samples 12 --sheet --scale 0.35 --out .tmp/ci/motion
+
+      - name: Upload visual review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-system-review-evidence
+          path: experiments/visual-system-v0-1/.tmp/ci/**
+          if-no-files-found: error
+          retention-days: 7
