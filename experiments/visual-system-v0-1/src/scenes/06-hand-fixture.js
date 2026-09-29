@@ -59,7 +59,7 @@
     if(phase===1){
       header(ctx,'INDEX PRESS','one unmistakable index finger · curled remaining fingers · fingertip owns contact',2);
       const scale=4.55,rot=.02,wrist=[330,900];
-      actor.drawHandState(ctx,{type:'press',at:wrist,rot,scale});
+      actor.drawHandState(ctx,{type:'press',at:wrist,rot,scale,detail:'close'});
       const p=contactDot(ctx,'press',wrist,rot,scale,false,'fingertip contact');
       ctx.fillStyle=P.mylloPanel;ctx.strokeStyle=P.mylloPanelInk;ctx.lineWidth=5;
       ctx.beginPath();ctx.arc(p[0]+20,p[1],42,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -72,7 +72,7 @@
     if(phase===2){
       header(ctx,'PALM REST','broad support contact on cabinet edge · folded fingers · no edge-grip confusion',3);
       const scale=4.65,rot=-.08,wrist=[310,900];
-      actor.drawHandState(ctx,{type:'rest',at:wrist,rot,scale,flipY:true});
+      actor.drawHandState(ctx,{type:'rest',at:wrist,rot,scale,flipY:true,detail:'close'});
       const p=contactDot(ctx,'rest',wrist,rot,scale,true,'palm contact');
       ctx.strokeStyle=P.mylloEdge;ctx.lineWidth=16;ctx.beginPath();ctx.moveTo(130,p[1]+16);ctx.lineTo(930,p[1]+16);ctx.stroke();
       ctx.fillStyle=P.inkFaint;ctx.font='600 16px system-ui';ctx.fillText('cabinet edge',770,p[1]+55);
@@ -82,7 +82,7 @@
 
     header(ctx,'OPEN / RELEASE','relaxed post-contact hand · no active anchor · readable wrist continuity',4);
     const scale=4.8,rot=-.16,wrist=[360,910];
-    actor.drawHandState(ctx,{type:'open',at:wrist,rot,scale});
+    actor.drawHandState(ctx,{type:'open',at:wrist,rot,scale,detail:'close'});
     wristGuide(ctx,wrist);
     ctx.fillStyle=P.inkFaint;ctx.font='700 16px system-ui';ctx.textAlign='left';ctx.fillText('wrist origin',wrist[0]+22,wrist[1]+5);
     ctx.strokeStyle=P.paperDeep;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(150,1290);ctx.lineTo(930,1290);ctx.stroke();

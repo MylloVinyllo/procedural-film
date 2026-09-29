@@ -88,12 +88,21 @@
     const p=new Path2D(d);ctx.fillStyle=C.skin;ctx.fill(p);ctx.strokeStyle=C.ink;ctx.lineWidth=1.8;ctx.lineJoin='round';ctx.stroke(p);
   }
 
-  function hand(ctx,p,rot,type,flipY=false){
+  function hand(ctx,p,rot,type,flipY=false,detail='medium'){
     const hs=V.hand(type),rig=FILM.handVectorRig[type]||FILM.handVectorRig.edge;
     ctx.save();ctx.translate(...p);ctx.rotate(rot);ctx.scale(hs.drawScale,hs.drawScale*(flipY?-1:1));
 
-    // Wrist bridge first, then finger groups, then palm. This hides mechanical seams and keeps
-    // finger roots embedded in one hand mass without collapsing the silhouette into a blob.
+    // At medium shot scale, individual finger construction becomes noisy. Use a compact authored
+    // silhouette for non-grip states and reserve the full five-digit rig for close inspection.
+    if(detail==='medium'&&type!=='edge'){
+      ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.roundRect(-13,-9,22,18,9);ctx.fill();ctx.stroke();
+      const key=type==='press'?'handPress':type==='rest'?'handRest':'handOpen';
+      part(ctx,key,C.skin,C.ink,1.55);
+      ctx.restore();
+      return;
+    }
+
     ctx.fillStyle=C.skin;ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;
     ctx.beginPath();ctx.roundRect(-14,-10,24,20,10);ctx.fill();ctx.stroke();
 
@@ -221,12 +230,12 @@
       if(R.left){
         const type=o.leftHand||'edge',rot=o.leftHandRot!=null?o.leftHandRot:Math.atan2(R.left.wrist[1]-R.left.elbow[1],R.left.wrist[0]-R.left.elbow[0]);
         if(type==='edge')edgeHandLayer(ctx,R.left.wrist,rot,!!o.leftHandFlip,'front');
-        else hand(ctx,R.left.wrist,rot,type,!!o.leftHandFlip);
+        else hand(ctx,R.left.wrist,rot,type,!!o.leftHandFlip,o.handDetail||'medium');
       }
       if(R.right){
         const type=o.rightHand||'edge',rot=o.rightHandRot!=null?o.rightHandRot:Math.atan2(R.right.wrist[1]-R.right.elbow[1],R.right.wrist[0]-R.right.elbow[0]);
         if(type==='edge')edgeHandLayer(ctx,R.right.wrist,rot,!!o.rightHandFlip,'front');
-        else hand(ctx,R.right.wrist,rot,type,!!o.rightHandFlip);
+        else hand(ctx,R.right.wrist,rot,type,!!o.rightHandFlip,o.handDetail||'medium');
       }
     });
   }
@@ -242,7 +251,7 @@
   }
   function drawHandState(ctx,o={}){
     const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1;
-    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY);ctx.restore();
+    ctx.save();ctx.translate(p[0],p[1]);ctx.scale(scale,scale);hand(ctx,[0,0],rot,type,!!o.flipY,o.detail||'close');ctx.restore();
   }
   function drawHandStateLayer(ctx,o={},layer='all'){
     const type=o.type||'edge',p=o.at||[0,0],rot=o.rot||0,scale=o.scale!=null?o.scale:1,flip=!!o.flipY;
