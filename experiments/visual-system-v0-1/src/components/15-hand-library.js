@@ -22,7 +22,7 @@
   }));
   V.registerHand('open',Object.freeze({
     contact:Object.freeze([0,0]),
-    drawScale:.66,
+    drawScale:.62,
     semantic:'released open hand',
     silhouette:'relaxed open release'
   }));
