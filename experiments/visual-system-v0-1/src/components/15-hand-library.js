@@ -3,14 +3,14 @@
   'use strict';
   const V=FILM.visual;
   V.registerHand('edge',Object.freeze({
-    contact:Object.freeze([68,8]),
-    drawScale:.74,
+    contact:Object.freeze([66,12]),
+    drawScale:.80,
     semantic:'record-edge grip',
     silhouette:'thumb-index pinch with grouped trailing fingers'
   }));
   V.registerHand('press',Object.freeze({
-    contact:Object.freeze([123,0]),
-    drawScale:.68,
+    contact:Object.freeze([126,0]),
+    drawScale:.72,
     semantic:'index-finger control press',
     silhouette:'extended index with compact curled finger mass'
   }));

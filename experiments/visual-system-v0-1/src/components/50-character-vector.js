@@ -42,15 +42,15 @@
     if(type==='edge'){
       // Fingers are authored as separate silhouettes. Their roots overlap under the palm,
       // so the outer contour reads as a hand rather than a paw-shaped single blob.
-      part(ctx,'handEdgeThumb',C.skin,C.ink,1.55);
-      part(ctx,'handEdgeIndex',C.skin,C.ink,1.55);
-      part(ctx,'handEdgeFingers',C.skin,C.ink,1.55);
       part(ctx,'handEdgePalm',C.skin,C.ink,1.65);
+      part(ctx,'handEdgeThumb',C.skin,C.ink,1.5);
+      part(ctx,'handEdgeIndex',C.skin,C.ink,1.5);
+      part(ctx,'handEdgeFingers',C.skin,C.ink,1.5);
     }else if(type==='press'){
-      part(ctx,'handPressIndex',C.skin,C.ink,1.55);
-      part(ctx,'handPressThumb',C.skin,C.ink,1.55);
-      part(ctx,'handPressCurl',C.skin,C.ink,1.55);
       part(ctx,'handPressPalm',C.skin,C.ink,1.65);
+      part(ctx,'handPressThumb',C.skin,C.ink,1.5);
+      part(ctx,'handPressCurl',C.skin,C.ink,1.5);
+      part(ctx,'handPressIndex',C.skin,C.ink,1.5);
     }else{
       const key=type==='rest'?'handRest':type==='open'?'handOpen':'handEdge';
       part(ctx,key,C.skin,C.ink,1.65);
